@@ -7,6 +7,10 @@ class MainView:
         if booleano: #si rol_admi es verdadero le mostrara la opción 5
             print("5. Gestionar Informes")
 
+    def ingreso_cuenta():
+        print("Ingrese su user:")
+        print("Ingrese contraseña: ")
+        
     def mostrar_menu():
         print("Bienvenido al sistema de ecotech")
         print(">"*40)

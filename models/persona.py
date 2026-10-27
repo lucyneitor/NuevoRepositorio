@@ -1,4 +1,6 @@
-class Persona():
+from abc import ABC
+
+class Persona(ABC):
     def __init__(self,rut:str,nombre:str,direccion:str,telefono:str,
                  correo:str,user:str,password:str):
         self.rut = rut
