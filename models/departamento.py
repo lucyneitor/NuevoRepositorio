@@ -8,14 +8,6 @@ class Departamento:
         self.gerente = gerente
 
     @property
-    def id_departamento(self)->int:
-        return self.__id_departamento
-
-    @id_departamento.setter
-    def id_departamento(self, id_departamento:int)->None:
-        self.__id_departamento = id_departamento
-
-    @property
     def nombre(self)->str:
         return self.__nombre
 
