@@ -13,6 +13,13 @@ class mainView:
         print("0. Salir")
         print(">"*40)
 
+    def mostrar():
+        fjbruwfwu0hfrpwo0¿
+        qeu9hfubfqe
+        fuobowrúohg0w+p
+        fuouoreougwbuob
+        
+
     @staticmethod
     def titulo_funcion(op:int,objetito:str):
         match op:

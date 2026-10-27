@@ -11,3 +11,6 @@ class InformeView():
         print("5. Generar Informe de Administradores")
         print("0. Volver al menú principal")
         print(">"*40)
+
+    def mostrar(self):
+        
