@@ -1,7 +1,12 @@
 
 
-class mainView:
+class MainView:
     @staticmethod
+    def inicio_seccion(booleano:bool): #en controller se gestiona
+        MainView.mostrar_menu() 
+        if booleano: #si rol_admi es verdadero le mostrara la opción 5
+            print("5. Gestionar Informes")
+
     def mostrar_menu():
         print("Bienvenido al sistema de ecotech")
         print(">"*40)
@@ -9,16 +14,8 @@ class mainView:
         print("2. Gestionar Departamentos")
         print("3. Gestionar Tiempo")
         print("4. Gestionar Proyectos")
-        print("5. Gestionar Informes")
         print("0. Salir")
-        print(">"*40)
-
-    def mostrar():
-        fjbruwfwu0hfrpwo0¿
-        qeu9hfubfqe
-        fuobowrúohg0w+p
-        fuouoreougwbuob
-        
+        print(">"*40)    
 
     @staticmethod
     def titulo_funcion(op:int,objetito:str):
