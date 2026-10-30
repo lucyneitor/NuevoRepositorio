@@ -1,6 +1,9 @@
 from views.main_view import MainView
 
 class EmpleadoView():
+    def __init__(self):
+        self.view = MainView() 
+
     @staticmethod
     def sub_menu():
         print("Submenú de Gestión de Empleados")
@@ -29,7 +32,7 @@ class EmpleadoView():
         print("-"*50)
         sueldo = input("Ingrese su sueldo")
         print("-"*50)
-        depa = escoger_departamento()
+        depa = escoger_departamento() #pendiente
         contrato = input("Ingrese fecha de contrato")
         if valor:
             print("Administrador creado exitosamente")
@@ -40,3 +43,12 @@ class EmpleadoView():
             "correo":correo, "usuario":usuario, "contraseña":password, "sueldo": sueldo,
             "rol_admi": valor, "contrato":contrato, "departamento":depa
         }
+
+    def menu_edit_estado(self):
+        print("="*50)
+        self.view.titulo_funcion(2,"estado de Empleado")
+        print("="*50)
+        print("1. Activo")
+        print("2. Inactivo")
+        print("3. Vacaciones")
+        print("4. Suspendido")

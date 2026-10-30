@@ -7,6 +7,15 @@ venv/
 __pycache__/
 *.pyc
 *.pyo
+*.py[cod]
 
 # Editor / sistema
 .vscode/
+
+#no subir base de de datos
+
+
+#valores locales
+.env
+
+.DS_Store
