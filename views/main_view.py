@@ -7,9 +7,24 @@ class MainView:
         if booleano: #si rol_admi es verdadero le mostrara la opción 5
             print("5. Gestionar Informes")
 
-    def ingreso_cuenta():
-        print("Ingrese su user:")
-        print("Ingrese contraseña: ")
+    def enunciado_inicio():
+        print("Bienvenido a la plataforma")
+        print("-"*50)
+        print("1. Iniciar sesión")
+        print("2. Registrarse")
+        print("3. Salir")
+
+    def init_usuario_existente()->bool:
+        print("Iniciar sección")
+        print("="*50)
+        usuario = pedir("usuario")
+        print("-"*45)
+        contra = pedir("contraseña")
+        print("="*50)
+        print("\n"
+              "Cargando... \n")
+        #funcion de buscar en base de datos
+        return resultado
         
     def mostrar_menu():
         print("Bienvenido al sistema de ecotech")

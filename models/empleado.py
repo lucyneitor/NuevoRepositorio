@@ -1,8 +1,12 @@
 from datetime import date
+from models.persona import Persona
 
-class Empleado():
+ESTADO = ["activo", "inactivo", "vacaciones", "suspendido"]
+
+class Empleado(Persona):
     @staticmethod
-    def __init__(self, sueldo:int, inicio_contrato:date, rol_admi:bool, estado:str):
+    def __init__(self, sueldo:int, inicio_contrato:date, rol_admi:bool, estado:str, rut:str,nombre:str,direccion:str,telefono:str,correo:str,user:str,password:str):
+        super().__init__(rut, nombre, direccion, telefono, correo, user, password)
         self.sueldo = sueldo
         self.inicio_contrato = inicio_contrato
         self.rol_admi = rol_admi
