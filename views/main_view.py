@@ -18,7 +18,7 @@ class MainView:
         print("2. Registrarse")
         print("3. Salir")
     @staticmethod
-    def init_usuario_existente(self)->dict:
+    def init_usuario_existente()->dict:
         print("Iniciar sección")
         print("="*50)
         usuario = pedir("usuario")

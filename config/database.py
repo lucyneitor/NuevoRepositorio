@@ -63,8 +63,8 @@ class Database:
                     id_proyecto INTEGER PRIMARY KEY AUTOINCREMENT,
                     nombre TEXT NOT NULL UNIQUE,
                     descripcion TEXT NOT NULL,
-                    fecha_inicio DATE NOT NULL,
-                )
+                    fecha_inicio DATE NOT NULL
+                );
             """)
 
             # 4) Tiempo
