@@ -1,3 +1,15 @@
+from pydantic import (TypeAdapter, Field, StringConstraints,ValidationError)
+from typing import Annotated
+
+regla_op_inicial = Annotated[int, Field(ge=0,le=2)]
+validador_inicial = TypeAdapter(regla_op_inicial)
+
+regla_op = Annotated[int, Field(ge=0, le=4)] #sin rol administrador
+validador_op = TypeAdapter(regla_op)
+
+regla_op_sup = Annotated[int, Field(ge=0, le=5)] #con rol administrador
+validador_op_sup = TypeAdapter(regla_op_sup)
+
 def leer_numero(mensaje: str) -> int: #falta un leer texto, leer fecha
     while True:
         try:

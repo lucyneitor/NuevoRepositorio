@@ -5,17 +5,7 @@ from models.empleado_dao import EmpleadoDAO
 from controllers.informe_controller import InformeController
 from controllers.tiempo_controller import TiempoController
 from controllers.proyecto_controller import ProyectoController
-from pydantic import (TypeAdapter, Field, StringConstraints,ValidationError)
-from typing import Annotated
-
-regla_op_inicial = Annotated[int, Field(ge=0,le=2)]
-validador_inicial = TypeAdapter(regla_op_inicial)
-
-regla_op = Annotated[int, Field(ge=0, le=4)] #sin rol administrador
-validador_op = TypeAdapter(regla_op)
-
-regla_op_sup = Annotated[int, Field(ge=0, le=5)] #con rol administrador
-validador_op_sup = TypeAdapter(regla_op_sup)
+from views.utils import validador_inicial
 
 class MainController:
     def __init__(self):
@@ -28,7 +18,7 @@ class MainController:
         self.empleado_dao = EmpleadoDAO()
 
     def ejecutar(self):
-        opcion = self.view.enunciado_inicio() # validar antes de la linea 30 (validador_inicial)
+        opcion = self.view.enunciado_inicio(validador_inicial) # validar antes de la linea 30 (validador_inicial)
         opcion = int(opcion)
         while True:
             if opcion == 0:

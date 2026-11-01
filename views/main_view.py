@@ -1,7 +1,7 @@
 from views.utils import pedir
+from views.utils import eleccion 
 from models.empleado_dao import EmpleadoDAO
 class MainView:
-    @staticmethod
     def __init__(self):
         self.empleado_dao = EmpleadoDAO()
 
@@ -11,12 +11,22 @@ class MainView:
         if booleano: #si rol_admi es verdadero le mostrara la opción 5
             print("5. Gestionar Informes")
     @staticmethod
-    def enunciado_inicio():
+    def enunciado_inicio(validador):
         print("Bienvenido a la plataforma")
-        print("-"*50)
+        print("-" * 50)
         print("1. Iniciar sesión")
         print("2. Registrarse")
-        print("3. Salir")
+        print("0. Salir")
+
+        while True:
+            entrada = input("Ingrese su opción: ")
+            try:
+                valor = int(entrada)
+                return validador.validate_python(valor)
+            except ValueError:
+                print("Debe ingresar un número entero válido.")
+            except Exception:
+                print("Opción inválida. Intente nuevamente.")
     @staticmethod
     def init_usuario_existente()->dict:
         print("Iniciar sección")
