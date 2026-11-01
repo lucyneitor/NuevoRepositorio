@@ -1,20 +1,24 @@
-
-
+from views.utils import pedir
+from models.empleado_dao import EmpleadoDAO
 class MainView:
+    @staticmethod
+    def __init__(self):
+        self.empleado_dao = EmpleadoDAO()
+
     @staticmethod
     def inicio_seccion(booleano:bool): #en controller se gestiona
         MainView.mostrar_menu() 
         if booleano: #si rol_admi es verdadero le mostrara la opción 5
             print("5. Gestionar Informes")
-
+    @staticmethod
     def enunciado_inicio():
         print("Bienvenido a la plataforma")
         print("-"*50)
         print("1. Iniciar sesión")
         print("2. Registrarse")
         print("3. Salir")
-
-    def init_usuario_existente()->bool:
+    @staticmethod
+    def init_usuario_existente(self)->dict:
         print("Iniciar sección")
         print("="*50)
         usuario = pedir("usuario")
@@ -23,9 +27,13 @@ class MainView:
         print("="*50)
         print("\n"
               "Cargando... \n")
-        #funcion de buscar en base de datos
-        return resultado
-        
+        #funcion de buscar en base de datos DAO
+        diccionario ={
+            "usuario":usuario,
+            "contraseña": contra
+        }
+        return diccionario
+    @staticmethod
     def mostrar_menu():
         print("Bienvenido al sistema de ecotech")
         print(">"*40)

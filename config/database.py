@@ -30,7 +30,7 @@ class Database:
 
             # 1) Persona
             cursor.execute("""
-                CREATE TABLE empleado (
+                CREATE TABLE IF NOT EXISTS empleado (
                     id_empleado INTEGER PRIMARY KEY AUTOINCREMENT,
                     rut TEXT NOT NULL UNIQUE,
                     nombre TEXT NOT NULL,
@@ -45,7 +45,7 @@ class Database:
                     salario INTEGER NOT NULL CHECK (salario > 0),
                     id_departamento INTEGER,
                     FOREIGN KEY (id_departamento) REFERENCES departamento(id_departamento) ON DELETE SET NULL
-                );
+                )
             """)
 
             # 2) Departamento
@@ -64,7 +64,7 @@ class Database:
                     nombre TEXT NOT NULL UNIQUE,
                     descripcion TEXT NOT NULL,
                     fecha_inicio DATE NOT NULL,
-                );
+                )
             """)
 
             # 4) Tiempo
@@ -78,7 +78,7 @@ class Database:
                     descripcion TEXT,
                     FOREIGN KEY(id_empleado) REFERENCES empleado(id_empleado) ON DELETE CASCADE,
                     FOREIGN KEY(id_proyecto) REFERENCES proyecto(id_proyecto) ON DELETE CASCADE
-                );
+                )
             """)
 
             # 5) Informe

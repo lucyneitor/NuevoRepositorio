@@ -4,7 +4,9 @@ def leer_numero(mensaje: str) -> int: #falta un leer texto, leer fecha
             return int(input(mensaje))
         except ValueError:
             print("Error: Debe ingresar un número entero válido.")
-
+def pedir(msg :str):
+    variable=input(f"Ingrese su {msg}: ")
+    return variable
 def eleccion(validador,op):
         try:
             op = validador.validate_strings(op)
