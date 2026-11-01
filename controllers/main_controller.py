@@ -1,6 +1,7 @@
 from views.main_view import MainView #agregar cada controller
 from controllers.departamento_controller import DepartamentoController
 from controllers.empleado_controller import EmpleadoController
+from models.empleado_dao import EmpleadoDAO
 from controllers.informe_controller import InformeController
 from controllers.tiempo_controller import TiempoController
 from controllers.proyecto_controller import ProyectoController
@@ -24,6 +25,7 @@ class MainController:
         self.informe_controller = InformeController()
         self.tiempo_controller = TiempoController()
         self.proyecto_controller = ProyectoController()
+        self.empleado_dao = EmpleadoDAO()
 
     def ejecutar(self):
         opcion = self.view.enunciado_inicio() # validar antes de la linea 30 (validador_inicial)
@@ -34,7 +36,8 @@ class MainController:
             elif opcion == 1:
                 intentos = 3
                 while intentos>0:
-                    encontrado=self.view.init_usuario_existente()
+                    datos = self.view.init_usuario_existente() #Agregar 
+                    encontrado = self.empleado_dao.obtener_empleado_por_user(datos)
                     if encontrado==False:
                         print("Credenciales no coinciden")
                         intentos -= 1

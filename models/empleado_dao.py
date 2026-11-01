@@ -128,7 +128,7 @@ class EmpleadoDAO:
         finally:
             conn.close()
 
-    def obtener_empleado_por_user(user: str) -> bool:
+    def obtener_empleado_por_user(credencial: dict) -> bool:
         """
         Retorna True si encuentra el usuario en la base de datos; False si no existe.
         """
@@ -139,9 +139,9 @@ class EmpleadoDAO:
                 """
                 SELECT 1
                 FROM empleado
-                WHERE user = ?
+                WHERE user = ? AND password = ?
                 """,
-                (user,),
+                (credencial["usuario"],credencial["contraseña"]),
             )
             fila = cursor.fetchone()
             return fila is not None
