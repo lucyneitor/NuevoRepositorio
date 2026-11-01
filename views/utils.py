@@ -11,7 +11,7 @@ def eleccion(validador,op):
         except TypeError:
             print("Por favor, ingrese la opcion que corresponda")
 
-def conversor(num):
+def conversor(num)->str:
     if num==1:
         return "activo"
     if num==2:

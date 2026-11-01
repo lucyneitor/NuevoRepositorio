@@ -2,13 +2,13 @@ from views.main_view import MainView
 from views.empleado_view import EmpleadoView
 from models.empleado import Empleado
 from models.empleado_dao import EmpleadoDAO
-from views.utils import conversor #
+from views.utils import conversor
 
 class EmpleadoController:
     def __init__(self):
         self.main_view: MainView = MainView()
-        self.empleado_view = EmpleadoView
-        self.utils = 
+        self.empleado_view = EmpleadoView()
+        self.utils = conversor
 
     def ejecutar(self, opcion):
         if opcion == 1:
@@ -32,7 +32,7 @@ class EmpleadoController:
 
     def agregar_empleado(self, valor):
         self.main_view.ejecutar()
-        nuevo=self.empleado_view.formulario_empleado(valor) #empleado view formulario
+        nuevo= self.empleado_view.formulario_empleado(valor) #empleado view formulario
         crear_empleado= Empleado( #creo el departamento
             sueldo=nuevo["sueldo"], inicio_contrato=nuevo["contrato"], rol_admi=nuevo['rol_admi'], 
             estado="activo", rut=nuevo["rut"], nombre=nuevo['nombre'], direccion=nuevo['direccion'],
@@ -44,4 +44,4 @@ class EmpleadoController:
 
     def editar_empleado(self):
         op = self.empleado_view.menu_edit_estado
-        conversor(op)
+        estado = self.utils(op)
