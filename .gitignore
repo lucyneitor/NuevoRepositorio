@@ -13,7 +13,7 @@ __pycache__/
 .vscode/
 
 #no subir base de de datos
-
+sistema_gestion.db
 
 #valores locales
 .env

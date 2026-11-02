@@ -9,7 +9,7 @@ class EmpleadoController:
         self.main_view = MainView()
         self.empleado_view = EmpleadoView()
 
-    def ejecutar(self, opcion):
+    def ejecutar(self, opcion): #editar
         self.empleado_view.sub_menu
         opcion = input() #te amo mucho mi vida
         eleccion(validador_op1, opcion)
@@ -17,7 +17,7 @@ class EmpleadoController:
         if opcion == 1:
             activacion = input("Tendrá rol de administrador (si/no): ")
             self.agregar_empleado(activacion)
-        elif opcion == 2 or opcion == 3 or opcion == 4:
+        elif opcion in (2,3,4):
             rut = input("Ingrese su rut: ")
             if opcion==2:
                 self.editar_empleado(rut)
