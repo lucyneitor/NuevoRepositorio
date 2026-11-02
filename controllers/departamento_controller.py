@@ -2,31 +2,38 @@ from views.main_view import MainView
 from views.departamento_view import DepartamentoView
 from models.empleado import Empleado
 from models.empleado_dao import EmpleadoDAO
+from views.utils import validador_op1, ValidationError, eleccion, pedir
 
 class DepartamentoController:
     def __init__(self):
         self.main_view: MainView = MainView()
         self.departamento_view = DepartamentoView()
 
-    def ejecutar(self, opcion):
-        if opcion == 1:
-            activacion = input("Tendrá rol de administrador (si/no): ")
-            self.agregar_empleado(activacion)
-        elif opcion == 2 or opcion == 3 or opcion == 4:
-            rut = input("Ingrese su rut: ")
-            if opcion==2:
-                self.editar_empleado(rut)
-            elif opcion == 3:
-                self.eliminar_empleado(rut)
-            elif opcion == 4:
-                self.imprimir_empleado(rut)
-        elif opcion == 5:
-            self.imprimir_empleados()
-        elif opcion == 0:
-            self.view.mostrar_mensaje("Saliendo de la gestión de empleados.")
-            self.main_view.mostrar_menu()
-        else:
-            self.view.mostrar_mensaje("Opción no válida.")
+    def ejecutar(self, opcion): #corregir todo
+        while True:
+            self.departamento_view.sub_menu()
+            opcion = pedir("opción")
+            try:
+                opcion = int(opcion)
+                eleccion(validador_op1, opcion)
+            except (TypeError, ValueError, ValidationError) as e:
+                print(e)
+                continue
+            else:            
+                if opcion == 0:
+                    self.view.mostrar_mensaje("Saliendo de la gestión de empleados.")
+                    self.main_view.mostrar_menu() 
+                elif opcion == 1:
+                    self.agregar_departamento(activacion)
+                elif opcion == 2 
+                    self.editar_empleado()
+                elif opcion == 3:
+                    self.buscar_empleado(rut)
+                elif opcion == 0:
+                    self.view.mostrar_mensaje("Saliendo de la gestión de empleados.")
+                    self.main_view.mostrar_menu()
+                else:
+                    self.view.mostrar_mensaje("Opción no válida.")
 
     def agregar_empleado(self, valor):
         self.main_view.ejecutar()

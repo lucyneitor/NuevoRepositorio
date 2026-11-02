@@ -1,5 +1,6 @@
 from views.main_view import MainView
-
+from models.departamento
+from views.utils import pedir
 class EmpleadoView():
     def __init__(self):
         self.view = MainView() 
@@ -15,30 +16,31 @@ class EmpleadoView():
         print(">"*40)
 
     @staticmethod
-    def formulario_empleado(valor): #Hacer funcion validador en cada entrada
-        rut = input("Ingrese su rut: ")
+    def formulario_empleado(valor)->dict: #Hacer funcion validador en cada entrada
+        rut = pedir("rut")
         print("-"*50)
-        nombre = input("Ingrese su nombre: ")
+        nombre = pedir("nombre")
         print("-"*50)
-        direccion = input("Ingrese su dirreción")
+        direccion = pedir("dirreción")
         print("-"*50)
-        telefono = input("Ingrese su telefono")
+        telefono = pedir("telefono")
         print("-"*50)
-        correo = input("Ingrese su correo")
+        correo = pedir("correo")
         print("-"*50)
-        usuario = input("Ingrese su usuario")
+        usuario = pedir("usuario")
         print("-"*50)
-        password = input("Ingrese contraseña")
+        password = pedir("contraseña")
         print("-"*50)
-        sueldo = input("Ingrese su sueldo")
+        sueldo = pedir("sueldo")
         print("-"*50)
-        depa = escoger_departamento() #pendiente
-        contrato = input("Ingrese fecha de contrato")
+
+        depa = escoger_departamento() #pendiente ("Dejar creado por defecto 2")
+        contrato = pedir("Ingrese fecha de contrato")
         if valor:
             print("Administrador creado exitosamente")
         else:
             print("Empleado creado exitosamente")
-        return {
+        return { #retorno un diccionario
             "rut": rut, "nombre": nombre, "dirección":direccion, "telefono":telefono,
             "correo":correo, "usuario":usuario, "contraseña":password, "sueldo": sueldo,
             "rol_admi": valor, "contrato":contrato, "departamento":depa

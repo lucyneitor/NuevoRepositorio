@@ -11,22 +11,13 @@ class MainView:
         if booleano: #si rol_admi es verdadero le mostrara la opción 5
             print("5. Gestionar Informes")
     @staticmethod
-    def enunciado_inicio(validador):
+    def enunciado_inicio():
         print("Bienvenido a la plataforma")
         print("-" * 50)
         print("1. Iniciar sesión")
         print("2. Registrarse")
         print("0. Salir")
 
-        while True:
-            entrada = input("Ingrese su opción: ")
-            try:
-                valor = int(entrada)
-                return validador.validate_python(valor)
-            except ValueError:
-                print("Debe ingresar un número entero válido.")
-            except Exception:
-                print("Opción inválida. Intente nuevamente.")
     @staticmethod
     def init_usuario_existente()->dict:
         print("Iniciar sección")
@@ -55,7 +46,7 @@ class MainView:
         print(">"*40)    
 
     @staticmethod
-    def titulo_funcion(op:int,objetito:str):
+    def titulo_funcion(op: int,objetito:str):
         match op:
             case 1:
                 print(f"Agregar nuevo {objetito}...")

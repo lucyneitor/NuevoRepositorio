@@ -147,6 +147,23 @@ class EmpleadoDAO:
             return fila is not None
         finally:
             conn.close()
+
+    def obtener_estado(user:str)->bool:
+        conn = Database().get_connection()
+        try:
+            cursor : Cursor = conn.cursor()
+            cursor.execute(
+                """
+                SELECT rol_admin
+                FROM empleado
+                WHERE user = ?
+                """,
+                (user,),
+            )
+            rol = cursor.fetchone()
+            return rol
+        finally:
+            conn.close()
     
     @staticmethod
     def actualizar_empleado(empleado: Empleado) -> bool:
