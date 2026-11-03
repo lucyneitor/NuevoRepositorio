@@ -1,5 +1,6 @@
 from pydantic import (TypeAdapter, Field, StringConstraints,ValidationError)
 from typing import Annotated
+import pwinput
 
 regla_op_inicial = Annotated[int, Field(ge=0,le=2)]
 validador_inicial = TypeAdapter(regla_op_inicial)
@@ -43,3 +44,5 @@ def conversor(num)->str:
         return "vacaciones"
     if num==4:
         return "suspendido"
+
+#crear funcion para confirmar movimiento

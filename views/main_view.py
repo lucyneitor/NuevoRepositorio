@@ -1,6 +1,5 @@
-from views.utils import pedir
+from views.utils import pedir, pwinput
 from models.empleado_dao import EmpleadoDAO
-import getpass as luz
 
 class MainView:
     def __init__(self):
@@ -25,14 +24,14 @@ class MainView:
         print("="*50)
         usuario = pedir("usuario")
         print("-"*45)
-        contra = luz.getpass("Ingrese su contraseña: ")
+        password = pwinput.pwinput("Ingrese su contraseña: ", mask="*")
         print("="*50)
         print("\n"
               "Cargando... \n")
         #funcion de buscar en base de datos DAO
         diccionario ={
             "usuario":usuario,
-            "contraseña": contra
+            "contraseña": password
         }
         return diccionario
     @staticmethod

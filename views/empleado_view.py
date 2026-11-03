@@ -1,6 +1,5 @@
 from views.main_view import MainView
-from models.departamento import Departamento
-from views.utils import pedir
+from views.utils import pedir, pwinput
 class EmpleadoView():
     def __init__(self):
         self.view = MainView() 
@@ -29,7 +28,7 @@ class EmpleadoView():
         print("-"*50)
         usuario = pedir("usuario")
         print("-"*50)
-        password = pedir("contraseña")
+        password = pwinput.pwinput("Ingrese su contraseña: ", mask="*")
         print("-"*50)
         sueldo = pedir("sueldo")
         print("-"*50)
