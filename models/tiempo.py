@@ -20,8 +20,8 @@ class Tiempo:
         self.fecha = fecha
         self.hora_entrada = hora_entrada
         self.hora_salida = hora_salida
-        self.id_empleado = id_empleado
-        self.id_proyecto = id_proyecto
+        self.id_empleado = id_empleado #FK empleado
+        self.id_proyecto = id_proyecto #FK proyecto
 
     def __str__(self):
         return (

@@ -1,8 +1,7 @@
 from views.main_view import MainView
-from controllers.main_controller import MainController
 from views.departamento_view import DepartamentoView
 from models.departamento_dao import DepartamentoDAO
-from models.empleado import Empleado
+from models.departamento import Departamento
 from models.empleado_dao import EmpleadoDAO
 from views.utils import validador_op1, ValidationError, eleccion, pedir
 
@@ -10,7 +9,6 @@ class DepartamentoController:
     def __init__(self):
         self.main_view = MainView()
         self.departamento_view = DepartamentoView()
-        self.main_controller = MainController()
         self.departamento_dao = DepartamentoDAO()
 
     def ejecutar(self, opcion): #corregir todo
@@ -41,17 +39,14 @@ class DepartamentoController:
                 else:
                     self.view.mostrar_mensaje("Opción no válida.")
 
-    def agregar_empleado(self, valor):
+    def agregar_departamento(self, valor):
         self.main_view.ejecutar()
-        nuevo= self.departamento_view.formulario_empleado(valor) #empleado view formulario
-        crear_empleado= Empleado( #creo el departamento
-            sueldo=nuevo["sueldo"], inicio_contrato=nuevo["contrato"], rol_admi=nuevo['rol_admi'], 
-            estado="activo", rut=nuevo["rut"], nombre=nuevo['nombre'], direccion=nuevo['direccion'],
-            telefono=nuevo['telefono'], correo=nuevo['correo'], user=nuevo["user"], 
-            password=nuevo['password'], selec_depa=nuevo["departamento"]
+        nuevo= self.departamento_view.formulario_departamento() #empleado view formulario
+        depa = Departamento( 
+            nombre= nuevo["nombre de departamento"], 
+            gerente= nuevo["nombre del gerente"]
         )
-        if EmpleadoDAO.crear(crear_empleado): # consultar linea (modificar)
-            mensaje="Creado exitosamente"
+        self.departamento_dao.crear_departamento(depa)
 
     def editar_departamento(self,elemento:object):
         while True:
@@ -65,8 +60,8 @@ class DepartamentoController:
                 continue
             else:
                 if opcion == 0: 
-                    print("Entendido...")
-                    self.main_controller.ejecutar()
+                    print("Entendido... Operación cancelada")
+                    return
                 elif opcion in (1,2):
                     if opcion == 1:
                         pal = "nombre del departamento"
@@ -74,7 +69,6 @@ class DepartamentoController:
                         pal = "gerente"
                     self.main_view.titulo_funcion(2,pal)
                     nuevo = pedir(pal) #crear una función de confirmación
-                    elemento.nombre = nuevo
                     if opcion == 1:
                         elemento.nombre = nuevo
                     else:
