@@ -19,19 +19,23 @@ class MainController:
         self.empleado_dao = EmpleadoDAO()
 
     def ejecutar(self):
-        self.view.enunciado_inicio() # validar antes de la linea 30 (validador_inicial)
         while True:
+            self.view.enunciado_inicio()
             opcion = pedir("usuario")
             try:
                 opcion = int(opcion)
                 eleccion(validador_inicial, opcion)
-            except (TypeError, ValueError, ValidationError) as e:
+            except (TypeError, ValueError, ValidationError) as e: #revisar uno de los mensajes
                 print(e)
             else:
-                if opcion == 0:
+                if opcion == 0: # listo
                     print("Hasta luego.")
                     break
-                elif opcion == 1:
+                elif opcion == 1: #listo
+                    if self.empleado_dao.contar_empleados() == 0:
+                        print(">"*15,"Opción bloqueada",">"*15)
+                        print("Debe registrarse para que hayan usuarios en sistema")
+                        continue
                     intentos = 3
                     while intentos>0:
                         datos = self.view.init_usuario_existente() #Agregar 
@@ -42,6 +46,7 @@ class MainController:
                             continue #mensaje correspondiente
                     #falta cuestionar si existe o no
                     if encontrado == False:
+                        print(">"*15,"Se cierra programa",">"*15)
                         return
                     rol = self.empleado_dao.obtener_estado(datos["usuario"])
                     break
@@ -54,7 +59,7 @@ class MainController:
                         rol = False
                     self.empleado_controller.agregar_empleado(rol)
                     break
-
+            
         if opcion != 0: #mecanismo inicial
             while True:
                 self.view.mostrar_menu()
@@ -77,11 +82,12 @@ class MainController:
                     elif opcion == 2:
                         self.departamento_controller.ejecutar()
                     elif opcion == 3: 
-                        self.tiempo_controller.ejecutar()
+                        self.tiempo_controller.ejecutar() #falta
                     elif opcion == 4:
-                        self.proyecto_controller.ejecutar()
+                        self.proyecto_controller.ejecutar() #falta
                     elif opcion == 5:
-                        self.informe_controller.ejecutar() 
+                        self.informe_controller.ejecutar() #falta
+        
 
 
 

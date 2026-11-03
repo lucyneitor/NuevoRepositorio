@@ -128,6 +128,7 @@ class EmpleadoDAO:
         finally:
             conn.close()
 
+    @staticmethod
     def obtener_empleado_por_user(credencial: dict) -> bool:
         """
         Retorna True si encuentra el usuario en la base de datos; False si no existe.
@@ -143,11 +144,12 @@ class EmpleadoDAO:
                 """,
                 (credencial["usuario"],credencial["contraseña"]),
             )
-            fila = cursor.fetchone()
-            return fila is not None
+            encontrado = cursor.fetchone()
+            return encontrado is not None
         finally:
             conn.close()
 
+    @staticmethod
     def obtener_estado(user:str)->bool:
         conn = Database().get_connection()
         try:
@@ -213,5 +215,15 @@ class EmpleadoDAO:
         except Exception as e:
             print(f"Error al eliminar empleado de BD: {e}")
             return False
+        finally:
+            conn.close()
+
+    @staticmethod
+    def contar_empleados() -> int:
+        conn = Database().get_connection()
+        try:
+            cursor = conn.cursor()
+            cursor.execute("SELECT COUNT(*) FROM empleado")
+            return cursor.fetchone()[0]
         finally:
             conn.close()

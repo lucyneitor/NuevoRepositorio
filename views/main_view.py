@@ -1,6 +1,7 @@
 from views.utils import pedir
-from views.utils import eleccion 
 from models.empleado_dao import EmpleadoDAO
+import getpass as luz
+
 class MainView:
     def __init__(self):
         self.empleado_dao = EmpleadoDAO()
@@ -24,7 +25,7 @@ class MainView:
         print("="*50)
         usuario = pedir("usuario")
         print("-"*45)
-        contra = pedir("contraseña")
+        contra = luz.getpass("Ingrese su contraseña: ")
         print("="*50)
         print("\n"
               "Cargando... \n")

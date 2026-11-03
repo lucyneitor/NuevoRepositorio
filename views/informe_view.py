@@ -13,4 +13,4 @@ class InformeView():
         print(">"*40)
 
     def mostrar(self):
-        
+        pass

@@ -9,7 +9,7 @@ class EmpleadoController:
         self.main_view = MainView()
         self.empleado_view = EmpleadoView()
 
-    def ejecutar(self, opcion): #editar
+    def ejecutar(self): #editar
         self.empleado_view.sub_menu
         opcion = input() #te amo mucho mi vida
         eleccion(validador_op1, opcion)

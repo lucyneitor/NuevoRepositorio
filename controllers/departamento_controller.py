@@ -11,7 +11,7 @@ class DepartamentoController:
         self.departamento_view = DepartamentoView()
         self.departamento_dao = DepartamentoDAO()
 
-    def ejecutar(self, opcion): #corregir todo
+    def ejecutar(self): #corregir todo
         while True:
             self.departamento_view.sub_menu()
             opcion = pedir("opción")
