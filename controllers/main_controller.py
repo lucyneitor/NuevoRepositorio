@@ -8,7 +8,6 @@ from controllers.proyecto_controller import ProyectoController
 from views.utils import validador_inicial, eleccion, validador_op, pedir, validador_op_sup, ValidationError
 
 
-
 class MainController:
     def __init__(self):
         self.view = MainView() #listo
@@ -41,7 +40,9 @@ class MainController:
                             print("Credenciales no coinciden")
                             intentos -= 1
                             continue #mensaje correspondiente
-                    #falta buscar rol desde objeto
+                    #falta cuestionar si existe o no
+                    if encontrado == False:
+                        return
                     rol = self.empleado_dao.obtener_estado(datos["usuario"])
                     break
                 elif opcion == 2:

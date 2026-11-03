@@ -1,5 +1,5 @@
 from views.main_view import MainView
-from models.departamento
+from models.departamento import Departamento
 from views.utils import pedir
 class EmpleadoView():
     def __init__(self):
