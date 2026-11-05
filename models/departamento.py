@@ -1,5 +1,3 @@
-
-
 class Departamento:
     @staticmethod
     def __init__(self, id_departamento=None, nombre=None, gerente=None):
@@ -15,9 +13,11 @@ class Departamento:
     def nombre(self, nombre:str)->None:
         self.__nombre = nombre
 
+    @property
     def gerente(self)->str:
         return self.__gerente
 
+    @gerente.setter
     def gerente(self, gerente:str)->None:
         self.__gerente=gerente
 
