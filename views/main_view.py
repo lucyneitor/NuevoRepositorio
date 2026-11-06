@@ -42,7 +42,8 @@ class MainView:
         print("2. Gestionar Departamentos")
         print("3. Gestionar Tiempo")
         print("4. Gestionar Proyectos")
-        print("0. Salir")
+        print("5. Cerrar Sesión -> Cambiar usuario")
+        print("0. Salir del Sistema")
         print(">"*40)    
 
     @staticmethod

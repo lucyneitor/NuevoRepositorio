@@ -5,11 +5,24 @@ ESTADO = ["activo", "inactivo", "vacaciones", "suspendido"]
 
 class Empleado(Persona):
     @staticmethod
-    def __init__(self, sueldo:int, inicio_contrato:date, rol_admi:bool, estado:str, rut:str,nombre:str,direccion:str,telefono:str,correo:str,user:str,password:str):
+    def __init__(
+        self, 
+        sueldo:int, 
+        inicio_contrato:date, 
+        rol_admi:bool, #sacar pq se traslada a usuario
+        estado:str, 
+        rut:str,
+        nombre:str,
+        direccion:str,
+        telefono:str,
+        correo:str,
+        user:str, #borrar user y password de empleado y persona
+        password:str
+        ):
         super().__init__(rut, nombre, direccion, telefono, correo, user, password)
         self.sueldo = sueldo
         self.inicio_contrato = inicio_contrato
-        self.rol_admi = rol_admi
+        self.rol_admi = rol_admi #solo admi decide editar que es administrador un empleado
         self.estado = estado 
 
     @property

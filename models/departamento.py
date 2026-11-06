@@ -1,9 +1,11 @@
+from models.empleado import Empleado
+
 class Departamento:
-    @staticmethod
     def __init__(self, id_departamento=None, nombre=None, gerente=None):
         self.id_departamento = id_departamento
         self.nombre = nombre
         self.gerente = gerente
+        self.empleados: list[Empleado] = [] 
 
     @property
     def nombre(self)->str:

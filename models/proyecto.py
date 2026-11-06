@@ -1,5 +1,6 @@
 from models.empleado import Empleado
 
+autorizar = "1234"
 class Proyecto:
     """
     La clase proyecto representa un proyecto en el que los trabajadores trabajan

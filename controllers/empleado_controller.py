@@ -2,12 +2,13 @@ from views.main_view import MainView
 from views.empleado_view import EmpleadoView
 from models.empleado import Empleado
 from models.empleado_dao import EmpleadoDAO
-from views.utils import validador_op1, eleccion
-
+from views.utils import validador_op1, eleccion, pwinput
+from config.settings import Settings
 class EmpleadoController:
     def __init__(self):
         self.main_view = MainView()
         self.empleado_view = EmpleadoView()
+        self.settings = Settings
 
     def ejecutar(self): #editar
         self.empleado_view.sub_menu
@@ -15,8 +16,18 @@ class EmpleadoController:
         eleccion(validador_op1, opcion)
         opcion = int(opcion)
         if opcion == 1:
-            activacion = input("Tendrá rol de administrador (si/no): ")
-            self.agregar_empleado(activacion)
+            activacion = input("Tendrá rol de administrador (si/no): ") #el usuario no decide quien es administrador
+            autoriza = pwinput.pwinput("Confirmación: ")
+            if activacion.lower() == "si":
+                if autoriza == self.settings.ADMIN_SHARED_PASSWORD:
+                    rol = True
+                else:
+                    print("Rol Administrador denegada")
+                    rol = False
+                rol = True
+            else:
+                rol = False
+            self.agregar_empleado(rol)
         elif opcion in (2,3,4):
             rut = input("Ingrese su rut: ")
             if opcion==2:
@@ -44,6 +55,6 @@ class EmpleadoController:
         if EmpleadoDAO.crear(crear_empleado): # consultar linea (modificar)
             mensaje="Creado exitosamente"
             
-    def editar_empleado(self):
+    def editar_empleado(self): #usar actualizar aqui 
         op = self.empleado_view.menu_edit_estado
         estado = self.utils(op)

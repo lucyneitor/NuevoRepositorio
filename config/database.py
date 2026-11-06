@@ -37,9 +37,6 @@ class Database:
                     direccion TEXT NOT NULL,
                     telefono TEXT NOT NULL,
                     correo TEXT NOT NULL UNIQUE,
-                    user TEXT NOT NULL UNIQUE,
-                    password TEXT NOT NULL,
-                    rol_admin BOOLEAN NOT NULL DEFAULT 0,
                     estado TEXT NOT NULL DEFAULT 'activo',
                     fecha_inicio_contrato DATE NOT NULL,
                     salario INTEGER NOT NULL CHECK (salario > 0),
@@ -53,7 +50,7 @@ class Database:
                 CREATE TABLE IF NOT EXISTS departamento (
                     id_departamento INTEGER PRIMARY KEY AUTOINCREMENT,
                     nombre TEXT NOT NULL UNIQUE,
-                    gerente TEXT
+                    gerente TEXT --agregar lista de objetos?
                 );
             """)
 
@@ -92,6 +89,22 @@ class Database:
                     FOREIGN KEY(id_empleado) REFERENCES empleado(id_empleado) ON DELETE CASCADE
                 )
             """)
+
+            #6) Usuario
+            cursor.execute("""
+                CREATE TABLE IF NOT EXISTS usuario(
+                    id_usuario INTEGER PRIMARY KEY AUTOINCREMENT,
+                    username TEXT NOT NULL UNIQUE,
+                    password_hash TEXT NOT NULL,
+                    nombre_completo TEXT NOT NULL,
+                    rol TEXT NOT NULL --
+                )
+            """)
+
+            cursor.execute("""
+                INSERT INTO departamento (nombre, gerente) VALUES (Ventas, Alejandro Guzmán)
+            """)
+
             conn.commit()
             return True
         except sqlite3.Error as e:

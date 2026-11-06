@@ -1,12 +1,9 @@
-from models.empleado import Empleado
 
 class Tiempo:
-
     """
     La clase tiempo representa cuanto demoran los trabajadores en realizar un proyecto
     esto despues estara conectado con la base de datos de proyecto para gestionar estos
     """
-    
     def __init__(
         self,
         id_tiempo: int | None,

@@ -5,8 +5,9 @@ from models.empleado_dao import EmpleadoDAO
 from controllers.informe_controller import InformeController
 from controllers.tiempo_controller import TiempoController
 from controllers.proyecto_controller import ProyectoController
-from views.utils import validador_inicial, eleccion, validador_op, pedir, validador_op_sup, ValidationError
-
+from views.utils import validador_inicial, eleccion, validador_op, pedir, validador_op_sup, ValidationError, pwinput
+from models.proyecto import autorizar
+from controllers.auth_controller import AuthController
 
 class MainController:
     def __init__(self):
@@ -17,76 +18,40 @@ class MainController:
         self.tiempo_controller = TiempoController()
         self.proyecto_controller = ProyectoController()
         self.empleado_dao = EmpleadoDAO()
+        self.auth_controller = AuthController()
 
     def ejecutar(self):
+        self.auth_controller.iniciar_sesion() #inicio sesión
+        if not self.usuario:
+            self.view.mostrar_mensaje("El programa ha finalizado debido a credenciales invalidadas")
+            return
+        
         while True:
-            self.view.enunciado_inicio()
-            opcion = pedir("usuario")
+            self.view.mostrar_menu()
+            opcion = pedir("opción")
             try:
                 opcion = int(opcion)
-                eleccion(validador_inicial, opcion)
-            except (TypeError, ValueError, ValidationError) as e: #revisar uno de los mensajes
+                if rol:
+                    eleccion(validador_op_sup, opcion)
+                else:
+                    eleccion(validador_op, opcion)
+            except (TypeError, ValueError, ValidationError) as e:
                 print(e)
+                continue
             else:
-                if opcion == 0: # listo
+                if opcion == 0: 
                     print("Hasta luego.")
                     break
-                elif opcion == 1: #listo
-                    if self.empleado_dao.contar_empleados() == 0:
-                        print(">"*15,"Opción bloqueada",">"*15)
-                        print("Debe registrarse para que hayan usuarios en sistema")
-                        continue
-                    intentos = 3
-                    while intentos>0:
-                        datos = self.view.init_usuario_existente() #Agregar 
-                        encontrado = self.empleado_dao.obtener_empleado_por_user(datos)
-                        if encontrado==False:
-                            print("Credenciales no coinciden")
-                            intentos -= 1
-                            continue #mensaje correspondiente
-                    #falta cuestionar si existe o no
-                    if encontrado == False:
-                        print(">"*15,"Se cierra programa",">"*15)
-                        return
-                    rol = self.empleado_dao.obtener_estado(datos["usuario"])
-                    break
+                elif opcion == 1:
+                    self.empleado_controller.ejecutar()
                 elif opcion == 2:
-                    self.view.titulo_funcion(1,"usuario")
-                    activacion = input("Tendrá rol de administrador (si/no): ")
-                    if activacion.lower() == "si":
-                        rol = True
-                    else:
-                        rol = False
-                    self.empleado_controller.agregar_empleado(rol)
-                    break
-            
-        if opcion != 0: #mecanismo inicial
-            while True:
-                self.view.mostrar_menu()
-                opcion = pedir("opción")
-                try:
-                    opcion = int(opcion)
-                    if rol:
-                        eleccion(validador_op_sup, opcion)
-                    else:
-                        eleccion(validador_op, opcion)
-                except (TypeError, ValueError, ValidationError) as e:
-                    print(e)
-                    continue
-                else:
-                    if opcion == 0: 
-                        print("Hasta luego.")
-                        break
-                    elif opcion == 1:
-                        self.empleado_controller.ejecutar()
-                    elif opcion == 2:
-                        self.departamento_controller.ejecutar()
-                    elif opcion == 3: 
-                        self.tiempo_controller.ejecutar() #falta
-                    elif opcion == 4:
-                        self.proyecto_controller.ejecutar() #falta
-                    elif opcion == 5:
-                        self.informe_controller.ejecutar() #falta
+                    self.departamento_controller.ejecutar()
+                elif opcion == 3: 
+                    self.tiempo_controller.ejecutar() #falta
+                elif opcion == 4:
+                    self.proyecto_controller.ejecutar() #falta
+                elif opcion == 5:
+                    self.informe_controller.ejecutar() #falta
         
 
 
