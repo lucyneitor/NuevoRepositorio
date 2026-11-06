@@ -46,3 +46,9 @@ def conversor(num)->str:
         return "suspendido"
 
 #crear funcion para confirmar movimiento
+def confirmar(mensaje: str) -> bool:
+    while True:
+        resp = pwinput.pwinput(f"{mensaje} (si/no): ").strip().lower()
+        if resp in ("si", "no"):
+            return resp == "si"
+        print("Respuesta no válida. Por favor, ingrese 'si' o 'no'.")

@@ -53,7 +53,7 @@ class Usuario:
         limpio = valor.strip().lower()
         if len(limpio) != 64 or not re.match(r"^[a-f0-9]{64}$", limpio):
             raise ValueError("La credencial debe almacenarse como un hash SHA-256 válido de 64 caracteres hexadecimales.")
-        self._password_hash = limpio
+        self.__password_hash = limpio
 
     @property
     def nombre_completo(self)->str:
@@ -63,7 +63,7 @@ class Usuario:
     def nombre_completo(self, valor:str)->None:
         if not isinstance(valor, str) or len(valor.strip()) < 3:
             raise ValueError("El nombre completo no puede estar vacío y debe tener al menos 3 caracteres.")
-        self._nombre_completo = valor.strip().title()
+        self.__nombre_completo = valor.strip().title()
 
     @property
     def rol(self)->str:
@@ -77,7 +77,7 @@ class Usuario:
         if rol_limpio not in self.ROLES:
             opciones = ", ".join(sorted(self.ROLES))
             raise ValueError(f"Rol '{valor}' no válido. Opciones permitidas: {opciones}.")
-        self._rol = rol_limpio
+        self.__rol = rol_limpio
 
     @staticmethod
     def encriptar_credencial(clave_plana:str)->str:

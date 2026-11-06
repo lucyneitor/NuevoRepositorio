@@ -5,7 +5,7 @@ from models.empleado_dao import EmpleadoDAO
 from controllers.informe_controller import InformeController
 from controllers.tiempo_controller import TiempoController
 from controllers.proyecto_controller import ProyectoController
-from views.utils import validador_inicial, eleccion, validador_op, pedir, validador_op_sup, ValidationError, pwinput
+from views.utils import eleccion, validador_op, pedir, validador_op_sup, ValidationError
 from models.proyecto import autorizar
 from controllers.auth_controller import AuthController
 
@@ -31,7 +31,7 @@ class MainController:
             opcion = pedir("opción")
             try:
                 opcion = int(opcion)
-                if rol:
+                if rol: #usar el usuario actual para ver si tiene rol a
                     eleccion(validador_op_sup, opcion)
                 else:
                     eleccion(validador_op, opcion)

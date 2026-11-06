@@ -1,6 +1,6 @@
 from views.utils import leer_numero, confirmar
 from models.usuario import Usuario
-
+from views.utils import pwinput
 class AuthView:
     """
     Vista de consola para el Inicio de Sesión y la Gestión de Usuarios con Credenciales Encriptadas.
@@ -47,7 +47,7 @@ class AuthView:
         print("\n--- Registrar Nuevo Usuario ---")
         username = input("Ingrese nombre de usuario (mín. 3 caracteres, sin espacios): ").strip()
         nombre_completo = input("Ingrese nombre completo del funcionario: ").strip()
-        clave = input("Ingrese contraseña (mín. 4 caracteres, se encriptará con SHA-256): ").strip()
+        clave = pwinput.pwinput("Ingrese contraseña (mín. 4 caracteres, se encriptará con SHA-256): ",mask="*").strip()
         confirmacion = input("Confirme la contraseña: ").strip()
 
         print("Roles disponibles: 1.- Administrador, 2.- Medico, 3.- Operador")
