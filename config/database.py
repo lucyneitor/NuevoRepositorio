@@ -102,7 +102,7 @@ class Database:
             """)
 
             cursor.execute("""
-                INSERT INTO departamento (nombre, gerente) VALUES (Ventas, Alejandro Guzmán)
+                INSERT INTO departamento (nombre, gerente) VALUES ('Ventas', 'Alejandro Guzmán')
             """)
 
             conn.commit()

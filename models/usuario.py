@@ -40,7 +40,7 @@ class Usuario:
             raise ValueError("El nombre de usuario debe tener al menos 3 caracteres.")
         if not re.match(r"^[a-zA-Z0-9_.-]+$", limpio):
             raise ValueError("El nombre de usuario solo puede contener letras, números, puntos, guiones o guiones bajos.")
-        self._username = limpio
+        self.__username = limpio
     
     @property
     def password_hash(self)->str:
@@ -90,10 +90,10 @@ class Usuario:
         clave_limpia = clave_plana.strip()
         if len(clave_limpia)<4:
             raise ValueError("La contraseña debe tener al menos 4 caracteres.")
-        return hashlib.sha256(clave_limpia.encode("utf-8")).hrxdigest()
+        return hashlib.sha256(clave_limpia.encode("utf-8")).hexdigest()
     
     @staticmethod
-    def validar_credenciaeles_ingreso(username:str, clave_plana:str)->tuple[bool, str]:
+    def validar_credenciales_ingreso(username:str, clave_plana:str)->tuple[bool, str]:
         """
         Valida las credenciales ingresadas por el usuario antes de procesar el login,
         evitando valores vacíos o con formato incorrecto.
