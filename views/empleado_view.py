@@ -1,12 +1,7 @@
 from views.main_view import MainView
 from views.utils import pedir, pwinput
-from controllers.empleado_controller import EmpleadoController
 
 class EmpleadoView():
-    def __init__(self):
-        self.view = MainView() 
-        self.empleado_controller = EmpleadoController()
-
     @staticmethod
     def sub_menu():
         print("Submenú de Gestión de Empleados")
@@ -18,7 +13,7 @@ class EmpleadoView():
         print(">"*40)
 
     @staticmethod
-    def formulario_empleado(self,valor)->dict: #Hacer funcion validador en cada entrada
+    def formulario_empleado()->dict: #Hacer funcion validador en cada entrada
         rut = pedir("rut")
         print("-"*50)
         nombre = pedir("nombre")
@@ -35,21 +30,16 @@ class EmpleadoView():
         print("-"*50)
         sueldo = pedir("sueldo")
         print("-"*50)
-        depa = self.empleado_controller.escoger_depa()
         contrato = pedir("Ingrese fecha de contrato")
-        if valor:
-            print("Administrador creado exitosamente")
-        else:
-            print("Empleado creado exitosamente")
         return { #retorno un diccionario
             "rut": rut, "nombre": nombre, "dirección":direccion, "telefono":telefono,
             "correo":correo, "usuario":usuario, "contraseña":password, "sueldo": sueldo,
-            "contrato":contrato, "departamento":depa, "rol":valor
+            "contrato":contrato
         }
 
     def menu_edit_estado(self):
         print("="*50)
-        self.view.titulo_funcion(2,"estado de Empleado")
+        MainView.titulo_funcion(2,"estado de Empleado")
         print("="*50)
         print("1. Activo")
         print("2. Inactivo")
@@ -58,7 +48,7 @@ class EmpleadoView():
 
     def menu_edit(self):
         print("="*50)
-        self.view.titulo_funcion(2,"Empleado")
+        MainView.titulo_funcion(2,"Empleado")
         print("="*50)
         print("1. Nombre")
         print("2. Direccion")

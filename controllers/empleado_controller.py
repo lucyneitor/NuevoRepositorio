@@ -55,17 +55,18 @@ class EmpleadoController:
             self.view.mostrar_mensaje("Opción no válida.")
 
     def agregar_empleado(self, valor): #crea usuario que no es el
-        nuevo= self.empleado_view.formulario_empleado(valor) #empleado view formulario
+        nuevo= self.empleado_view.formulario_empleado() #empleado view formulario
+        depa = self.escoger_depa()
         crear_empleado= Empleado( #creo el departamento
             sueldo=nuevo["sueldo"], inicio_contrato=nuevo["contrato"], estado="activo", 
             rut=nuevo["rut"], nombre=nuevo['nombre'], direccion=nuevo['direccion'],
-            telefono=nuevo['telefono'], correo=nuevo['correo'], selec_depa=nuevo["departamento"]
+            telefono=nuevo['telefono'], correo=nuevo['correo'], selec_depa=depa
         )
         if EmpleadoDAO.crear(crear_empleado): # consultar linea (modificar)
             mensaje="Empleado creado exitosamente"
         crear_usuario = Usuario(
             username=nuevo['usuario'], password_hash=nuevo['contraseña'], 
-            nombre_completo=nuevo['nombre'], rol=nuevo["rol"]
+            nombre_completo=nuevo['nombre'], rol=valor
         )
         if UsuarioDAO.crear(crear_usuario):
             mensaje="Usuario creado exitosamente"
