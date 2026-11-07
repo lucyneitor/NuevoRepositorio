@@ -9,20 +9,16 @@ class Empleado(Persona):
         self, 
         sueldo:int, 
         inicio_contrato:date, 
-        rol_admi:bool, #sacar pq se traslada a usuario
         estado:str, 
         rut:str,
         nombre:str,
         direccion:str,
         telefono:str,
         correo:str,
-        user:str, #borrar user y password de empleado y persona
-        password:str
         ):
-        super().__init__(rut, nombre, direccion, telefono, correo, user, password)
+        super().__init__(rut, nombre, direccion, telefono, correo)
         self.sueldo = sueldo
         self.inicio_contrato = inicio_contrato
-        self.rol_admi = rol_admi #solo admi decide editar que es administrador un empleado
         self.estado = estado 
 
     @property
@@ -40,14 +36,6 @@ class Empleado(Persona):
     @inicio_contrato.setter
     def inicio_contrato(self, inicio_contrato:date)->None:
         self.__inicio_contrato = inicio_contrato #agregar validación en contrato
-
-    @property
-    def rol_admi(self)->bool:
-        return self.__rol_admi
-
-    @rol_admi.setter
-    def rol_admi(self, rol_admi:bool)->None:
-        self.__rol_admi = rol_admi #agregar validacion en admi
 
     @property
     def estado(self)->str:

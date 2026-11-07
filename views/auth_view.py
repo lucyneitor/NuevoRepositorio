@@ -17,7 +17,7 @@ class AuthView:
     @staticmethod
     def solicitar_credenciales() -> dict:
         username = input("Usuario    : ").strip()
-        clave = input("Contraseña : ").strip()
+        clave = pwinput.pwinput("Contraseña : ").strip()
         return {
             "username": username,
             "clave": clave
@@ -48,7 +48,7 @@ class AuthView:
         username = input("Ingrese nombre de usuario (mín. 3 caracteres, sin espacios): ").strip()
         nombre_completo = input("Ingrese nombre completo del funcionario: ").strip()
         clave = pwinput.pwinput("Ingrese contraseña (mín. 4 caracteres, se encriptará con SHA-256): ",mask="*").strip()
-        confirmacion = input("Confirme la contraseña: ").strip()
+        confirmacion = pwinput.pwinput("Confirme la contraseña: ").strip()
 
         print("Roles disponibles: 1.- Administrador, 2.- Medico, 3.- Operador")
         opcion_rol = leer_numero("Seleccione un rol (1-3): ")

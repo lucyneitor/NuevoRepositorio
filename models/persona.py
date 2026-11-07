@@ -2,14 +2,12 @@ from abc import ABC
 
 class Persona(ABC):
     def __init__(self,rut:str,nombre:str,direccion:str,telefono:str,
-                 correo:str,user:str,password:str):
+                 correo:str):
         self.rut = rut
         self.nombre = nombre
         self.direccion = direccion
         self.telefono = telefono
         self.correo = correo
-        self.user = user
-        self.password = password
 
     @property
     def rut(self)->str:
@@ -50,21 +48,5 @@ class Persona(ABC):
     @correo.setter
     def correo(self, correo: str)->None:
         self.__correo = correo #agregar validación de correo
-
-    @property
-    def user(self)->str:
-        return self.__user
-
-    @user.setter
-    def user(self, user:str)->None:
-        self.__user = user #agregar validación de user
-
-    @property
-    def password(self)->str:
-        return self.__password
-
-    @password.setter
-    def password(self, password:str)->None:
-        self.__password = password
 
     

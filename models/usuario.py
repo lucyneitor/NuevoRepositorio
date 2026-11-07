@@ -126,7 +126,7 @@ class Usuario:
         
         try:
             hash_ingresado = self.encriptar_credencial(clave_ingresada)
-            return hmac.compare_digest(self.__password_hard, hash_ingresado)
+            return hmac.compare_digest(self.__password_hash, hash_ingresado)
         except ValueError:
             return False
 

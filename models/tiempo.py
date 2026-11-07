@@ -1,3 +1,4 @@
+#pasar a empleado y a proyecto como fk
 
 class Tiempo:
     """

@@ -1,5 +1,6 @@
 from views.main_view import MainView
 from views.utils import pedir, pwinput
+
 class EmpleadoView():
     def __init__(self):
         self.view = MainView() 
@@ -42,7 +43,7 @@ class EmpleadoView():
         return { #retorno un diccionario
             "rut": rut, "nombre": nombre, "dirección":direccion, "telefono":telefono,
             "correo":correo, "usuario":usuario, "contraseña":password, "sueldo": sueldo,
-            "rol_admi": valor, "contrato":contrato, "departamento":depa
+            "contrato":contrato, "departamento":depa, "rol":valor
         }
 
     def menu_edit_estado(self):
@@ -53,3 +54,14 @@ class EmpleadoView():
         print("2. Inactivo")
         print("3. Vacaciones")
         print("4. Suspendido")
+
+    def menu_edit(self):
+        print("="*50)
+        self.view.titulo_funcion(2,"Empleado")
+        print("="*50)
+        print("1. Nombre")
+        print("2. Direccion")
+        print("3. telefono")
+        print("4. correo")
+        print("5. sueldo")
+        print("6. Acceder o desender de Administrador")#cambiar

@@ -2,15 +2,17 @@ from views.main_view import MainView
 from views.empleado_view import EmpleadoView
 from models.empleado import Empleado
 from models.empleado_dao import EmpleadoDAO
-from views.utils import validador_op1, eleccion, pwinput
+from views.utils import validador_op1, eleccion, pwinput, pedir
 from config.settings import Settings
+from 
+
 class EmpleadoController:
     def __init__(self):
         self.main_view = MainView()
         self.empleado_view = EmpleadoView()
         self.settings = Settings
 
-    def ejecutar(self): #editar
+    def ejecutar(self, usuario:Usuario): #editar
         self.empleado_view.sub_menu
         opcion = input() #te amo mucho mi vida
         eleccion(validador_op1, opcion)
@@ -47,14 +49,26 @@ class EmpleadoController:
     def agregar_empleado(self, valor):
         nuevo= self.empleado_view.formulario_empleado(valor) #empleado view formulario
         crear_empleado= Empleado( #creo el departamento
-            sueldo=nuevo["sueldo"], inicio_contrato=nuevo["contrato"], rol_admi=nuevo['rol_admi'], 
-            estado="activo", rut=nuevo["rut"], nombre=nuevo['nombre'], direccion=nuevo['direccion'],
-            telefono=nuevo['telefono'], correo=nuevo['correo'], user=nuevo["user"], 
-            password=nuevo['password'], selec_depa=nuevo["departamento"]
+            sueldo=nuevo["sueldo"], inicio_contrato=nuevo["contrato"], estado="activo", 
+            rut=nuevo["rut"], nombre=nuevo['nombre'], direccion=nuevo['direccion'],
+            telefono=nuevo['telefono'], correo=nuevo['correo'], selec_depa=nuevo["departamento"]
         )
         if EmpleadoDAO.crear(crear_empleado): # consultar linea (modificar)
-            mensaje="Creado exitosamente"
-            
+            mensaje="Empleado creado exitosamente"
+        crear_usuario = Usuario(
+            username=nuevo['usuario'], password_hash=nuevo['contraseña'], 
+            nombre_completo=nuevo['nombre'], rol=nuevo["rol"]
+        )
+        if UsuarioDAO.crear(crear_usuario):
+            mensaje="Usuario creado exitosamente"
+    
     def editar_empleado(self): #usar actualizar aqui 
-        op = self.empleado_view.menu_edit_estado
-        estado = self.utils(op)
+        self.empleado_view.menu_edit()
+        op = pedir("opinión")
+        try:
+            op = int(op)
+            eleccion(validador_op_sup, op)
+        except (TypeError, ValueError, ValidationError) as e:
+            print(e)
+        else:
+            confirmar("", usuario:Usuario) -> bool:

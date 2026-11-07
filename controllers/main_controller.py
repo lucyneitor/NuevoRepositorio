@@ -19,19 +19,20 @@ class MainController:
         self.proyecto_controller = ProyectoController()
         self.empleado_dao = EmpleadoDAO()
         self.auth_controller = AuthController()
+        self.usuario = None
 
     def ejecutar(self):
-        self.auth_controller.iniciar_sesion() #inicio sesión
-        if not self.usuario:
+        usuario = self.auth_controller.iniciar_sesion() 
+        if self.usuario is None: #login fallido
             self.view.mostrar_mensaje("El programa ha finalizado debido a credenciales invalidadas")
             return
-        
+        self.usuario = usuario
         while True:
-            self.view.mostrar_menu()
+            self.view.mostrar_menu(self.usuario.rol == "Administrador")
             opcion = pedir("opción")
             try:
                 opcion = int(opcion)
-                if rol: #usar el usuario actual para ver si tiene rol a
+                if self.usuario.rol == "Admministrador": #usar el usuario actual para ver si tiene rol a
                     eleccion(validador_op_sup, opcion)
                 else:
                     eleccion(validador_op, opcion)
@@ -43,7 +44,7 @@ class MainController:
                     print("Hasta luego.")
                     break
                 elif opcion == 1:
-                    self.empleado_controller.ejecutar()
+                    self.empleado_controller.ejecutar(self.usuario)
                 elif opcion == 2:
                     self.departamento_controller.ejecutar()
                 elif opcion == 3: 
@@ -51,6 +52,12 @@ class MainController:
                 elif opcion == 4:
                     self.proyecto_controller.ejecutar() #falta
                 elif opcion == 5:
+                    self.view.mostrar_mensaje(f"Cerrando sesión de '{self.auth_controller.username}'...")
+                    self.auth_controller = self.auth_controller.iniciar_sesion()
+                    if self.usuario_actual is None:
+                        self.view.mostrar_mensaje("El programa ha finalizado debido a credenciales inválidas.")
+                        break
+                elif opcion == 6:
                     self.informe_controller.ejecutar() #falta
         
 

@@ -1,17 +1,18 @@
 from pydantic import (TypeAdapter, Field, StringConstraints,ValidationError)
+from models.usuario import Usuario
 from typing import Annotated
 import pwinput
 
 regla_op_inicial = Annotated[int, Field(ge=0,le=2)]
 validador_inicial = TypeAdapter(regla_op_inicial)
 
-regla_op = Annotated[int, Field(ge=0, le=4)] #sin rol administrador
+regla_op = Annotated[int, Field(ge=0, le=5)] #sin rol administrador
 validador_op = TypeAdapter(regla_op)
 
 regla_op1 = Annotated[int, Field(ge=0, le=3)]
 validador_op1 = TypeAdapter(regla_op1)
 
-regla_op_sup = Annotated[int, Field(ge=0, le=5)] #con rol administrador
+regla_op_sup = Annotated[int, Field(ge=0, le=6)] #con rol administrador
 validador_op_sup = TypeAdapter(regla_op_sup)
 
 def leer_numero(mensaje: str) -> int: #falta un leer texto, leer fecha
@@ -46,9 +47,12 @@ def conversor(num)->str:
         return "suspendido"
 
 #crear funcion para confirmar movimiento
-def confirmar(mensaje: str) -> bool:
+def confirmar(mensaje: str, usuario:Usuario) -> bool:
     while True:
-        resp = pwinput.pwinput(f"{mensaje} (si/no): ").strip().lower()
+        resp = input(f"{mensaje} (si/no): ").strip().lower()
+        validar = pwinput.pwinput("Confirmar: ")
         if resp in ("si", "no"):
-            return resp == "si"
+            if usuario.verificar_credencial(validar):
+                return True
+            return False
         print("Respuesta no válida. Por favor, ingrese 'si' o 'no'.")

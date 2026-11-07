@@ -35,7 +35,7 @@ class MainView:
         }
         return diccionario
     @staticmethod
-    def mostrar_menu():
+    def mostrar_menu(admin:bool):
         print("Bienvenido al sistema de ecotech")
         print(">"*40)
         print("1. Gestionar Empleados")
@@ -43,6 +43,10 @@ class MainView:
         print("3. Gestionar Tiempo")
         print("4. Gestionar Proyectos")
         print("5. Cerrar Sesión -> Cambiar usuario")
+
+        if admin:
+            print("6. Gestionar Informes")
+
         print("0. Salir del Sistema")
         print(">"*40)    
 
@@ -63,6 +67,8 @@ class MainView:
                 print("Opción no válida. Por favor, seleccione una opción del menú.")
         print(">"*40)
 
-    
+    @staticmethod
+    def mostrar_mensaje(mensaje: str) -> None:
+        print(f"\n[SISTEMA] {mensaje}")
     
 
