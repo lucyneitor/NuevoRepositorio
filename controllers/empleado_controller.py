@@ -9,6 +9,7 @@ from models.usuario_dao import UsuarioDAO
 from models.departamento_dao import DepartamentoDAO
 from views.departamento_view import DepartamentoView
 from controllers.departamento_controller import DepartamentoController
+from views.utils import Annotated, Field, TypeAdapter
 
 class EmpleadoController:
     def __init__(self, usuario:Usuario):
@@ -59,7 +60,7 @@ class EmpleadoController:
         depa = self.escoger_depa()
         crear_empleado= Empleado( #creo el departamento
             sueldo=nuevo["sueldo"], inicio_contrato=nuevo["contrato"], estado="activo", 
-            rut=nuevo["rut"], nombre=nuevo['nombre'], direccion=nuevo['direccion'],
+            rut=nuevo["rut"], nombre=nuevo['nombre'], direccion=nuevo['dirección'],
             telefono=nuevo['telefono'], correo=nuevo['correo'], selec_depa=depa
         )
         if EmpleadoDAO.crear(crear_empleado): # consultar linea (modificar)
@@ -83,7 +84,25 @@ class EmpleadoController:
             autorizado = confirmar("¿Está seguro de editar esto?", self.usuario) #cuestionar si se autorizo o no
 
     def escoger_depa(self)->int | None:
-        self.departamento_controller.mostrar_depa()
-        op = pedir("opción")
-        autorizado = confirmar("¿Está seguro de pertenecer a este departamento?", self.usuario)  #cuestionar si se autorizo o no
-        return op
+        cant = self.departamento_dao.contar_departamentos()
+        if cant == 1:
+            print(f"Fuiste asignado al departamento {self.departamento_dao.obtener_por_id(1)}")
+            return cant
+        regla_op_depa = Annotated[int, Field(ge=1,le=self.departamento_dao.contar_departamentos())]
+        validador_depa = TypeAdapter(regla_op_depa)
+        while True:
+            self.departamento_controller.mostrar_depa()
+            op = pedir("opción")
+            eleccion(validador_depa,op)
+            try:
+                op = int(op)
+                eleccion(validador_depa,op)
+            except (TypeError, ValueError, ValidationError) as e:
+                print(e)
+                continue
+            else:
+                if confirmar("¿Está seguro de pertenecer a este departamento?", self.usuario):
+                    print("Operación exitosa")
+                    return op
+                print("Operación fallida: No estas autorizado")
+                return None

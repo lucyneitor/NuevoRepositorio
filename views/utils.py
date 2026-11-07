@@ -50,9 +50,10 @@ def conversor(num)->str:
 def confirmar(mensaje: str, usuario:Usuario) -> bool:
     while True:
         resp = input(f"{mensaje} (si/no): ").strip().lower()
-        validar = pwinput.pwinput("Confirmar: ")
         if resp in ("si", "no"):
-            if usuario.verificar_credencial(validar):
-                return True
+            if resp=="si":
+                validar = pwinput.pwinput("Confirmar: ")
+                if usuario.verificar_credencial(validar):
+                    return True
             return False
         print("Respuesta no válida. Por favor, ingrese 'si' o 'no'.")
