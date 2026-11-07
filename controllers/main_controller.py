@@ -26,7 +26,7 @@ class MainController:
         if self.usuario is None: #login fallido
             self.view.mostrar_mensaje("El programa ha finalizado debido a credenciales invalidadas")
             return
-        self.empleado = EmpleadoController(self.usuario)
+        self.empleado_controller = EmpleadoController(self.usuario)
 
         while True:
             self.view.mostrar_menu(self.usuario.rol == "Administrador")

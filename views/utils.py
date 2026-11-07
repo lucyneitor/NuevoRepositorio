@@ -15,6 +15,9 @@ validador_op1 = TypeAdapter(regla_op1)
 regla_op_sup = Annotated[int, Field(ge=0, le=6)] #con rol administrador
 validador_op_sup = TypeAdapter(regla_op_sup)
 
+regla_op_time = Annotated[int, Field(ge=0, le=4)]
+validador_time = TypeAdapter(regla_op_time)
+
 def leer_numero(mensaje: str) -> int: #falta un leer texto, leer fecha
     while True:
         try:

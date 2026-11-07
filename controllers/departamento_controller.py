@@ -23,8 +23,8 @@ class DepartamentoController:
                 continue
             else:            
                 if opcion == 0:
-                    self.view.mostrar_mensaje("Saliendo de la gestión de empleados.")
-                    self.main_view.mostrar_menu() 
+                    self.main_view.mostrar_mensaje("Saliendo de la gestión de empleados.")
+                    return
                 elif opcion == 1:
                     self.agregar_departamento()
                 elif opcion in (2,3):
@@ -35,11 +35,8 @@ class DepartamentoController:
                         self.buscar_departamento(elemento)
                 elif opcion == 4:
                     self.mostrar_departamentos()
-                elif opcion == 0:
-                    self.view.mostrar_mensaje("Saliendo de la gestión de empleados.")
-                    self.main_view.mostrar_menu()
                 else:
-                    self.view.mostrar_mensaje("Opción no válida.")
+                    self.main_view.mostrar_mensaje("Opción no válida.")
 
     def agregar_departamento(self, valor):
         self.main_view.ejecutar()

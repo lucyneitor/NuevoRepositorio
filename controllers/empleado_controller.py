@@ -22,7 +22,7 @@ class EmpleadoController:
         self.departamento_controller = DepartamentoController()
 
     def ejecutar(self): #editar
-        self.empleado_view.sub_menu
+        self.empleado_view.sub_menu()
         opcion = input() #te amo mucho mi vida
         eleccion(validador_op1, opcion)
         opcion = int(opcion)
@@ -51,7 +51,7 @@ class EmpleadoController:
             self.imprimir_empleados()
         elif opcion == 0:
             self.main_view.mostrar_mensaje("Saliendo de la gestión de empleados.")
-            self.main_view.mostrar_menu()
+            return
         else:
             self.main_view.mostrar_mensaje("Opción no válida.")
 

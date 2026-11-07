@@ -9,6 +9,7 @@ class EmpleadoView():
         print("1. Agregar Empleado")
         print("2. Modificar Empleado")
         print("3. Buscar Empleado")
+        print("4. Mostrar Empleados")
         print("0. Volver al menú principal")
         print(">"*40)
 
@@ -56,3 +57,14 @@ class EmpleadoView():
         print("4. correo")
         print("5. sueldo")
         print("6. Acceder o desender de Administrador")#cambiar
+        print("="*50)
+
+    def mostrar_por_estado():
+        print("="*50)
+        print("Mostrar registros Empleados")
+        print("="*50)
+        print("1. Contratados")
+        print("2. Despedidos")
+        print("3. En vacaciones")
+        print("4. Suspendidos")
+        print("="*50)

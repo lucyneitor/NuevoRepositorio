@@ -8,5 +8,6 @@ class ProyectoView():
         print("2. Modificar Proyecto")
         print("3. Buscar Proyecto")
         print("4. Eliminar Proyecto")
+        print("5. Mostrar proyectos")
         print("0. Volver al menú principal")
         print(">"*40)

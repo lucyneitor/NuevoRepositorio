@@ -4,7 +4,7 @@ class DepartamentoView():
     def __init__(self):
         self.departamento_dao = DepartamentoDAO()
 
-    def sub_menu():
+    def sub_menu(self):
         print("Submenú de Gestión de Departamentos")
         print(">"*40)
         print("1. Agregar Departamento")
@@ -22,7 +22,7 @@ class DepartamentoView():
         print("0. Volver")
         print("="*50)
 
-    def mostrar_departamentos(self, departamentos:list):
+    def mostrar_departamentos(departamentos:list):
         print("\nDepartamentos")
         print(">"*60)
         for departamento in departamentos:
