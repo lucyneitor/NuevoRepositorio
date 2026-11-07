@@ -12,7 +12,7 @@ from controllers.auth_controller import AuthController
 class MainController:
     def __init__(self):
         self.view = MainView() #listo
-        self.empleado_controller = EmpleadoController()
+        self.empleado_controller = None
         self.departamento_controller = DepartamentoController()
         self.informe_controller = InformeController()
         self.tiempo_controller = TiempoController()
@@ -27,6 +27,7 @@ class MainController:
             self.view.mostrar_mensaje("El programa ha finalizado debido a credenciales invalidadas")
             return
         self.usuario = usuario
+        self.empleado_controller(self.usuario)
         while True:
             self.view.mostrar_menu(self.usuario.rol == "Administrador")
             opcion = pedir("opción")
@@ -44,7 +45,7 @@ class MainController:
                     print("Hasta luego.")
                     break
                 elif opcion == 1:
-                    self.empleado_controller.ejecutar(self.usuario)
+                    self.empleado_controller.ejecutar()
                 elif opcion == 2:
                     self.departamento_controller.ejecutar()
                 elif opcion == 3: 
