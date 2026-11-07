@@ -2,15 +2,18 @@ from views.main_view import MainView
 from views.empleado_view import EmpleadoView
 from models.empleado import Empleado
 from models.empleado_dao import EmpleadoDAO
-from views.utils import validador_op1, eleccion, pwinput, pedir
+from views.utils import validador_op1, eleccion, pwinput, pedir, validador_op_sup,ValidationError,confirmar
 from config.settings import Settings
-from 
+from models.usuario import Usuario
+from models.usuario_dao import UsuarioDAO
+from models.departamento_dao import DepartamentoDAO
 
 class EmpleadoController:
     def __init__(self):
         self.main_view = MainView()
         self.empleado_view = EmpleadoView()
         self.settings = Settings
+        self.departamento_dao = DepartamentoDAO()
 
     def ejecutar(self, usuario:Usuario): #editar
         self.empleado_view.sub_menu
@@ -33,7 +36,7 @@ class EmpleadoController:
         elif opcion in (2,3,4):
             rut = input("Ingrese su rut: ")
             if opcion==2:
-                self.editar_empleado(rut)
+                self.editar_empleado(self.usuario)
             elif opcion == 3:
                 self.eliminar_empleado(rut)
             elif opcion == 4:
@@ -62,7 +65,7 @@ class EmpleadoController:
         if UsuarioDAO.crear(crear_usuario):
             mensaje="Usuario creado exitosamente"
     
-    def editar_empleado(self): #usar actualizar aqui 
+    def editar_empleado(self,usuario:Usuario): #usar actualizar aqui 
         self.empleado_view.menu_edit()
         op = pedir("opinión")
         try:
@@ -71,4 +74,9 @@ class EmpleadoController:
         except (TypeError, ValueError, ValidationError) as e:
             print(e)
         else:
-            confirmar("", usuario:Usuario) -> bool:
+            autorizado = confirmar("¿Está seguro de editar esto?", usuario)
+
+    def escoger_depa(self):
+        self.departamento_dao.obtener_todos() # cambiar
+        op = pedir("opción")
+        autorizado = confirmar("¿Está seguro de pertenecer a este departamento?", usuario)

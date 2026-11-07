@@ -1,9 +1,10 @@
 from views.main_view import MainView
 from views.utils import pedir, pwinput
-
+from controllers.empleado_controller import EmpleadoController
 class EmpleadoView():
     def __init__(self):
         self.view = MainView() 
+        self.empleado_controlLer = EmpleadoController()
 
     @staticmethod
     def sub_menu():
@@ -16,7 +17,7 @@ class EmpleadoView():
         print(">"*40)
 
     @staticmethod
-    def formulario_empleado(valor)->dict: #Hacer funcion validador en cada entrada
+    def formulario_empleado(self,valor)->dict: #Hacer funcion validador en cada entrada
         rut = pedir("rut")
         print("-"*50)
         nombre = pedir("nombre")
@@ -34,7 +35,7 @@ class EmpleadoView():
         sueldo = pedir("sueldo")
         print("-"*50)
 
-        depa = escoger_departamento() #pendiente ("Dejar creado por defecto 2")
+        depa = self.empleado_controller.escoger_departamento() #pendiente ("Dejar creado por defecto 2")
         contrato = pedir("Ingrese fecha de contrato")
         if valor:
             print("Administrador creado exitosamente")

@@ -1,4 +1,6 @@
 #pasar a empleado y a proyecto como fk
+from datetime import date, time
+
 
 class Tiempo:
     """
@@ -8,9 +10,9 @@ class Tiempo:
     def __init__(
         self,
         id_tiempo: int | None,
-        fecha: str,
-        hora_entrada: str,
-        hora_salida: str,
+        fecha: date,
+        hora_entrada: time,
+        hora_salida: time,
         id_empleado: str,
         id_proyecto: int,
     ) -> None:
@@ -32,20 +34,20 @@ class Tiempo:
 
     @property
     def fecha(self):
-        return self._fecha
+        return self.__fecha
 
     @fecha.setter
     def fecha(self, fecha: str) -> None:
         if not isinstance(fecha, str) or not fecha.strip():
             raise ValueError("La fecha no puede estar vacía")
-        self._fecha = fecha.strip()
-        return self._fecha
+        self.__fecha = fecha.strip()
+        return self.__fecha
 
     """Tiempo trabajado: Representamos el tiempo trabajado en horas"""
 
     @property
     def tiempo_trabajado(self):
-        return self._tiempo_trabajado
+        return self.__tiempo_trabajado
 
     @tiempo_trabajado.setter
     def tiempo_trabajado(self, tiempo_trabajado:float) -> None:
@@ -55,18 +57,18 @@ class Tiempo:
             raise ValueError("El tiempo trabajado debe ser un número")
         if tiempo_trabajado < 0:
             raise ValueError("El tiempo trabajado no puede ser negativo")
-        self._tiempo_trabajado = tiempo_trabajado
-        return self._tiempo_trabajado
+        self.__tiempo_trabajado = tiempo_trabajado
+        return self.__tiempo_trabajado
 
     """Descripcion: Representamos la descripcion del trabajo"""
 
     @property
     def descripcion(self):
-        return self._descripcion
+        return self.__descripcion
 
     @descripcion.setter
     def descripcion(self, descripcion):
         if not isinstance(descripcion, str) or not descripcion.strip():
             raise ValueError("La descripción no puede estar vacía")
-        self._descripcion = descripcion.strip()
-        return self._descripcion
+        self.__descripcion = descripcion.strip()
+        return self.__descripcion
