@@ -1,7 +1,7 @@
 from views.main_view import MainView
 from views.departamento_view import DepartamentoView
-from models.departamento_dao import DepartamentoDAO
 from models.departamento import Departamento
+from models.departamento_dao import DepartamentoDAO
 from models.empleado_dao import EmpleadoDAO
 from views.utils import validador_op1, ValidationError, eleccion, pedir
 
@@ -79,7 +79,7 @@ class DepartamentoController:
                 print(f"{pal} editado exitosamente")
 
     def mostrar_depa(self):
-        if contar_departamentos() == 0:
+        if self.departamento_dao.contar_departamentos() == 0:
             print("No hay Departamentos")
             return
         departamentos = self.departamento_dao.obtener_todos()

@@ -35,7 +35,6 @@ class EmpleadoView():
         print("-"*50)
         sueldo = pedir("sueldo")
         print("-"*50)
-
         depa = self.empleado_controller.escoger_depa()
         contrato = pedir("Ingrese fecha de contrato")
         if valor:

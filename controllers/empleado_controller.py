@@ -70,7 +70,7 @@ class EmpleadoController:
         if UsuarioDAO.crear(crear_usuario):
             mensaje="Usuario creado exitosamente"
     
-    def editar_empleado(self,): #usar actualizar aqui 
+    def editar_empleado(self): #usar actualizar aqui 
         self.empleado_view.menu_edit()
         op = pedir("opinión")
         try:
@@ -81,7 +81,7 @@ class EmpleadoController:
         else:
             autorizado = confirmar("¿Está seguro de editar esto?", self.usuario) #cuestionar si se autorizo o no
 
-    def escoger_depa(self)->int:
+    def escoger_depa(self)->int | None:
         self.departamento_controller.mostrar_depa()
         op = pedir("opción")
         autorizado = confirmar("¿Está seguro de pertenecer a este departamento?", self.usuario)  #cuestionar si se autorizo o no
