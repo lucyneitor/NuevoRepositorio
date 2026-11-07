@@ -50,10 +50,10 @@ class EmpleadoController:
         elif opcion == 5:
             self.imprimir_empleados()
         elif opcion == 0:
-            self.view.mostrar_mensaje("Saliendo de la gestión de empleados.")
+            self.main_view.mostrar_mensaje("Saliendo de la gestión de empleados.")
             self.main_view.mostrar_menu()
         else:
-            self.view.mostrar_mensaje("Opción no válida.")
+            self.main_view.mostrar_mensaje("Opción no válida.")
 
     def agregar_empleado(self, valor): #crea usuario que no es el
         nuevo= self.empleado_view.formulario_empleado() #empleado view formulario
@@ -63,7 +63,7 @@ class EmpleadoController:
             rut=nuevo["rut"], nombre=nuevo['nombre'], direccion=nuevo['dirección'],
             telefono=nuevo['telefono'], correo=nuevo['correo'], selec_depa=depa
         )
-        if EmpleadoDAO.crear(crear_empleado): # consultar linea (modificar)
+        if EmpleadoDAO.crear_empleado(crear_empleado): # consultar linea (modificar)
             mensaje="Empleado creado exitosamente"
         crear_usuario = Usuario(
             username=nuevo['usuario'], password_hash=nuevo['contraseña'], 

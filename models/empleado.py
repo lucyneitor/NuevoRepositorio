@@ -4,7 +4,6 @@ from models.persona import Persona
 ESTADO = ["activo", "inactivo", "vacaciones", "suspendido"]
 
 class Empleado(Persona):
-    @staticmethod
     def __init__(
         self, 
         sueldo:int, 
