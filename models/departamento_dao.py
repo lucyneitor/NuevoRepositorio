@@ -130,3 +130,17 @@ class DepartamentoDAO:
         finally:
             if conn:
                 conn.close()
+
+    def contar_departamentos() -> int:
+        conn = None
+        try:
+            conn = Database().get_connection()
+            cursor = conn.cursor()
+            cursor.execute("SELECT COUNT(*) FROM departamento")
+            return cursor.fetchone()[0]
+        except sqlite3.Error as e:
+            print(f"Error al contar departamentos: {e}")
+            return 0
+        finally:
+            if conn:
+                conn.close()

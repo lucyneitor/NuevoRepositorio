@@ -1,10 +1,11 @@
 from views.main_view import MainView
 from views.utils import pedir, pwinput
 from controllers.empleado_controller import EmpleadoController
+
 class EmpleadoView():
     def __init__(self):
         self.view = MainView() 
-        self.empleado_controlLer = EmpleadoController()
+        self.empleado_controller = EmpleadoController()
 
     @staticmethod
     def sub_menu():
@@ -35,7 +36,7 @@ class EmpleadoView():
         sueldo = pedir("sueldo")
         print("-"*50)
 
-        depa = self.empleado_controller.escoger_departamento() #pendiente ("Dejar creado por defecto 2")
+        depa = self.empleado_controller.escoger_depa()
         contrato = pedir("Ingrese fecha de contrato")
         if valor:
             print("Administrador creado exitosamente")

@@ -7,15 +7,20 @@ from config.settings import Settings
 from models.usuario import Usuario
 from models.usuario_dao import UsuarioDAO
 from models.departamento_dao import DepartamentoDAO
+from views.departamento_view import DepartamentoView
+from controllers.departamento_controller import DepartamentoController
 
 class EmpleadoController:
-    def __init__(self):
+    def __init__(self, usuario:Usuario):
         self.main_view = MainView()
         self.empleado_view = EmpleadoView()
         self.settings = Settings
         self.departamento_dao = DepartamentoDAO()
+        self.departamento_view = DepartamentoView()
+        self.usuario = usuario
+        self.departamento_controller = DepartamentoController()
 
-    def ejecutar(self, usuario:Usuario): #editar
+    def ejecutar(self): #editar
         self.empleado_view.sub_menu
         opcion = input() #te amo mucho mi vida
         eleccion(validador_op1, opcion)
@@ -49,7 +54,7 @@ class EmpleadoController:
         else:
             self.view.mostrar_mensaje("Opción no válida.")
 
-    def agregar_empleado(self, valor):
+    def agregar_empleado(self, valor): #crea usuario que no es el
         nuevo= self.empleado_view.formulario_empleado(valor) #empleado view formulario
         crear_empleado= Empleado( #creo el departamento
             sueldo=nuevo["sueldo"], inicio_contrato=nuevo["contrato"], estado="activo", 
@@ -65,7 +70,7 @@ class EmpleadoController:
         if UsuarioDAO.crear(crear_usuario):
             mensaje="Usuario creado exitosamente"
     
-    def editar_empleado(self,usuario:Usuario): #usar actualizar aqui 
+    def editar_empleado(self,): #usar actualizar aqui 
         self.empleado_view.menu_edit()
         op = pedir("opinión")
         try:
@@ -74,9 +79,10 @@ class EmpleadoController:
         except (TypeError, ValueError, ValidationError) as e:
             print(e)
         else:
-            autorizado = confirmar("¿Está seguro de editar esto?", usuario)
+            autorizado = confirmar("¿Está seguro de editar esto?", self.usuario) #cuestionar si se autorizo o no
 
-    def escoger_depa(self):
-        self.departamento_dao.obtener_todos() # cambiar
+    def escoger_depa(self)->int:
+        self.departamento_controller.mostrar_depa()
         op = pedir("opción")
-        autorizado = confirmar("¿Está seguro de pertenecer a este departamento?", usuario)
+        autorizado = confirmar("¿Está seguro de pertenecer a este departamento?", self.usuario)  #cuestionar si se autorizo o no
+        return op

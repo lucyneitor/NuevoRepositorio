@@ -33,6 +33,8 @@ class DepartamentoController:
                         self.editar_departamento(elemento)
                     else:
                         self.buscar_departamento(elemento)
+                elif opcion == 4:
+                    self.mostrar_departamentos()
                 elif opcion == 0:
                     self.view.mostrar_mensaje("Saliendo de la gestión de empleados.")
                     self.main_view.mostrar_menu()
@@ -48,7 +50,7 @@ class DepartamentoController:
         )
         self.departamento_dao.crear_departamento(depa)
 
-    def editar_departamento(self,elemento:object):
+    def editar_departamento(self,elemento:object): #falva confirmacion
         while True:
             self.departamento_view.menu_edit()
             opcion = pedir("opcion")
@@ -76,8 +78,13 @@ class DepartamentoController:
                 self.departamento_dao.actualizar(elemento)
                 print(f"{pal} editado exitosamente")
 
-                    
-                
+    def mostrar_depa(self):
+        if contar_departamentos() == 0:
+            print("No hay Departamentos")
+            return
+        departamentos = self.departamento_dao.obtener_todos()
+        self.departamento_view.mostrar_departamentos(departamentos)
+               
             
             
         
