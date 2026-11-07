@@ -23,7 +23,7 @@ class MainController:
 
     def ejecutar(self):
         usuario = self.auth_controller.iniciar_sesion() 
-        if self.usuario is None: #login fallido
+        if usuario is None: #login fallido
             self.view.mostrar_mensaje("El programa ha finalizado debido a credenciales invalidadas")
             return
         self.usuario = usuario
