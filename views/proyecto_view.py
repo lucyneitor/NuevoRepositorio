@@ -24,9 +24,8 @@ class ProyectoView():
         print("0. Volver")
         print("-" * 45)
         
-    def formulario_proyect(self) -> dict:
+    def formulario(self) -> dict:
         print(">"*50)
-
         print(">"*50)
         nombre = pedir("Nombre del proyecto").strip()
         descripcion = pedir("Descripción").strip()

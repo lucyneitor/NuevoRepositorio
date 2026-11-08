@@ -4,23 +4,26 @@ from models.proyecto import Proyecto
 
 class ProyectoDAO:
     @staticmethod
-    def agregar_proyecto(proyecto_obj: Proyecto):
+    def agregar_proyecto(proyecto: Proyecto):
         conn = Database().get_connection()
         try: 
             cursor : Cursor = conn.cursor()
             cursor.execute(
-                """INSERT INTO proyecto (
-                id_proyecto, 
-                nombre, 
-                descripcion, 
-                fecha_inicio, 
-                fecha_fin)
-            VALUES(?,?,?,?,?)"""
-            ,(proyecto_obj.id_proyecto, 
-              proyecto_obj.nombre,
-              proyecto_obj.descripcion,
-              proyecto_obj.fecha_inicio,
-              proyecto_obj.fecha_fin))
+                """
+                INSERT INTO proyecto (
+                    id_proyecto, 
+                    nombre, 
+                    descripcion, 
+                    fecha_inicio, 
+                    fecha_fin)
+                VALUES(?,?,?,?,?)
+                """
+            ,(proyecto.id_proyecto, 
+              proyecto.nombre,
+              proyecto.descripcion,
+              proyecto.fecha_inicio,
+              proyecto.fecha_fin))
+            proyecto.id_proyecto = cursor.lastrowid
             conn.commit()
             return True
         except Exception as e:

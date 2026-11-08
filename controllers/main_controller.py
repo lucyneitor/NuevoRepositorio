@@ -6,7 +6,6 @@ from controllers.informe_controller import InformeController
 from controllers.tiempo_controller import TiempoController
 from controllers.proyecto_controller import ProyectoController
 from views.utils import eleccion, validador_op, pedir, validador_op_sup, ValidationError
-from models.proyecto import autorizar
 from controllers.auth_controller import AuthController
 
 class MainController:
