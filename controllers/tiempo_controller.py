@@ -80,10 +80,12 @@ class TiempoController:
     def listar_registros_empleado(self, rut:str): 
         registros = self.tiempo_dao.obtener_todos_tiempos_rut(rut)
         cant_tiempo_registrados = self.tiempo_dao.contar_tiempos_rut(rut)
-        cant_trabajo =self.tiempo.tiempo_trabajado() # revisar
+        cant_trabajo = sum(registro.tiempo_trabajado for registro in registros)
         cant_basura_tiempo = self.tiempo_dao.contar_pausa_minutos(rut)
         cant_proyect = self.tiempo_dao.contar_proyectos_por_rut(rut)
-        self.tiempo_view.mostrar_registros_empleado(registros, cant_tiempo_registrados, cant_trabajo,cant_basura_tiempo,cant_proyect,rut)
+        self.tiempo_view.mostrar_registros_empleado(
+            registros, cant_tiempo_registrados, cant_trabajo,
+            cant_basura_tiempo,cant_proyect,rut)
 
 
     #def listar_registros_proyecto(id:int): --obtener todos y luego llamar funcion de vista

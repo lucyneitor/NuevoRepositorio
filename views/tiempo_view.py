@@ -59,7 +59,27 @@ class TiempoView():
         print("-"*60)
         print(f"Registros del empleado {rut}")
         print("-"*60)
-        print("pedir a la ia")
+        if not registros:
+            print("Este empleado no tiene registros de tiempo.")
+            return
+
+        print(
+            f"{'N.º':<6} {'Fecha':<12} {'Entrada':<10} {'Salida':<10} "
+            f"{'Proyecto':<12} {'Pausa':<10} {'Trabajado':<12}"
+        )
+        print("-" * 100)
+
+        for tiempo in registros:
+            print(
+                f"{tiempo.id_tiempo:<6} "
+                f"{tiempo.fecha.isoformat():<12} "
+                f"{tiempo.hora_entrada.strftime('%H:%M'):<10} "
+                f"{tiempo.hora_salida.strftime('%H:%M'):<10} "
+                f"{tiempo.id_proyecto:<12} "
+                f"{tiempo.pausa_minutos:>5} min   "
+                f"{tiempo.tiempo_trabajado:>7.2f} h"
+            )
+
         print("-"*60)
         print("RESUMEN GENERAL")
         print(f"Tiempos registrados: {tiempos}")
