@@ -482,7 +482,7 @@ class TiempoDAO:
         """
         conn = Database().get_connection()
         try:
-            cursor = conn.cursor
+            cursor = conn.cursor()
             cursor.execute("""
                 SELECT COALESCE(SUM(pausa_minutos), 0)
                 FROM tiempo
