@@ -44,7 +44,7 @@ class TiempoController:
                     break
                 elif op == 1:
                     self.listar_registros()
-                elif op is (2,3,6):
+                elif op in (2,3,6):
                     su_rut = pedir("RUT que busca") if op in (2, 6) else None
                     id_proyect = pedir("ID del proyecto") if op in (3, 6) else None
                     if op == 2:

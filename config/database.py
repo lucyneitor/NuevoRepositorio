@@ -51,7 +51,7 @@ class Database:
                     id_departamento INTEGER PRIMARY KEY AUTOINCREMENT,
                     nombre TEXT NOT NULL UNIQUE,
                     gerente TEXT --agregar lista de objetos?
-                );
+                )
             """)
 
             # 3) Proyecto
@@ -61,20 +61,21 @@ class Database:
                     nombre TEXT NOT NULL UNIQUE,
                     descripcion TEXT NOT NULL,
                     fecha_inicio DATE NOT NULL
-                );
+                )
             """)
 
             # 4) Tiempo
             cursor.execute("""
                 CREATE TABLE IF NOT EXISTS tiempo (
                     id_tiempo INTEGER PRIMARY KEY AUTOINCREMENT,
-                    fecha DATE NOT NULL,
-                    horas_realizadas INTEGER NOT NULL,
+                    fecha TEXT NOT NULL,
+                    hora_entrada TEXT NOT NULL,
+                    hora_salida TEXT NOT NULL,
+                    pausa_minutos INTEGER NOT NULL DEFAULT 0,
                     id_empleado INTEGER NOT NULL,
                     id_proyecto INTEGER NOT NULL,
-                    descripcion TEXT,
-                    FOREIGN KEY(id_empleado) REFERENCES empleado(id_empleado) ON DELETE CASCADE,
-                    FOREIGN KEY(id_proyecto) REFERENCES proyecto(id_proyecto) ON DELETE CASCADE
+                    FOREIGN KEY (id_empleado) REFERENCES empleado(id_empleado) ON DELETE CASCADE,
+                    FOREIGN KEY (id_proyecto) REFERENCES proyecto(id_proyecto) ON DELETE CASCADE
                 )
             """)
 
