@@ -1,9 +1,11 @@
 from views.tiempo_view import TiempoView
+from models.tiempo_dao import TiempoDAO
 from views.utils import validador_time, pedir, eleccion, ValidationError
 
 class TiempoController:
     def __init__(self):
         self.tiempo_view = TiempoView()
+        self.tiempo_dao = TiempoDAO()
     
     def ejecutar(self):
         while True:
@@ -63,7 +65,14 @@ class TiempoController:
                 else:
                     print("Opción no válida. Ingrese un número del 0 al 4.")
 
-    #def listar_registros(): --obtener todos y luego llamar funcion de vista
+    def listar_registros(self): 
+        """Busca y muestra todos los registros de tiempo, incluido el nombre del proyecto."""
+        registros = self.tiempo_dao.obtener_todos_tiempos_con_nombre_proyecto()
+        cant_tiempo = self.tiempo_dao.contar_tiempos()
+        cant_proyect = self.tiempo_dao.contar_proyectos_en_tiempos()
+        cant_empleado = self.tiempo_dao.contar_empleados_en_tiempos()
+        self.tiempo_view.mostrar(registros,cant_tiempo,cant_proyect,cant_empleado)
+
     #def listar_registros_empleado(rut:str): --obtener todos y luego llamar funcion de vista
     #def listar_registros_proyecto(id:int): --obtener todos y luego llamar funcion de vista
     #def listar_registros_pro_perso(rut:str, id:int):--obtener todos y luego llamar funcion de vista

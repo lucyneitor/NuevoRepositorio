@@ -441,3 +441,32 @@ class TiempoDAO:
             return cursor.fetchone()[0]
         finally:
             conn.close()
+
+
+    def contar_proyectos_en_tiempos() -> int:
+        """
+        Cuenta los proyectos distintos que aparecen en la tabla tiempo.
+        """
+        conn = Database().get_connection()
+        try:
+            cursor: Cursor = conn.cursor()
+            cursor.execute(
+                "SELECT COUNT(DISTINCT id_proyecto) FROM tiempo"
+            )
+            return cursor.fetchone()[0]
+        finally:
+            conn.close()
+
+    def contar_empleados_en_tiempos() -> int:
+        """
+        Cuenta los proyectos distintos que aparecen en la tabla tiempo.
+        """
+        conn = Database().get_connection()
+        try:
+            cursor: Cursor = conn.cursor()
+            cursor.execute(
+                "SELECT COUNT(DISTINCT id_empleado) FROM tiempo"
+            )
+            return cursor.fetchone()[0]
+        finally:
+            conn.close()

@@ -25,7 +25,36 @@ class TiempoView():
         print("6. Filtrar por empleado y proyecto")
         print("0. Volver")
 
-    #mostrar_registros () --Resumen general y despues todo
+    def mostrar_registros(registros:list,tiempos:int,proyecto:int,empleado:int): #Resumen general y despues todo
+        print("-"*60)
+        print("Listar Resultados")
+        print("-"*60)
+        if not registros:
+            print("No hay registros de tiempo para mostrar.")
+            return
+
+        for registro in registros:
+            tiempo = registro["tiempo"]
+            nombre_proyecto = registro["nombre_proyecto"]
+
+            print(
+                f"Registro N.º {tiempo.id_tiempo} | "
+                f"Empleado (RUT): {tiempo.id_empleado} | "
+                f"Proyecto: {nombre_proyecto} | "
+                f"Fecha: {tiempo.fecha} | "
+                f"Entrada: {tiempo.hora_entrada} | "
+                f"Salida: {tiempo.hora_salida} | "
+                f"Pausa: {tiempo.pausa_minutos} min | "
+                f"Total trabajado: {tiempo.tiempo_trabajado:.2f} h"
+            )
+
+        print("-"*60)
+        print("RESUMEN GENERAL")
+        print(f"Cantidad de registros: {tiempos}")
+        print(f"Cantidad de proyectos trabajados: {proyecto}")
+        print(f"Cantidad de empleados involucrados en proyectos: {empleado}")
+        print("-"*60)
+        
     #mostrar_registros(id_empleado) --Resumen general y despues todo
     #mostrar_registros(id_proyecto) --Resumen general y despues todo
     #mostrar_registros(fecha especifica) --Resumen general y despues todo
