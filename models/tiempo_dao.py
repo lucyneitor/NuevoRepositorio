@@ -470,3 +470,40 @@ class TiempoDAO:
             return cursor.fetchone()[0]
         finally:
             conn.close()
+
+    def contar_pausa_minutos(rut) -> int:
+        """
+        Cuenta acumulacion de tiempo pausa
+        """
+        conn = Database().get_connection()
+        try:
+            cursor:Cursor = conn.cursor(
+                cursor.execute("""
+                    SELECT COALESCE(SUM(pausa_minutos), 0)
+                    FROM tiempo
+                    WHERE id_empleado = ?
+                """, (rut,))
+            )
+            return cursor.fetchone()[0]
+        finally:
+            conn.close()
+
+    def contar_proyectos_por_rut(rut: str) -> int:
+        """
+        Cuenta los proyectos distintos en los que participa una persona.
+        """
+        conn = Database().get_connection()
+        try:
+            cursor: Cursor = conn.cursor()
+            cursor.execute(
+                """
+                SELECT COUNT(DISTINCT t.id_proyecto)
+                FROM tiempo t
+                JOIN empleado e ON e.id_empleado = t.id_empleado
+                WHERE e.rut = ?
+                """,
+                (rut,),
+            )
+            return cursor.fetchone()[0]
+        finally:
+            conn.close()

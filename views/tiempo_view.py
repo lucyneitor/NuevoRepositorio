@@ -45,7 +45,7 @@ class TiempoView():
                 f"Entrada: {tiempo.hora_entrada} | "
                 f"Salida: {tiempo.hora_salida} | "
                 f"Pausa: {tiempo.pausa_minutos} min | "
-                f"Total trabajado: {tiempo.tiempo_trabajado:.2f} h"
+                f"Total trabajado: {tiempo.tiempo_trabajado:.2f} hrs"
             )
 
         print("-"*60)
@@ -54,8 +54,20 @@ class TiempoView():
         print(f"Cantidad de proyectos trabajados: {proyecto}")
         print(f"Cantidad de empleados involucrados en proyectos: {empleado}")
         print("-"*60)
-        
-    #mostrar_registros(id_empleado) --Resumen general y despues todo
+
+    def mostrar_registros_empleado(registros:list, tiempos:int, realizado:int, negativo:int, proyecto:int, rut:str):
+        print("-"*60)
+        print(f"Registros del empleado {rut}")
+        print("-"*60)
+        print("pedir a la ia")
+        print("-"*60)
+        print("RESUMEN GENERAL")
+        print(f"Tiempos registrados: {tiempos}")
+        print(f"Tiempo trabajado: {realizado}")
+        print(f"Tiempo en pausa: {negativo}")
+        print(f"Cantidad de proyectos involucrados: {proyecto}")
+
+
     #mostrar_registros(id_proyecto) --Resumen general y despues todo
     #mostrar_registros(fecha especifica) --Resumen general y despues todo
     #mostrar_registros(fecha1,fecha2) --Resumen general y despues todo
