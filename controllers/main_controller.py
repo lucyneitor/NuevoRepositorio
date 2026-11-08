@@ -42,7 +42,7 @@ class MainController:
             else:
                 if opcion == 0: 
                     print("Hasta luego.")
-                    break
+                    return
                 elif opcion == 1:
                     self.empleado_controller.ejecutar()
                 elif opcion == 2:
@@ -52,8 +52,8 @@ class MainController:
                 elif opcion == 4:
                     self.proyecto_controller.ejecutar() #falta
                 elif opcion == 5:
-                    self.view.mostrar_mensaje(f"Cerrando sesión de '{self.auth_controller.username}'...")
-                    self.auth_controller = self.auth_controller.iniciar_sesion()
+                    self.view.mostrar_mensaje(f"Cerrando sesión de '{self.usuario.username}'...")
+                    self.usuario = self.auth_controller.iniciar_sesion()
                     if self.usuario is None:
                         self.view.mostrar_mensaje("El programa ha finalizado debido a credenciales inválidas.")
                         break

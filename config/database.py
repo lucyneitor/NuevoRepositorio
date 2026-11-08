@@ -28,32 +28,16 @@ class Database:
             conn = self.get_connection()
             cursor: Cursor = conn.cursor()
 
-            # 1) Persona
-            cursor.execute("""
-                CREATE TABLE IF NOT EXISTS empleado (
-                    rut TEXT PRIMARY KEY NOT NULL,
-                    nombre TEXT NOT NULL,
-                    direccion TEXT NOT NULL,
-                    telefono TEXT NOT NULL,
-                    correo TEXT NOT NULL UNIQUE,
-                    estado TEXT NOT NULL DEFAULT 'activo',
-                    fecha_inicio_contrato DATE NOT NULL,
-                    salario INTEGER NOT NULL CHECK (salario > 0),
-                    id_departamento INTEGER,
-                    FOREIGN KEY (id_departamento) REFERENCES departamento(id_departamento) ON DELETE SET NULL
-                )
-            """)
+            cursor: Cursor = conn.cursor()
 
-            # 2) Departamento
             cursor.execute("""
                 CREATE TABLE IF NOT EXISTS departamento (
                     id_departamento INTEGER PRIMARY KEY AUTOINCREMENT,
                     nombre TEXT NOT NULL UNIQUE,
-                    gerente TEXT 
+                    gerente TEXT
                 )
             """)
 
-            # 3) Proyecto
             cursor.execute("""
                 CREATE TABLE IF NOT EXISTS proyecto (
                     id_proyecto INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -66,7 +50,22 @@ class Database:
                 )
             """)
 
-            # 4) Tiempo
+            cursor.execute("""
+                CREATE TABLE IF NOT EXISTS empleado (
+                    rut TEXT PRIMARY KEY,
+                    nombre TEXT NOT NULL,
+                    direccion TEXT NOT NULL,
+                    telefono TEXT NOT NULL,
+                    correo TEXT NOT NULL UNIQUE,
+                    estado TEXT NOT NULL DEFAULT 'activo',
+                    fecha_inicio_contrato DATE NOT NULL,
+                    salario INTEGER NOT NULL CHECK (salario > 0),
+                    id_departamento INTEGER,
+                    FOREIGN KEY (id_departamento)
+                        REFERENCES departamento(id_departamento) ON DELETE SET NULL
+                )
+            """)
+
             cursor.execute("""
                 CREATE TABLE IF NOT EXISTS tiempo (
                     id_tiempo INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -74,39 +73,47 @@ class Database:
                     hora_entrada TEXT NOT NULL,
                     hora_salida TEXT NOT NULL,
                     pausa_minutos INTEGER NOT NULL DEFAULT 0,
-                    id_empleado TEXT NOT NULL,
+                    rut_empleado TEXT NOT NULL,
                     id_proyecto INTEGER NOT NULL,
-                    FOREIGN KEY (id_empleado) REFERENCES empleado(rut) ON DELETE CASCADE,
-                    FOREIGN KEY (id_proyecto) REFERENCES proyecto(id_proyecto) ON DELETE CASCADE
+                    FOREIGN KEY (rut_empleado)
+                        REFERENCES empleado(rut) ON DELETE CASCADE,
+                    FOREIGN KEY (id_proyecto)
+                        REFERENCES proyecto(id_proyecto) ON DELETE CASCADE
                 )
             """)
 
-            # 5) Informe
             cursor.execute("""
                 CREATE TABLE IF NOT EXISTS informe (
                     id_informe INTEGER PRIMARY KEY AUTOINCREMENT,
                     fecha DATE NOT NULL,
                     tipo TEXT NOT NULL,
                     formato TEXT NOT NULL,
-                    id_empleado TEXT NOT NULL,
-                    FOREIGN KEY(id_empleado) REFERENCES empleado(rut) ON DELETE CASCADE
+                    rut_empleado TEXT NOT NULL,
+                    FOREIGN KEY (rut_empleado)
+                        REFERENCES empleado(rut) ON DELETE CASCADE
                 )
             """)
 
-            #6) Usuario
             cursor.execute("""
-                CREATE TABLE IF NOT EXISTS usuario(
+                CREATE TABLE IF NOT EXISTS usuario (
                     id_usuario INTEGER PRIMARY KEY AUTOINCREMENT,
                     username TEXT NOT NULL UNIQUE,
                     password_hash TEXT NOT NULL,
                     nombre_completo TEXT NOT NULL,
-                    rol TEXT NOT NULL 
+                    rol TEXT NOT NULL
                 )
             """)
 
-            cursor.execute("""
-                INSERT INTO departamento (nombre, gerente) VALUES ('Ventas', 'Alejandro Guzmán')
-            """)
+            cursor.execute(
+                """
+                INSERT OR IGNORE INTO departamento (nombre, gerente)
+                VALUES (?, ?)
+                """,
+                ("Ventas", "Alejandro Guzmán")
+            )
+
+            conn.commit()
+            return True
 
             conn.commit()
             return True

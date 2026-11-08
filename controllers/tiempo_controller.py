@@ -4,6 +4,7 @@ from models.tiempo import Tiempo #ocupar al agregar un tiempo
 from views.utils import validador_time, pedir, eleccion, ValidationError, validador_op_sup
 from models.empleado_dao import EmpleadoDAO
 from models.proyecto_dao import ProyectoDAO
+from datetime import date
 
 class TiempoController:
     def __init__(self):
@@ -11,7 +12,8 @@ class TiempoController:
         self.tiempo_dao = TiempoDAO()
         self.empleado_dao = EmpleadoDAO()
         self.proyecto_dao = ProyectoDAO()
-    
+
+    @staticmethod
     def ejecutar(self):
         while True:
             self.tiempo_view.sub_menu()
@@ -38,6 +40,7 @@ class TiempoController:
                 else:
                     print("Opción no válida. Ingrese un número del 0 al 4.")
 
+    @staticmethod
     def listar_tiempos(self):
         while True:
             self.tiempo_view.menu_listar()
@@ -72,6 +75,7 @@ class TiempoController:
                 else:
                     print("Opción no válida. Ingrese un número del 0 al 4.")
 
+    @staticmethod
     def listar_registros(self): 
         """
         Busca y muestra todos los registros de tiempo, incluido el nombre del proyecto.
@@ -82,12 +86,13 @@ class TiempoController:
         cant_empleado = self.tiempo_dao.contar_empleados_en_tiempos()
         self.tiempo_view.mostrar_registros(registros,cant_tiempo,cant_proyect,cant_empleado)
 
+    @staticmethod
     def listar_registros_empleado(self, rut:str): 
         """
         Busca y muestra todos los registros de tiempo del empleado.
         """
         registros = self.tiempo_dao.obtener_todos_tiempos_rut(rut)
-        cant_tiempo_registrados = self.tiempo_dao.contar_tiempos_rut(rut)
+        cant_tiempo_registrados = self.tiempo_dao.contar_tiempos_rut(rut) # pendiente
         cant_trabajo = sum(registro.tiempo_trabajado for registro in registros)
         cant_basura_tiempo = self.tiempo_dao.contar_pausa_minutos(rut)
         cant_proyect = self.tiempo_dao.contar_proyectos_por_rut(rut)
@@ -96,10 +101,29 @@ class TiempoController:
             cant_basura_tiempo,cant_proyect,rut)
 
 
-    #def listar_registros_proyecto(id:int): --obtener todos y luego llamar funcion de vista
-    #def listar_registros_pro_perso(rut:str, id:int):--obtener todos y luego llamar funcion de vista
-    #def listar_registros_fecha(fecha:date): --obtener todos y luego llamar funcion de vista
-    #def listar_registros_rango_fecha(fecha1:str, fecha2:str): --obtener todos y luego llamar funcion de vista
+    def listar_registros_proyecto(self,id:int): 
+        nom = self.proyecto_dao.obtener_proyecto_id(id)
+        estado = self.proyecto_dao.obtener_estado(id) # pendiente
+        registros = self.tiempo_dao.obtener_tiempos_proyect(id)
+        cant_empleado = self.tiempo_dao.contar_empleados_por_proyecto(id)
+        cant_tiempo = self.tiempo_dao.sumar_tiempo(id)
+        self.tiempo_view.mostrar_registros_proyecto(
+            registros, cant_tiempo, cant_empleado, nom)
+
+    def listar_registros_pro_perso(self, rut:str, id:int):
+        nom_pro = self.proyecto_dao.obtener_proyecto_id(id)
+        nom_em = self.empleado_dao.obtener_empleado_por_rut(rut)
+        registros = self.tiempo_dao.obtener_todos_tiempos_rut_proyect(rut,id)
+        cant_tiempo_registrados = self.tiempo_dao.contar_tiempos_rut(rut)
+        cant_trabajo = sum(registro.tiempo_trabajado for registro in registros)
+        cant_basura_tiempo = self.tiempo_dao.contar_pausa_minutos(rut)
+        self.tiempo_view.mostrar_registros_esp_pro_em(nom_pro, nom_em, registros, 
+                                                      cant_tiempo_registrados,cant_trabajo, cant_basura_tiempo)
+
+    def listar_registros_fecha(fecha:date): 
+
+
+    def listar_registros_rango_fecha(fecha1:str, fecha2:str):
 
     def agregar_tiempos(self, rut:str, proyect=str):
         """

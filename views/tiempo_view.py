@@ -112,10 +112,47 @@ class TiempoView():
         print(f"Cantidad de proyectos involucrados: {proyecto}")
 
 
-    #mostrar_registros(id_proyecto) --Resumen general y despues todo
+    def mostrar_registros_proyecto(registros, cant_tiempo, cant_empleado, nom):
+        print("-"*60)
+        print(f"Registros del Proyecto {nom}")
+        print("-"*60)
+
+        for tiempo in registros:
+            print(
+                f"{tiempo.fecha.isoformat():<12} "
+                f"{tiempo.hora_entrada.strftime('%H:%M'):<10} "
+                f"{tiempo.hora_salida.strftime('%H:%M'):<10} "
+                f"{tiempo.pausa_minutos:>5} min   "
+                f"{tiempo.tiempo_trabajado:>7.2f} h"
+            )
+        print("-"*60)
+        print("RESUMEN GENERAL")
+        print(f"Cantidad de empleados: {cant_empleado}")
+        print(f"Tiempo trabajado: {cant_tiempo}")
+        print(f"Tiempo en pausa: {negativo}")
+        print(f"Cantidad de proyectos involucrados: {proyecto}")
+        
     #mostrar_registros(fecha especifica) --Resumen general y despues todo
     #mostrar_registros(fecha1,fecha2) --Resumen general y despues todo
-    #Mostrar_registros(id_proyecto, id_empleado) --Resumen general y despues todo
+    
+    def mostrar_registros_esp_pro_em(pro, em, registros, cant_re, tiempo, pausa):
+        print("-"*60)
+        print(f"Registros del Empledo {em} en Proyecto {pro}")
+        print("-"*60)
+        for tiempo in registros:
+            print(
+                f"{tiempo.fecha.isoformat():<12} "
+                f"{tiempo.hora_entrada.strftime('%H:%M'):<10} "
+                f"{tiempo.hora_salida.strftime('%H:%M'):<10} "
+                f"{tiempo.pausa_minutos:>5} min   "
+                f"{tiempo.tiempo_trabajado:>7.2f} h"
+            )
+        print("-"*60)
+        print("RESUMEN GENERAL")
+        print(f"Cantidad de registros: {cant_re}")
+        print(f"Tiempo trabajado: {tiempo}")
+        print(f"Tiempo en pausa: {pausa}")
+
 
     def formulario_tiempo(self)->dict: #falta validar cada dato
         fecha = pedir("fecha")
