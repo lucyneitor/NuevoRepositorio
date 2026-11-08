@@ -1,7 +1,7 @@
 from views.main_view import MainView
 
 class InformeView():
-    def sub_menu():
+    def sub_menu(self):
         print("Submenú de Gestión de Informes")
         print(">"*40)
         print("1. Generar Informe de Empleados")
@@ -12,5 +12,3 @@ class InformeView():
         print("0. Volver al menú principal")
         print(">"*40)
 
-    def mostrar(self):
-        pass

@@ -32,7 +32,7 @@ class MainController:
             opcion = pedir("opción")
             try:
                 opcion = int(opcion)
-                if self.usuario.rol == "Admministrador": #usar el usuario actual para ver si tiene rol a
+                if self.usuario.rol == "Administrador": #usar el usuario actual para ver si tiene rol a
                     eleccion(validador_op_sup, opcion)
                 else:
                     eleccion(validador_op, opcion)
