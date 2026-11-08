@@ -1,28 +1,67 @@
 # NuevoRepositorio
----
 
-## 📊 Estado del Proyecto y Módulos
-
-Actualmente el sistema se encuentra en una **fase avanzada de refactorización y estabilización** de su ruta crítica (base de datos, empleados y tiempos). 
-
-| Módulo / Componente | Estado | Porcentaje |
-| :--- | :---: | :---: |
-| 🏗️ **Estructura General** | Operativa | ![80%](https://img.shields.io/badge/80%25-success?style=flat-square) |
-| 🔐 **Autenticación y Usuarios** | Funcional | ![75%](https://img.shields.io/badge/75%25-success?style=flat-square) |
-| 🗄️ **Base de Datos y Esquema** | En Ajuste | ![65%](https://img.shields.io/badge/65%25-yellow?style=flat-square) |
-| 👥 **Empleados y Departamentos** | En Desarrollo | ![60%](https://img.shields.io/badge/60%25-yellow?style=flat-square) |
-| ⏱️ **Control de Tiempos** | Avanzado | ![70%](https://img.shields.io/badge/70%25-success?style=flat-square) |
-| 📂 **Gestión de Proyectos** | Inicial | ![30%](https://img.shields.io/badge/30%25-orange?style=flat-square) |
-| 📈 **Informes y Reportes** | Planeado | ![20%](https://img.shields.io/badge/20%25-red?style=flat-square) |
-| 🧪 **Integración Final y Pruebas** | Pendiente | ![40%](https://img.shields.io/badge/40%25-orange?style=flat-square) |
-
-> **Progreso Global Estimado: ~60%**
+Sistema de gestión para control de recursos, tiempos y reportes de personal.
 
 ---
 
-### 🎯 Ruta Crítica Actual
-Para alcanzar la estabilidad del **80% - 90%**, nos estamos enfocando estrictamente en el siguiente orden de prioridades:
-1. **Consistencia de la Base de Datos:** Alinear tablas, claves foráneas y modelos DAO.
-2. **Módulos Core:** Dejar operando al 100% las gestiones de *Empleados* y *Tiempos*.
-3. **Expansión:** Consolidar el módulo de *Proyectos*.
-4. **Cierre:** Finalizar la generación de *Informes* y pruebas de integración.
+## 📊 Estado del Proyecto
+
+El proyecto se encuentra en una etapa avanzada de desarrollo, con la estructura base, la conexión a la base de datos y los módulos principales ya implementados. Aún faltan algunos ajustes de integración y la finalización de ciertos módulos clave para dejarlo completamente funcional y estable.
+
+| Módulo | Estado | Avance |
+|---|---|---|
+| Estructura general | ✅ Completa | 85% |
+| Autenticación / usuarios | ✅ Avanzado | 80% |
+| Base de datos | ✅ Estable | 75% |
+| Empleados | ✅ Avanzado | 75% |
+| Departamentos | ✅ Avanzado | 70% |
+| Tiempos | ✅ Avanzado | 80% |
+| Proyectos | ⚠️ En desarrollo | 45% |
+| Informes | ⚠️ Inicial | 30% |
+| Integración final y pruebas | ⚠️ Pendiente | 40% |
+
+> Progreso global estimado: 65%
+
+---
+
+## ✅ Funcionalidades actuales
+
+- Gestión de usuarios y autenticación.
+- Registro y administración de empleados.
+- Organización por departamentos.
+- Registro de tiempos de trabajo.
+- Conexión con SQLite.
+- Estructura modular con modelos, DAO, controladores y vistas.
+
+---
+
+## ⚠️ Pendientes principales
+
+- Completar la gestión de proyectos.
+- Finalizar la lógica de informes y reportes.
+- Corregir detalles de integración entre DAO, controladores y vistas.
+- Validar flujo completo de alta, edición, eliminación y consultas.
+- Realizar pruebas de funcionamiento integradas.
+
+---
+
+## 🧩 Arquitectura
+
+El proyecto está organizado en capas:
+
+- `models/`: entidades y acceso a datos.
+- `controllers/`: lógica de control del flujo.
+- `views/`: interfaz de usuario / mensajes / menús.
+- `config/`: configuración de la aplicación y base de datos.
+- `services/`: lógica auxiliar y procesos específicos.
+- `main.py`: punto de entrada del sistema.
+
+---
+
+## 🚀 Ejecución
+
+1. Clonar el repositorio.
+2. Crear un entorno virtual.
+3. Instalar dependencias:
+   ```bash
+   pip install -r requirements.txt
