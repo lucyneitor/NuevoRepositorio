@@ -6,8 +6,7 @@ class Proyecto:
     esto despues estara conectado con la base de datos de tiempo para gestionar estos
     """
     
-    def __init__(self, id_proyecto:int,nombre:str, descripcion:str, fecha_inicio:str,fecha_fin:str,estado:str):
-        self.id_proyecto = id_proyecto
+    def __init__(self:int,nombre:str, descripcion:str, fecha_inicio:str,fecha_fin:str,estado:str):
         self.nombre = nombre
         self.descripcion = descripcion
         self.fecha_inicio = fecha_inicio
@@ -18,17 +17,6 @@ class Proyecto:
         return f"{self.nombre}: {self.descripcion}"
 
     """Nombre: Representamos el nombre del proyecto"""
-
-    @property
-    def id_proyecto(self):
-        return self._id_proyecto
-    
-    @id_proyecto.setter
-    def id_proyecto(self, value: int) -> None:
-        if not isinstance(value, int) or value <= 0:
-            raise ValueError("El ID del departamento debe ser un número entero mayor a 0.")
-        self._id_proyecto = value
-
     
     @property
     def nombre(self):
