@@ -175,6 +175,7 @@ class TiempoDAO:
             print(f"Error al consultar tiempos del empleado: {error}")
             return []
 
+    @staticmethod
     def obtener_todos_tiempos_rut_proyect(rut: str, id:int) -> list[Tiempo]:
             """Obtiene los registros de tiempo de un empleado identificado por RUT."""
             try:
@@ -481,7 +482,7 @@ class TiempoDAO:
         """
         conn = Database().get_connection()
         try:
-            cursor: Cursor = conn.cursor
+            cursor = conn.cursor
             cursor.execute("""
                 SELECT COALESCE(SUM(pausa_minutos), 0)
                 FROM tiempo

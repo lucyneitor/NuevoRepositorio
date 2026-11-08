@@ -31,7 +31,6 @@ class Database:
             # 1) Persona
             cursor.execute("""
                 CREATE TABLE IF NOT EXISTS empleado (
-                    id_empleado INTEGER PRIMARY KEY AUTOINCREMENT,
                     rut TEXT NOT NULL UNIQUE,
                     nombre TEXT NOT NULL,
                     direccion TEXT NOT NULL,
@@ -89,7 +88,7 @@ class Database:
                     fecha DATE NOT NULL,
                     tipo TEXT NOT NULL,
                     formato TEXT NOT NULL,
-                    id_empleado INTEGER NOT NULL,
+                    id_empleado TEXT NOT NULL,
                     FOREIGN KEY(id_empleado) REFERENCES empleado(id_empleado) ON DELETE CASCADE
                 )
             """)
