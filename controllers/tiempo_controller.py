@@ -1,13 +1,17 @@
 from views.tiempo_view import TiempoView
 from models.tiempo_dao import TiempoDAO
-from models.tiempo import Tiempo
-from views.utils import validador_time, pedir, eleccion, ValidationError
+from models.tiempo import Tiempo #ocupar al agregar un tiempo
+from views.utils import validador_time, pedir, eleccion, ValidationError, validador_op_sup
+from models.empleado_dao import EmpleadoDAO
+from models.proyecto_dao import ProyectoDAO
 
 class TiempoController:
     def __init__(self):
         self.tiempo_view = TiempoView()
         self.tiempo_dao = TiempoDAO()
         self.tiempo = Tiempo()
+        self.empleado_dao = EmpleadoDAO()
+        self.proyecto_dao = ProyectoDAO()
     
     def ejecutar(self):
         while True:
@@ -24,8 +28,10 @@ class TiempoController:
                     break
                 elif op == 1:
                     self.listar_tiempos()
-                #elif op == 2:
-                    #self.agregar_tiempo()
+                elif op == 2:
+                    rut = pedir("RUT del empleado")
+                    proyecto = pedir("nombre del proyecto")
+                    self.agregar_tiempos(rut,proyecto) #creo que listo
                 #elif op == 3:
                     #self.buscar_tiempo()
                 #elif op == 4:
@@ -93,8 +99,78 @@ class TiempoController:
     #def listar_registros_fecha(fecha:date): --obtener todos y luego llamar funcion de vista
     #def listar_registros_rango_fecha(fecha1:str, fecha2:str): --obtener todos y luego llamar funcion de vista
 
-
-    #def agregar_tiempos(): --Crear tiempo dao
+    def agregar_tiempos(self, rut:str, proyect=str):
+        nuevo= self.tiempo_view.formulario_tiempo() #empleado view formulario
+        empleado = self.empleado_dao.obtener_empleado_por_rut(rut) #retorna id
+        proyecto = self.proyecto_dao.obtener_proyecto_id(proyect) #retorna id
+        crear_tiempo= Tiempo(
+            fecha = nuevo["fecha"], hora_salida=nuevo["hora_salida"], 
+            id_empleado=empleado, id_proyecto=proyecto,
+            pausa_minutos = nuevo["pausa_minutos"]
+        )
+        if self.tiempo_dao.crear_tiempo(crear_tiempo): # consultar linea (modificar)
+            mensaje="Empleado creado exitosamente"
         
-    #def buscar_tiempos(): --buscar en dao
+    def buscar_tiempos(self):
+        while True:
+            self.tiempo_view.menu_buscar()
+            op = pedir("opción")
+            try:
+                op = int(op)
+                eleccion(validador_op_sup,op)
+            except (TypeError, ValueError, ValidationError) as e:
+                print(e)
+            else:
+                if op == 0:
+                    print("Volviendo al menú principal...")
+                    break
+                elif op in (1,2,3,4,5,6):
+                    rut = pedir("RUT del empleado") if op in (2, 6) else None
+                    id_proyecto = pedir("ID del proyecto") if op in (3, 6) else None
+                    if op == 1:
+                        id_tiempo = int(pedir("ID del registro"))
+                        registro = self.tiempo_dao.obtener_tiempo_por_id(id_tiempo)
+                        registros = [registro] if registro else []
+                    elif op == 2:
+                        registros = self.tiempo_dao.obtener_todos_tiempos_rut(rut)
+                    elif op == 3:
+                         registros = self.tiempo_dao.obtener_tiempos_proyect(
+                            int(id_proyecto)
+                        )
+                    elif op == 4:
+                        fecha = pedir("Fecha (AAAA-MM-DD)")
+                        registros = self.tiempo_dao.obtener_tiempos_por_fecha(fecha)
+                    elif op == 5:
+                        fecha_inicio = pedir("Fecha inicial (AAAA-MM-DD)")
+                        fecha_fin = pedir("Fecha final (AAAA-MM-DD)")
+                        registros = self.tiempo_dao.obtener_tiempos_por_intervalo(
+                            fecha_inicio,
+                            fecha_fin,
+                        )
+                    else:
+                        registros = self.tiempo_dao.obtener_todos_tiempos_rut_proyect(
+                            rut,
+                            int(id_proyecto),
+                        )   
+                else:
+                    print("Opción no válida. Ingrese un número del 0 al 6.")
+
+                self.mostrar_registros_busqueda(registros)
+
+    def mostrar_registros_busqueda(self, registros: list) -> None:
+        if not registros:
+            print("No se encontraron registros.")
+            return
+
+        for tiempo in registros:
+            print(
+                f"ID: {tiempo.id_tiempo} | "
+                f"Fecha: {tiempo.fecha} | "
+                f"Entrada: {tiempo.hora_entrada} | "
+                f"Salida: {tiempo.hora_salida} | "
+                f"RUT: {tiempo.id_empleado} | "
+                f"Proyecto: {tiempo.id_proyecto} | "
+                f"Pausa: {tiempo.pausa_minutos} min"
+            )
+            
     #def actualizar_tiempo(): -- sub_menu para saber que quiere actualizar

@@ -1,3 +1,4 @@
+from views.utils import pedir
 
 class TiempoView():
     def sub_menu(self):
@@ -23,6 +24,29 @@ class TiempoView():
         print("4. Filtrar por fecha")
         print("5. Filtrar por rango de fechas")
         print("6. Filtrar por empleado y proyecto")
+        print("0. Volver")
+
+    def menu_buscar(self):
+        print("Opciones para buscar registros de tiempo")
+        print("-" * 50)
+        print("1. Buscar por ID del registro")
+        print("2. Buscar por RUT del empleado")
+        print("3. Buscar por ID del proyecto")
+        print("4. Buscar por fecha específica")
+        print("5. Buscar por intervalo de fechas")
+        print("6. Buscar por RUT y proyecto")
+        print("0. Volver")
+
+    def menu_actualizar(self):
+        print("Opciones para actualizar registros de tiempo")
+        print("-" * 50)
+        print("1. Actualizar fecha")
+        print("2. Actualizar hora de entrada")
+        print("3. Actualizar hora de salida")
+        print("4. Actualizar RUT del empleado")
+        print("5. Actualizar proyecto")
+        print("6. Actualizar minutos de pausa")
+        print("7. Actualizar todos los datos")
         print("0. Volver")
 
     def mostrar_registros(registros:list,tiempos:int,proyecto:int,empleado:int): #Resumen general y despues todo
@@ -93,6 +117,16 @@ class TiempoView():
     #mostrar_registros(fecha1,fecha2) --Resumen general y despues todo
     #Mostrar_registros(id_proyecto, id_empleado) --Resumen general y despues todo
 
-    #formulario_tiempo()->dict
-
-    #
+    def formulario_tiempo(self)->dict: #falta validar cada dato
+        fecha = pedir("fecha")
+        print("-"*50)
+        hora_entrada = pedir("hora de entrada")
+        print("-"*50)
+        hora_salida = pedir("hora de salida")
+        print("-"*50)
+        minutos = pedir("pausa de minutos")
+        print("-"*50)
+        return {
+            'fecha': fecha, 'hora_entrada': hora_entrada, 
+            'hora_salida':hora_salida, 'pausa_minutos': minutos
+        }

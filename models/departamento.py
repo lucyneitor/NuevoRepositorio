@@ -1,11 +1,11 @@
 from models.empleado import Empleado
 
 class Departamento:
-    def __init__(self, id_departamento=None, nombre=None, gerente=None):
+    def __init__(self, id_departamento=None, nombre=None, gerente=None, empleados: list[Empleado] | None = None):
         self.id_departamento = id_departamento
         self.nombre = nombre
         self.gerente = gerente
-        self.empleados: list[Empleado] = [] 
+        self.empleados = empleados
 
     @property
     def nombre(self)->str:
@@ -23,5 +23,18 @@ class Departamento:
     def gerente(self, gerente:str)->None:
         self.__gerente=gerente
 
+    @property
+    def empleados(self) -> list[Empleado] | None:
+        return self.__empleados
+    
+    @empleados.setter
+    def empleados(self, empleados:list[Empleado]) -> None:
+        if not isinstance(empleados, list):
+            raise TypeError("Los empleados deben entregarse en una lista.")
+
+        if not all(isinstance(empleado, Empleado) for empleado in empleados):
+            raise TypeError("Cada elemento debe ser un objeto Empleado.")
+
+        self.__empleados = empleados
     
         
