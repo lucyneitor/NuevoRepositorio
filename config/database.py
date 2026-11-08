@@ -72,9 +72,9 @@ class Database:
                     hora_entrada TEXT NOT NULL,
                     hora_salida TEXT NOT NULL,
                     pausa_minutos INTEGER NOT NULL DEFAULT 0,
-                    id_empleado INTEGER NOT NULL,
+                    id_empleado TEXT NOT NULL,
                     id_proyecto INTEGER NOT NULL,
-                    FOREIGN KEY (id_empleado) REFERENCES empleado(id_empleado) ON DELETE CASCADE,
+                    FOREIGN KEY (id_empleado) REFERENCES empleado(rut) ON DELETE CASCADE,
                     FOREIGN KEY (id_proyecto) REFERENCES proyecto(id_proyecto) ON DELETE CASCADE
                 )
             """)
@@ -86,7 +86,7 @@ class Database:
                     fecha DATE NOT NULL,
                     tipo TEXT NOT NULL,
                     formato TEXT NOT NULL,
-                    id_empleado INTEGER NOT NULL,
+                    id_empleado INTEGER NOT NULL, --Responsable de una acción
                     FOREIGN KEY(id_empleado) REFERENCES empleado(id_empleado) ON DELETE CASCADE
                 )
             """)

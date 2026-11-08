@@ -85,7 +85,8 @@ class Tiempo:
         """Devuelve las horas trabajadas, descontando la pausa."""
         inicio = datetime.combine(self.fecha, self.hora_entrada)
         fin = datetime.combine(self.fecha, self.hora_salida)
-
+        if fin>=inicio:
+            raise ValueError("Ingrese fecha valida")
         # Si la salida es antes de la entrada, se considera que terminó al día siguiente.
         if fin < inicio:
             fin += timedelta(days=1)
