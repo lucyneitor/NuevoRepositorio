@@ -53,7 +53,7 @@ class ProyectoController:
                             elif op == 4:
                                 self.eliminar_proyecto(proyecto)
                 elif op == 5:
-                    self.mostrar_proyectos()
+                    self.mostrar_proyecto()
 
     def agregar_proyecto(self):
         nuevo=self.proyecto_view.formulario()
@@ -62,7 +62,7 @@ class ProyectoController:
             fecha_inicio = nuevo["fecha_inicio"], fecha_fin=nuevo["fecha_fin"],
             estado=nuevo["estado"]
         )
-        if self.proyecto_dao.crear_tiempo(crear_proyecto): # consultar linea (modificar)
+        if self.proyecto_dao.agregar_proyecto(crear_proyecto): # consultar linea (modificar)
             mensaje="Empleado creado exitosamente"
 
     def modificar_proyecto(self,proyecto:Proyecto):

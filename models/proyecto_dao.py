@@ -17,12 +17,12 @@ class ProyectoDAO:
                     fecha_inicio, 
                     fecha_fin)
                 VALUES(?,?,?,?,?)
-                """
-            ,(proyecto.id_proyecto, 
-              proyecto.nombre,
-              proyecto.descripcion,
-              proyecto.fecha_inicio,
-              proyecto.fecha_fin))
+                """,(proyecto.id_proyecto, 
+                    proyecto.nombre,
+                    proyecto.descripcion,
+                    proyecto.fecha_inicio,
+                    proyecto.fecha_fin)
+            )
             proyecto.id_proyecto = cursor.lastrowid
             conn.commit()
             return True
