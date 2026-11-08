@@ -102,7 +102,7 @@ class TiempoDAO:
                     TiempoDAO._texto_fecha(tiempo.fecha),
                     TiempoDAO._texto_hora(tiempo.hora_entrada),
                     TiempoDAO._texto_hora(tiempo.hora_salida),
-                    id_empleado,
+                    tiempo.id_empleado,  # Aquí debe contener el RUT
                     tiempo.id_proyecto,
                     tiempo.pausa_minutos,
                 ),
@@ -353,8 +353,8 @@ class TiempoDAO:
             cursor: Cursor = conn.cursor()
             cursor.execute("""
                 SELECT COUNT(*) 
-                FROM tiempo t
-                JOIN empleado e ON e.id_empleado = t.id_empleado
+                FROM tiempo AS t
+                JOIN empleado AS e ON e.id_empleado = t.id_empleado
                 WHERE e.rut = ?
                 """,
                 (rut,),)
@@ -372,8 +372,8 @@ class TiempoDAO:
             cursor: Cursor = conn.cursor()
             cursor.execute("""
                 SELECT COUNT(*) 
-                FROM tiempo t
-                JOIN proyecto p ON p.id_proyecto = t.id_proyecto
+                FROM tiempo AS t
+                JOIN proyecto AS p ON p.id_proyecto = t.id_proyecto
                 WHERE p.nombre = ?
                 """,
                 (nom,),)
@@ -392,8 +392,8 @@ class TiempoDAO:
             cursor.execute("""
                 SELECT COUNT(*) 
                 FROM tiempo t
-                JOIN empleado e ON e.id_empleado = t.id_empleado
-                JOIN proyecto p ON p.id_proyecto = t.id_proyecto
+                JOIN empleado AS e ON e.id_empleado = t.id_empleado
+                JOIN proyecto AS p ON p.id_proyecto = t.id_proyecto
                 WHERE e.rut = ? AND p.nombre = ?
                 """,
                 (rut,nom),)
