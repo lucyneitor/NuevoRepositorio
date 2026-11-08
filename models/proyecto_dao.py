@@ -92,3 +92,35 @@ class ProyectoDAO:
             return False
         finally:
             conn.close()
+
+    def obtener_id_por_nombre(nombre: str) -> int | None:
+        conn = Database().get_connection()
+        try:
+            cursor = conn.cursor()
+            cursor.execute(
+                "SELECT id_proyecto FROM proyecto WHERE nombre = ?",
+                (nombre.strip(),),
+            )
+            fila = cursor.fetchone()
+            return fila["id_proyecto"] if fila else None
+        except Exception as error:
+            print(f"Error al buscar el proyecto por nombre: {error}")
+            return None
+        finally:
+            conn.close()
+
+    @staticmethod
+    def existe_proyecto(id_proyecto: int) -> bool:
+        conn = Database().get_connection()
+        try:
+            cursor = conn.cursor()
+            cursor.execute(
+                "SELECT EXISTS(SELECT 1 FROM proyecto WHERE id_proyecto = ?)",
+                (id_proyecto,),
+            )
+            return bool(cursor.fetchone()[0])
+        except Exception as error:
+            print(f"Error al verificar el proyecto: {error}")
+            return False
+        finally:
+            conn.close()

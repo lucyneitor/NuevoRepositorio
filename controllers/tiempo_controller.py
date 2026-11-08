@@ -9,7 +9,6 @@ class TiempoController:
     def __init__(self):
         self.tiempo_view = TiempoView()
         self.tiempo_dao = TiempoDAO()
-        self.tiempo = Tiempo()
         self.empleado_dao = EmpleadoDAO()
         self.proyecto_dao = ProyectoDAO()
     
@@ -32,8 +31,8 @@ class TiempoController:
                     rut = pedir("RUT del empleado")
                     proyecto = pedir("nombre del proyecto")
                     self.agregar_tiempos(rut,proyecto) #creo que listo
-                #elif op == 3:
-                    #self.buscar_tiempo()
+                elif op == 3:
+                    self.buscar_tiempo()
                 #elif op == 4:
                     #self.actualizar_tiempo()
                 else:
@@ -84,6 +83,9 @@ class TiempoController:
         self.tiempo_view.mostrar_registros(registros,cant_tiempo,cant_proyect,cant_empleado)
 
     def listar_registros_empleado(self, rut:str): 
+        """
+        Busca y muestra todos los registros de tiempo del empleado.
+        """
         registros = self.tiempo_dao.obtener_todos_tiempos_rut(rut)
         cant_tiempo_registrados = self.tiempo_dao.contar_tiempos_rut(rut)
         cant_trabajo = sum(registro.tiempo_trabajado for registro in registros)
@@ -100,9 +102,12 @@ class TiempoController:
     #def listar_registros_rango_fecha(fecha1:str, fecha2:str): --obtener todos y luego llamar funcion de vista
 
     def agregar_tiempos(self, rut:str, proyect=str):
+        """
+        Crea registro de tiempo, en base a lo que se registre en formulario y la los datos parametros validarlos
+        """
         nuevo= self.tiempo_view.formulario_tiempo() #empleado view formulario
-        empleado = self.empleado_dao.obtener_empleado_por_rut(rut) #retorna id
-        proyecto = self.proyecto_dao.obtener_proyecto_id(proyect) #retorna id
+        empleado = self.empleado_dao.obtener_empleado_por_rut(rut) #pendiente
+        proyecto = self.proyecto_dao.obtener_id_por_nombre(proyect) #retorna id
         crear_tiempo= Tiempo(
             fecha = nuevo["fecha"], hora_salida=nuevo["hora_salida"], 
             id_empleado=empleado, id_proyecto=proyecto,

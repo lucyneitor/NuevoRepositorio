@@ -1,18 +1,18 @@
-from models.empleado import Empleado
+ESTADO = ["Pendiente", "En proceso", "Finalizado"]
 
-autorizar = "1234"
 class Proyecto:
     """
     La clase proyecto representa un proyecto en el que los trabajadores trabajan
     esto despues estara conectado con la base de datos de tiempo para gestionar estos
     """
     
-    def __init__(self, id_proyecto:int,nombre:str, descripcion:str, fecha_inicio:str,fecha_fin:str):
+    def __init__(self, id_proyecto:int,nombre:str, descripcion:str, fecha_inicio:str,fecha_fin:str,estado:str):
         self.id_proyecto = id_proyecto
         self.nombre = nombre
         self.descripcion = descripcion
         self.fecha_inicio = fecha_inicio
         self.fecha_fin = fecha_fin
+        self.estado = estado
         
     def __str__(self):
         return f"{self.nombre}: {self.descripcion}"
@@ -77,3 +77,21 @@ class Proyecto:
             raise ValueError("La fecha de inicio del proyecto no puede estar vacía")
         self._fecha_fin = fecha_fin.strip()
         return self._fecha_fin
+
+    @property
+    def estado(self):
+        return self.__estado
+
+    @estado.setter
+    def estado(self, estado:str):
+        if not isinstance(estado, str):
+            raise TypeError("El estado debe ser texto.")
+
+        estado = estado.strip()
+
+        if estado not in ESTADO:
+            raise ValueError(
+                f"Estado inválido. Debe ser uno de estos: {', '.join(ESTADO)}."
+            )
+
+        self.__estado = estado

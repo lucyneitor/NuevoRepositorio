@@ -2,7 +2,7 @@ from views.main_view import MainView
 from views.empleado_view import EmpleadoView
 from models.empleado import Empleado
 from models.empleado_dao import EmpleadoDAO
-from views.utils import validador_op1, eleccion, pwinput, pedir, validador_op_sup,ValidationError,confirmar
+from views.utils import validador_time, eleccion, pwinput, pedir, validador_op_sup,ValidationError,confirmar
 from config.settings import Settings
 from models.usuario import Usuario
 from models.usuario_dao import UsuarioDAO
@@ -22,38 +22,43 @@ class EmpleadoController:
         self.departamento_controller = DepartamentoController()
 
     def ejecutar(self): #editar
-        self.empleado_view.sub_menu()
-        opcion = input() #te amo mucho mi vida
-        eleccion(validador_op1, opcion)
-        opcion = int(opcion)
-        if opcion == 1:
-            activacion = input("Tendrá rol de administrador (si/no): ") #el usuario no decide quien es administrador
-            autoriza = pwinput.pwinput("Confirmación: ")
-            if activacion.lower() == "si":
-                if autoriza == self.settings.ADMIN_SHARED_PASSWORD:
-                    rol = True
-                else:
-                    print("Rol Administrador denegada")
-                    rol = False
-                rol = True
+        while True:
+            self.empleado_view.sub_menu()
+            opcion = pedir("opción") 
+            try:
+                eleccion(validador_time, opcion)
+                opcion = int(opcion)
+            except (TypeError, ValueError, ValidationError) as e:
+                print(e)
             else:
-                rol = False
-            self.agregar_empleado(rol)
-        elif opcion in (2,3,4):
-            rut = input("Ingrese su rut: ")
-            if opcion==2:
-                self.editar_empleado(self.usuario)
-            elif opcion == 3:
-                self.eliminar_empleado(rut)
-            elif opcion == 4:
-                self.imprimir_empleado(rut)
-        elif opcion == 5:
-            self.imprimir_empleados()
-        elif opcion == 0:
-            self.main_view.mostrar_mensaje("Saliendo de la gestión de empleados.")
-            return
-        else:
-            self.main_view.mostrar_mensaje("Opción no válida.")
+                if opcion == 1:
+                    activacion = input("Tendrá rol de administrador (si/no): ") #el usuario no decide quien es administrador
+                    autoriza = pwinput.pwinput("Confirmación: ")
+                    if activacion.lower() == "si":
+                        if autoriza == self.settings.ADMIN_SHARED_PASSWORD:
+                            rol = True
+                        else:
+                            print("Rol Administrador denegada")
+                            rol = False
+                        rol = True
+                    else:
+                        rol = False
+                    self.agregar_empleado(rol)
+                elif opcion in (2,3,4):
+                    rut = input("Ingrese su rut: ")
+                    if opcion==2:
+                        self.editar_empleado(self.usuario)
+                    elif opcion == 3:
+                        self.eliminar_empleado(rut)
+                    elif opcion == 4:
+                        self.imprimir_empleado(rut)
+                elif opcion == 5:
+                    self.imprimir_empleados()
+                elif opcion == 0:
+                    self.main_view.mostrar_mensaje("Saliendo de la gestión de empleados.")
+                    return
+                else:
+                    self.main_view.mostrar_mensaje("Opción no válida.")
 
     def agregar_empleado(self, valor): #crea usuario que no es el
         nuevo= self.empleado_view.formulario_empleado() #empleado view formulario

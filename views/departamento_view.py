@@ -5,7 +5,7 @@ class DepartamentoView():
         self.departamento_dao = DepartamentoDAO()
 
     def sub_menu(self):
-        print("\n>" * 40)
+        print(">" * 40)
         print("Submenú de Gestión de Departamentos")
         print(">"*40)
         print("1. Agregar Departamento")
@@ -17,7 +17,7 @@ class DepartamentoView():
         print(">"*40)
 
     def menu_edit(self) -> None:
-        print("\n=" * 50)
+        print("=" * 50)
         print("Editar departamento")
         print("=" * 50)
         print("1. Cambiar nombre")
@@ -27,7 +27,7 @@ class DepartamentoView():
         print("=" * 50)
 
     def menu_mostrar_departamentos(self) -> None:
-        print("\n=" * 50)
+        print("=" * 50)
         print("Mostrar departamentos")
         print("=" * 50)
         print("1. Mostrar todos los departamentos y sus empleados")
@@ -38,7 +38,7 @@ class DepartamentoView():
         print("=" * 50)
 
     def mostrar_departamentos(departamentos:list):
-        print("\nDepartamentos")
+        print("Departamentos")
         print(">"*60)
         for departamento in departamentos:
             print(
