@@ -102,7 +102,7 @@ class ProyectoView():
         print("6. Listo los seleccionados")
         print("0. Volver")
 
-    def mostar_detalle(self,opciones:list[str],proyectos:list[Proyecto]):
+    def mostrar_detalle(self,opciones:list[str],proyectos:list[Proyecto]):
         campos_disponibles = {
             "nombre": ("Nombre", "nombre"),
             "descripción": ("Descripción", "descripcion"),

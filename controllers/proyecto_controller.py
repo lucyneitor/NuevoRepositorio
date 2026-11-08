@@ -113,7 +113,6 @@ class ProyectoController:
                     except ValueError as error:
                         print(error)
                         continue  # vuelve al menú de edición
-
                     
                 if confirmar("¿Seguro en editar esto?",self.usuario):
                     proyecto.nombre = nombre
@@ -130,8 +129,6 @@ class ProyectoController:
                 else:
                     print("Cambio cancelado.")
                     break
-
-
 
     def calcular_estado(self, fecha_inicio: str, fecha_fin: str) -> str:
         inicio = date.fromisoformat(fecha_inicio)
@@ -180,7 +177,7 @@ class ProyectoController:
                 if op == 0:
                     break
                 elif op == 1:
-                    self.proyecto_view.mostrar_proyectos(proyectos)
+                    self.proyecto_view.menu_op1(proyectos)
                     return
                 else:
                     opciones = []
