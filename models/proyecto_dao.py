@@ -96,6 +96,7 @@ class ProyectoDAO:
         finally:
             conn.close()
 
+    @staticmethod
     def obtener_id_por_nombre(nombre: str) -> int | None:
         conn = Database().get_connection()
         try:

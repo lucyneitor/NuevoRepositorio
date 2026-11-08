@@ -361,6 +361,7 @@ class TiempoDAO:
         finally:
             conn.close()
 
+    @staticmethod
     def contar_tiempos_nom_proyect(nom:str) -> int:
         """
         Devuelve la cantidad de registros de tiempo.
@@ -379,6 +380,7 @@ class TiempoDAO:
         finally:
             conn.close()
 
+    @staticmethod
     def contar_tiempos_rut_proyect(rut:str,nom:str) -> int:
         """
         Devuelve la cantidad de registros de tiempo.
@@ -442,7 +444,7 @@ class TiempoDAO:
         finally:
             conn.close()
 
-
+    @staticmethod
     def contar_proyectos_en_tiempos() -> int:
         """
         Cuenta los proyectos distintos que aparecen en la tabla tiempo.
@@ -457,6 +459,7 @@ class TiempoDAO:
         finally:
             conn.close()
 
+    @staticmethod
     def contar_empleados_en_tiempos() -> int:
         """
         Cuenta los proyectos distintos que aparecen en la tabla tiempo.
@@ -471,23 +474,26 @@ class TiempoDAO:
         finally:
             conn.close()
 
+    @staticmethod
     def contar_pausa_minutos(rut) -> int:
         """
         Cuenta acumulacion de tiempo pausa
         """
         conn = Database().get_connection()
         try:
-            cursor:Cursor = conn.cursor(
-                cursor.execute("""
-                    SELECT COALESCE(SUM(pausa_minutos), 0)
-                    FROM tiempo
-                    WHERE id_empleado = ?
-                """, (rut,))
+            cursor: Cursor = conn.cursor
+            cursor.execute("""
+                SELECT COALESCE(SUM(pausa_minutos), 0)
+                FROM tiempo
+                WHERE id_empleado = ?
+            """, (rut,)
             )
+            
             return cursor.fetchone()[0]
         finally:
             conn.close()
 
+    @staticmethod
     def contar_proyectos_por_rut(rut: str) -> int:
         """
         Cuenta los proyectos distintos en los que participa una persona.

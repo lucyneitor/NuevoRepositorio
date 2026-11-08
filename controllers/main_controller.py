@@ -54,7 +54,7 @@ class MainController:
                 elif opcion == 5:
                     self.view.mostrar_mensaje(f"Cerrando sesión de '{self.auth_controller.username}'...")
                     self.auth_controller = self.auth_controller.iniciar_sesion()
-                    if self.usuario_actual is None:
+                    if self.usuario is None:
                         self.view.mostrar_mensaje("El programa ha finalizado debido a credenciales inválidas.")
                         break
                 elif opcion == 6:

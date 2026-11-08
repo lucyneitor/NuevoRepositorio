@@ -50,7 +50,7 @@ class Database:
                 CREATE TABLE IF NOT EXISTS departamento (
                     id_departamento INTEGER PRIMARY KEY AUTOINCREMENT,
                     nombre TEXT NOT NULL UNIQUE,
-                    gerente TEXT --agregar lista de objetos?
+                    gerente TEXT 
                 )
             """)
 
@@ -89,7 +89,7 @@ class Database:
                     fecha DATE NOT NULL,
                     tipo TEXT NOT NULL,
                     formato TEXT NOT NULL,
-                    id_empleado INTEGER NOT NULL, --Responsable de una acción
+                    id_empleado INTEGER NOT NULL,
                     FOREIGN KEY(id_empleado) REFERENCES empleado(id_empleado) ON DELETE CASCADE
                 )
             """)
@@ -101,7 +101,7 @@ class Database:
                     username TEXT NOT NULL UNIQUE,
                     password_hash TEXT NOT NULL,
                     nombre_completo TEXT NOT NULL,
-                    rol TEXT NOT NULL --
+                    rol TEXT NOT NULL 
                 )
             """)
 
