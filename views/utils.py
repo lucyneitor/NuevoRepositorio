@@ -1,6 +1,7 @@
 from pydantic import (TypeAdapter, Field, StringConstraints,ValidationError)
 from models.usuario import Usuario
 from typing import Annotated
+from datetime import date
 import pwinput
 
 regla_op_inicial = Annotated[int, Field(ge=0,le=2)]
@@ -17,6 +18,9 @@ validador_op_sup = TypeAdapter(regla_op_sup)
 
 regla_op_time = Annotated[int, Field(ge=0, le=4)]
 validador_time = TypeAdapter(regla_op_time)
+
+TextoNoVacio = Annotated[str, StringConstraints(strip_whitespace=True, min_length=1)]
+validador_texto = TypeAdapter(TextoNoVacio)
 
 def leer_numero(mensaje: str) -> int: #falta un leer texto, leer fecha
     while True:
@@ -60,3 +64,23 @@ def confirmar(mensaje: str, usuario:Usuario) -> bool:
                     return True
             return False
         print("Respuesta no válida. Por favor, ingrese 'si' o 'no'.")
+
+def pedir_texto_valido(self, mensaje: str) -> str:
+    while True:
+        try:
+            entrada = pedir(mensaje)
+            return validador_texto.validate_python(entrada)
+        except ValidationError:
+            print("El texto no puede estar vacío.")
+
+def validacion_fechas(fecha_inicio: str, fecha_fin: str, msg: str) -> tuple[str, str]:
+    try:
+        inicio = date.fromisoformat(fecha_inicio.strip())
+        fin = date.fromisoformat(fecha_fin.strip())
+    except (TypeError, ValueError) as error:
+        raise ValueError("Usa el formato de fecha AAAA-MM-DD.") from error
+
+    if inicio > fin:
+        raise ValueError(msg)
+
+    return inicio.isoformat(), fin.isoformat()
