@@ -19,12 +19,14 @@ class Usuario:
         nombre_completo: str,
         rol: str = "Operador",
         id_usuario: int | None = None
+        rut_empleado: str | None = None
     ):
-        self.id_usuario = id_usuario
-        self.username = username
-        self.password_hash = password_hash
-        self.nombre_completo = nombre_completo
-        self.rol = rol
+            self.id_usuario = id_usuario
+            self.username = username
+            self.password_hash = password_hash
+            self.nombre_completo = nombre_completo
+            self.rol = rol
+            self.rut_empleado = rut_empleado
     
 
     @property
@@ -78,6 +80,19 @@ class Usuario:
             opciones = ", ".join(sorted(self.ROLES))
             raise ValueError(f"Rol '{valor}' no válido. Opciones permitidas: {opciones}.")
         self.__rol = rol_limpio
+
+    @property
+    def rut_empleado(self) -> str | None:
+        return self.__rut_empleado
+
+    @rut_empleado.setter
+    def rut_empleado(self, valor: str | None) -> None:
+        if valor is None:
+            self.__rut_empleado = None
+            return
+        if not isinstance(valor, str) or not valor.strip():
+            raise ValueError("El RUT del empleado no puede estar vacío.")
+        self.__rut_empleado = valor.strip()
 
     @staticmethod
     def encriptar_credencial(clave_plana:str)->str:
