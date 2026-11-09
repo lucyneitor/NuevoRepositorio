@@ -13,14 +13,14 @@ class Usuario:
     ROLES: set[str] = {"Empleado","Administrador"} 
 
     def __init__(
-        self,
-        username: str,
-        password_hash: str,
-        nombre_completo: str,
-        rol: str = "Operador",
-        id_usuario: int | None = None
-        rut_empleado: str | None = None
-    ):
+    self,
+    username: str,
+    password_hash: str,
+    nombre_completo: str,
+    rol: str = "Empleado",
+    id_usuario: int | None = None,
+    rut_empleado: str | None = None,
+):
             self.id_usuario = id_usuario
             self.username = username
             self.password_hash = password_hash
