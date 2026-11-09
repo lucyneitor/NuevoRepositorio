@@ -101,7 +101,7 @@ class Usuario:
 
         if not isinstance(username, str) or not username.strip():
             return (False, "El campo 'Usuario' no puede estar vacío.")
-        if not isinstance(clave_plana, str) or not username.strip():
+        if not isinstance(clave_plana, str) or not clave_plana.strip():
             return (False, "El campo 'Contraseña' no puede estar vacío.")
 
         user_limpio = username.strip()
