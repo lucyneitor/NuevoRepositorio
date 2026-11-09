@@ -99,9 +99,6 @@ class Database:
                     password_hash TEXT NOT NULL,
                     nombre_completo TEXT NOT NULL,
                     rol TEXT NOT NULL,
-                    rut_empleado TEXT NOT NULL,
-                    FOREIGN KEY (rut_empleado)
-                        REFERENCES empleado(rut) ON DELETE CASCADE
                 )
             """)
 

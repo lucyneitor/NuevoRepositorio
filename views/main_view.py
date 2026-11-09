@@ -19,22 +19,6 @@ class MainView:
         print("0. Salir")
 
     @staticmethod
-    def init_usuario_existente()->dict:
-        print("Iniciar sección")
-        print("="*50)
-        usuario = pedir("usuario")
-        print("-"*45)
-        password = pwinput.pwinput("Ingrese su contraseña: ", mask="*")
-        print("="*50)
-        print("\n"
-              "Cargando... \n")
-        #funcion de buscar en base de datos DAO
-        diccionario ={
-            "usuario":usuario,
-            "contraseña": password
-        }
-        return diccionario
-    @staticmethod
     def mostrar_menu(admin:bool):
         print("Bienvenido al sistema de ecotech")
         print(">"*40)
