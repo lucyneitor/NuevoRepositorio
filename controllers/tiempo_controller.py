@@ -100,7 +100,7 @@ class TiempoController:
             registros, cant_tiempo_registrados, cant_trabajo,
             cant_basura_tiempo,cant_proyect,rut)
 
-
+    @staticmethod
     def listar_registros_proyecto(self,id:int): 
         nom = self.proyecto_dao.obtener_proyecto_id(id)
         estado = self.proyecto_dao.obtener_estado(id) # pendiente
@@ -110,6 +110,7 @@ class TiempoController:
         self.tiempo_view.mostrar_registros_proyecto(
             registros, cant_tiempo, cant_empleado, nom)
 
+    @staticmethod
     def listar_registros_pro_perso(self, rut:str, id:int):
         nom_pro = self.proyecto_dao.obtener_proyecto_id(id)
         nom_em = self.empleado_dao.obtener_empleado_por_rut(rut)
@@ -120,16 +121,21 @@ class TiempoController:
         self.tiempo_view.mostrar_registros_esp_pro_em(nom_pro, nom_em, registros, 
                                                       cant_tiempo_registrados,cant_trabajo, cant_basura_tiempo)
 
+    @staticmethod
     def listar_registros_fecha(self, fecha:date): 
+        pass
         registros = self.tiempo_dao.obtener_tiempos_por_fecha(fecha)
         cant_tiempo_registrados = len(registros)
         cant_trabajo = sum(registro.tiempo_trabajado for registro in registros)
         cant_proyectos = self.tiempo_dao.contar_proyectos_en_tiempos()
         self.tiempo_view.mostrar_registros_por_fecha(registros, fecha)
 
+    @staticmethod
     def listar_registros_rango_fecha(self, fecha1:str, fecha2:str):
+        pass
         registros = self.tiempo_dao.contar_tiempos_por_intervalo(fecha1,fecha2)
 
+    @staticmethod
     def agregar_tiempos(self, rut:str, proyect=str):
         """
         Crea registro de tiempo, en base a lo que se registre en formulario y la los datos parametros validarlos
@@ -144,7 +150,8 @@ class TiempoController:
         )
         if self.tiempo_dao.crear_tiempo(crear_tiempo): # consultar linea (modificar)
             mensaje="Empleado creado exitosamente"
-        
+
+    @staticmethod
     def buscar_tiempos(self):
         while True:
             self.tiempo_view.menu_buscar()
@@ -191,6 +198,7 @@ class TiempoController:
 
                 self.mostrar_registros_busqueda(registros)
 
+    @staticmethod
     def mostrar_registros_busqueda(self, registros: list) -> None:
         if not registros:
             print("No se encontraron registros.")

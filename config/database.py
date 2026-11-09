@@ -28,8 +28,6 @@ class Database:
             conn = self.get_connection()
             cursor: Cursor = conn.cursor()
 
-            cursor: Cursor = conn.cursor()
-
             cursor.execute("""
                 CREATE TABLE IF NOT EXISTS departamento (
                     id_departamento INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -100,7 +98,10 @@ class Database:
                     username TEXT NOT NULL UNIQUE,
                     password_hash TEXT NOT NULL,
                     nombre_completo TEXT NOT NULL,
-                    rol TEXT NOT NULL
+                    rol TEXT NOT NULL,
+                    rut_empleado TEXT NOT NULL,
+                    FOREIGN KEY (rut_empleado)
+                        REFERENCES empleado(rut) ON DELETE CASCADE
                 )
             """)
 
@@ -115,8 +116,6 @@ class Database:
             conn.commit()
             return True
 
-            conn.commit()
-            return True
         except sqlite3.Error as e:
             print(f"Error al inicializar la base de datos: {e}")
             return False
