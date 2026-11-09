@@ -50,7 +50,23 @@ class TiempoView():
         print("7. Actualizar todos los datos")
         print("0. Volver")
 
-    def mostrar_registros(registros:list,tiempos:int,proyecto:int,empleado:int): #Resumen general y despues todo
+    def vista_busqueda(self, registros: list):
+        print(">"*50)
+        print("Registro encontrado")
+        print(">"*50)
+        for tiempo in registros:
+            print(
+                f"ID: {tiempo.id_tiempo} | "
+                f"Fecha: {tiempo.fecha} | "
+                f"Entrada: {tiempo.hora_entrada} | "
+                f"Salida: {tiempo.hora_salida} | "
+                f"RUT: {tiempo.id_empleado} | "
+                f"Proyecto: {tiempo.id_proyecto} | "
+                f"Pausa: {tiempo.pausa_minutos} min"
+            )
+        print(">"*50)
+
+    def mostrar_registros(self, registros:list,tiempos:int,proyecto:int,empleado:int): #Resumen general y despues todo
         print("-"*60)
         print("Listar Resultados")
         print("-"*60)
