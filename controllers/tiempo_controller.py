@@ -34,8 +34,8 @@ class TiempoController:
                     self.agregar_tiempos(rut,proyecto) #creo que listo
                 elif op == 3:
                     self.buscar_tiempo()
-                #elif op == 4:
-                    #self.actualizar_tiempo()
+                elif op == 4:
+                    self.actualizar_tiempo()
                 else:
                     print("Opción no válida. Ingrese un número del 0 al 4.")
 
@@ -192,6 +192,38 @@ class TiempoController:
 
                 self.tiempo_view.vista_busqueda(registros)
 
-    
+    def actualizar_tiempo(): 
+        """
+        Solicita el ID de un registro de tiempo, valida su existencia 
+        y actualiza sus datos utilizando el formulario y el DAO.
+        """
+        try:
+            id_tiempo = int(pedir("ID del registro de tiempo a actualizar"))
+        except (TypeError, ValueError):
+            print("El ID ingresado debe ser un número entero.")
+            return
 
-    #def actualizar_tiempo(): -- sub_menu para saber que quiere actualizar
+        # Verificar si el registro existe en la base de datos
+        registro_existente = self.tiempo_dao.obtener_tiempo_por_id(id_tiempo)
+        if not registro_existente:
+            print(f"No se encontró ningún registro de tiempo con el ID {id_tiempo}.")
+            return
+
+        print(f"Registro encontrado (ID: {id_tiempo}). Ingrese los nuevos datos:")
+        nuevo = self.tiempo_view.formulario_tiempo()
+
+        # Creamos la instancia actualizada (puedes conservar los valores anteriores si alguno viene vacío)
+        tiempo_actualizado = Tiempo(
+            id=id_tiempo,  # Asegúrate de que tu modelo Tiempo acepte el ID si es necesario para la actualización
+            fecha=nuevo.get("fecha", registro_existente.fecha),
+            hora_salida=nuevo.get("hora_salida", registro_existente.hora_salida),
+            id_empleado=registro_existente.id_empleado,
+            id_proyecto=registro_existente.id_proyecto,
+            pausa_minutos=nuevo.get("pausa_minutos", registro_existente.pausa_minutos)
+        )
+
+        # Llamada al DAO para actualizar (asumiendo que tu DAO tiene un método actualizar_tiempo)
+        if self.tiempo_dao.actualizar_tiempo(tiempo_actualizado):
+            print("¡Registro de tiempo actualizado exitosamente!")
+        else:
+            print("Ocurrió un error al intentar actualizar el registro en la base de datos.")
