@@ -7,6 +7,7 @@ from controllers.tiempo_controller import TiempoController
 from controllers.proyecto_controller import ProyectoController
 from views.utils import eleccion, validador_op, pedir, validador_op_sup, ValidationError
 from controllers.auth_controller import AuthController
+from models.usuario_dao import UsuarioDAO
 
 class MainController:
     def __init__(self):
@@ -18,6 +19,7 @@ class MainController:
         self.proyecto_controller = ProyectoController()
         self.empleado_dao = EmpleadoDAO()
         self.auth_controller = AuthController()
+        self.usuario_dao = UsuarioDAO()
         self.usuario = None
 
     def ejecutar(self):
@@ -42,7 +44,7 @@ class MainController:
             else:
                 if opcion == 0: 
                     print("Hasta luego.")
-                    return
+                    break
                 elif opcion == 1:
                     self.empleado_controller.ejecutar()
                 elif opcion == 2:
@@ -53,10 +55,24 @@ class MainController:
                     self.proyecto_controller.ejecutar() #falta
                 elif opcion == 5:
                     self.view.mostrar_mensaje(f"Cerrando sesión de '{self.usuario.username}'...")
-                    self.usuario = self.auth_controller.iniciar_sesion()
-                    if self.usuario is None:
-                        self.view.mostrar_mensaje("El programa ha finalizado debido a credenciales inválidas.")
-                        break
+                    self.usuario = None
+                    if len(self.usuario_dao.obtener_todos()) <= 1: # Verificamos si al cerrar sesión la BD se queda sin usuarios
+                        print("No hay otros usuarios en la base de datos. ¿Quieres registrarte?")
+                        
+                        # Capturamos el usuario que acaba de registrarse
+                        usuario_nuevo = self.auth_controller.registrar_usuario()
+                        
+                        if usuario_nuevo:
+                            self.usuario = usuario_nuevo  # Asignamos el nuevo usuario
+                            self.empleado_controller = EmpleadoController(self.usuario)
+                            self.view.mostrar_mensaje(f"¡Bienvenido de nuevo, {self.usuario.username}!")
+                            continue  # Continúa en el menú principal con el nuevo usuario
+                        else:
+                            break
+                    else:
+                        # Si hay más usuarios, rompemos para que el bucle exterior pida login normal
+                        self.ejecutar()
+                    
                     self.empleado_controller = EmpleadoController(self.usuario)
                 elif opcion == 6:
                     self.informe_controller.ejecutar() #falta

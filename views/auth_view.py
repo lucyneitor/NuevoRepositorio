@@ -50,9 +50,9 @@ class AuthView:
         clave = pwinput.pwinput("Ingrese contraseña (mín. 4 caracteres, se encriptará con SHA-256): ",mask="*").strip()
         confirmacion = pwinput.pwinput("Confirme la contraseña: ").strip()
 
-        print("Roles disponibles: 1.- Administrador, 2.- Medico, 3.- Operador")
+        print("Roles disponibles: 1.- Administrador, 2.- Empleado")
         opcion_rol = leer_numero("Seleccione un rol (1-3): ")
-        mapa_roles = {1: "Administrador", 2: "Medico", 3: "Operador"}
+        mapa_roles = {1: "Administrador", 2: "Empleado"}
         rol = mapa_roles.get(opcion_rol, "")
 
         return {

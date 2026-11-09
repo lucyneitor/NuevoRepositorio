@@ -64,25 +64,26 @@ class AuthController:
             else:
                 self.view.mostrar_error("Opción no válida.")
 
-    def registrar_usuario(self) -> None:
+    def registrar_usuario(self) -> Usuario | None:
         datos = self.view.formulario_nuevo_usuario()
 
         es_valido, msg = Usuario.validar_credenciales_ingreso(datos["username"], datos["clave"])
+        
         if not es_valido:
             self.view.mostrar_error(msg)
-            return
+            return None
 
         if not datos["nombre_completo"]:
             self.view.mostrar_error("El nombre completo no puede estar vacío.")
-            return
+            return None
 
         if datos["clave"] != datos["confirmacion"]:
             self.view.mostrar_error("Las contraseñas ingresadas no coinciden.")
-            return
+            return None
 
         if UsuarioDAO.obtener_por_username(datos["username"]):
             self.view.mostrar_error(f"Ya existe un usuario registrado con el login '{datos['username']}'.")
-            return
+            return None
 
         try:
             password_encriptada = Usuario.encriptar_credencial(datos["clave"])
@@ -96,6 +97,7 @@ class AuthController:
                 self.view.mostrar_mensaje(
                     f"Usuario '{nuevo_usuario.username}' registrado exitosamente con credencial encriptada."
                 )
+                return nuevo_usuario
             else:
                 self.view.mostrar_error("No fue posible guardar el usuario en la base de datos.")
         except (ValueError, TypeError) as e:
