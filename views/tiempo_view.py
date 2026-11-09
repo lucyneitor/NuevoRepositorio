@@ -1,4 +1,5 @@
 from views.utils import pedir
+from datetime import date
 
 class TiempoView():
     def sub_menu(self):
@@ -132,9 +133,44 @@ class TiempoView():
         print(f"Tiempo en pausa: {negativo}")
         print(f"Cantidad de proyectos involucrados: {proyecto}")
         
-    #mostrar_registros(fecha especifica) --Resumen general y despues todo
+    def mostrar_registros_por_fecha(
+        self,
+        registros: list,
+        fecha: date,
+        cant_registros: int,
+        cant_trabajo: float,
+        cant_pausa: int,
+        cant_proyectos: int,
+        cant_empleados: int,
+    ) -> None:
+        print("-" * 60)
+        print(f"Registros del día {fecha.isoformat()}")
+        print("-" * 60)
+
+        if not registros:
+            print("No hay registros para esta fecha.")
+        else:
+            for tiempo in registros:
+                print(
+                    f"RUT: {tiempo.id_empleado} | "
+                    f"Proyecto: {tiempo.id_proyecto} | "
+                    f"Entrada: {tiempo.hora_entrada.strftime('%H:%M')} | "
+                    f"Salida: {tiempo.hora_salida.strftime('%H:%M')} | "
+                    f"Pausa: {tiempo.pausa_minutos} min | "
+                    f"Trabajado: {tiempo.tiempo_trabajado:.2f} h"
+                )
+
+        print("-" * 60)
+        print("RESUMEN GENERAL")
+        print(f"Cantidad de registros: {cant_registros}")
+        print(f"Cantidad de empleados: {cant_empleados}")
+        print(f"Cantidad de proyectos: {cant_proyectos}")
+        print(f"Tiempo trabajado: {cant_trabajo:.2f} horas")
+        print(f"Tiempo en pausa: {cant_pausa} minutos")
+        print("-" * 60)
+
     #mostrar_registros(fecha1,fecha2) --Resumen general y despues todo
-    
+
     def mostrar_registros_esp_pro_em(pro, em, registros, cant_re, tiempo, pausa):
         print("-"*60)
         print(f"Registros del Empledo {em} en Proyecto {pro}")

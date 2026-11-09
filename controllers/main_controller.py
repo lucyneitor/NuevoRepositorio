@@ -57,6 +57,7 @@ class MainController:
                     if self.usuario is None:
                         self.view.mostrar_mensaje("El programa ha finalizado debido a credenciales inválidas.")
                         break
+                    self.empleado_controller = EmpleadoController(self.usuario)
                 elif opcion == 6:
                     self.informe_controller.ejecutar() #falta
         

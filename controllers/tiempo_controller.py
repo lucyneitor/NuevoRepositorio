@@ -124,12 +124,12 @@ class TiempoController:
         registros = self.tiempo_dao.obtener_tiempos_por_fecha(fecha)
         cant_tiempo_registrados = len(registros)
         cant_trabajo = sum(registro.tiempo_trabajado for registro in registros)
-        cant_proyectos = self.tiempo_dao.
+        cant_proyectos = self.tiempo_dao.contar_proyectos_en_tiempos()
         self.tiempo_view.mostrar_registros_por_fecha(registros, fecha)
 
     def listar_registros_rango_fecha(self, fecha1:str, fecha2:str):
         registros = self.tiempo_dao.contar_tiempos_por_intervalo(fecha1,fecha2)
-        
+
     def agregar_tiempos(self, rut:str, proyect=str):
         """
         Crea registro de tiempo, en base a lo que se registre en formulario y la los datos parametros validarlos
