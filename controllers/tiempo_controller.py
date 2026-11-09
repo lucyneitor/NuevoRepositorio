@@ -192,7 +192,7 @@ class TiempoController:
 
                 self.tiempo_view.vista_busqueda(registros)
 
-    def actualizar_tiempo(): 
+    def actualizar_tiempo(self): 
         """
         Solicita el ID de un registro de tiempo, valida su existencia 
         y actualiza sus datos utilizando el formulario y el DAO.
@@ -205,7 +205,7 @@ class TiempoController:
 
         # Verificar si el registro existe en la base de datos
         registro_existente = self.tiempo_dao.obtener_tiempo_por_id(id_tiempo)
-        if not registro_existente:
+        if registro_existente is None:
             print(f"No se encontró ningún registro de tiempo con el ID {id_tiempo}.")
             return
 
