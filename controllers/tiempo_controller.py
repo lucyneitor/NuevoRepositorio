@@ -92,9 +92,9 @@ class TiempoController:
         Busca y muestra todos los registros de tiempo del empleado.
         """
         registros = self.tiempo_dao.obtener_todos_tiempos_rut(rut)
-        cant_tiempo_registrados = self.tiempo_dao.contar_tiempos_rut(rut) # pendiente
+        cant_tiempo_registrados = len(registros)# pendiente
         cant_trabajo = sum(registro.tiempo_trabajado for registro in registros)
-        cant_basura_tiempo = self.tiempo_dao.contar_pausa_minutos(rut)
+        cant_basura_tiempo = sum(t.pausa_minutos for t in registros)
         cant_proyect = self.tiempo_dao.contar_proyectos_por_rut(rut)
         self.tiempo_view.mostrar_registros_empleado(
             registros, cant_tiempo_registrados, cant_trabajo,
@@ -114,17 +114,22 @@ class TiempoController:
         nom_pro = self.proyecto_dao.obtener_proyecto_id(id)
         nom_em = self.empleado_dao.obtener_empleado_por_rut(rut)
         registros = self.tiempo_dao.obtener_todos_tiempos_rut_proyect(rut,id)
-        cant_tiempo_registrados = self.tiempo_dao.contar_tiempos_rut(rut)
+        cant_tiempo_registrados = len(registros)
         cant_trabajo = sum(registro.tiempo_trabajado for registro in registros)
         cant_basura_tiempo = self.tiempo_dao.contar_pausa_minutos(rut)
         self.tiempo_view.mostrar_registros_esp_pro_em(nom_pro, nom_em, registros, 
                                                       cant_tiempo_registrados,cant_trabajo, cant_basura_tiempo)
 
-    def listar_registros_fecha(fecha:date): 
+    def listar_registros_fecha(self, fecha:date): 
+        registros = self.tiempo_dao.obtener_tiempos_por_fecha(fecha)
+        cant_tiempo_registrados = len(registros)
+        cant_trabajo = sum(registro.tiempo_trabajado for registro in registros)
+        cant_proyectos = self.tiempo_dao.
+        self.tiempo_view.mostrar_registros_por_fecha(registros, fecha)
 
-
-    def listar_registros_rango_fecha(fecha1:str, fecha2:str):
-
+    def listar_registros_rango_fecha(self, fecha1:str, fecha2:str):
+        registros = self.tiempo_dao.contar_tiempos_por_intervalo(fecha1,fecha2)
+        
     def agregar_tiempos(self, rut:str, proyect=str):
         """
         Crea registro de tiempo, en base a lo que se registre en formulario y la los datos parametros validarlos
