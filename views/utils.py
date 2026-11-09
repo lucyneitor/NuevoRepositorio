@@ -19,6 +19,9 @@ validador_op_sup = TypeAdapter(regla_op_sup)
 regla_op_time = Annotated[int, Field(ge=0, le=4)]
 validador_time = TypeAdapter(regla_op_time)
 
+regla_op_gran = Annotated[int, Field(ge=0, le=7)]
+validador_grande = TypeAdapter(regla_op_gran)
+
 TextoNoVacio = Annotated[str, StringConstraints(strip_whitespace=True, min_length=1)]
 validador_texto = TypeAdapter(TextoNoVacio)
 

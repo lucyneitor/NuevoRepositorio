@@ -103,11 +103,11 @@ class AuthController:
         except (ValueError, TypeError) as e:
             self.view.mostrar_error(f"Datos inválidos: {e}")
 
-    def listar_usuarios(self) -> None:
+    def listar_usuarios(self) -> None: #ejecuta correctamente
         usuarios = UsuarioDAO.obtener_todos()
         self.view.mostrar_lista_usuarios(usuarios)
 
-    def eliminar_usuario(self, usuario_actual: Usuario | None = None) -> None:
+    def eliminar_usuario(self, usuario_actual: Usuario | None = None) -> None: #no permite eliminar usuario
         id_usuario = self.view.solicitar_id_usuario()
         usuario = UsuarioDAO.obtener_por_id(id_usuario)
         if not usuario:

@@ -43,9 +43,10 @@ class MainView:
         print("3. Gestionar Tiempo")
         print("4. Gestionar Proyectos")
         print("5. Cerrar Sesión -> Cambiar usuario")
+        print("6. Gestionar usuarios y credenciales")
 
         if admin:
-            print("6. Gestionar Informes")
+            print("7. Gestionar Informes")
 
         print("0. Salir del Sistema")
         print(">"*40)    
