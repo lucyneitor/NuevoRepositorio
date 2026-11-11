@@ -3,6 +3,7 @@ from models.usuario import Usuario
 from typing import Annotated
 from datetime import date
 import pwinput
+from config.settings import Settings
 
 regla_op_inicial = Annotated[int, Field(ge=0,le=2)]
 validador_inicial = TypeAdapter(regla_op_inicial)
@@ -63,7 +64,7 @@ def confirmar(mensaje: str, usuario:Usuario) -> bool:
         if resp in ("si", "no"):
             if resp=="si":
                 validar = pwinput.pwinput("Confirmar: ")
-                if usuario.verificar_credencial(validar):
+                if validar == Settings.ADMIN_INITIAL_CLAVE:
                     return True
             return False
         print("Respuesta no válida. Por favor, ingrese 'si' o 'no'.")

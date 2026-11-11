@@ -131,6 +131,7 @@ class DepartamentoDAO:
             if conn:
                 conn.close()
 
+    @staticmethod
     def contar_departamentos() -> int:
         conn = None
         try:

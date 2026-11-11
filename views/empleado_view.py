@@ -31,7 +31,7 @@ class EmpleadoView():
         print("-"*50)
         sueldo = pedir("sueldo")
         print("-"*50)
-        contrato = pedir("Ingrese fecha de contrato")
+        contrato = pedir("fecha de contrato 'DD-MM-YYYY'")
         return { #retorno un diccionario
             "rut": rut, "nombre": nombre, "dirección":direccion, "telefono":telefono,
             "correo":correo, "usuario":usuario, "contraseña":password, "sueldo": sueldo,

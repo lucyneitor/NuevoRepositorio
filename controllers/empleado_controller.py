@@ -32,17 +32,8 @@ class EmpleadoController:
                 print(e)
             else:
                 if opcion == 1:
-                    activacion = input("Tendrá rol de administrador (si/no): ") #el usuario no decide quien es administrador
-                    autoriza = pwinput.pwinput("Confirmación: ")
-                    if activacion.lower() == "si":
-                        if autoriza == self.settings.ADMIN_SHARED_PASSWORD:
-                            rol = True
-                        else:
-                            print("Rol Administrador denegada")
-                            rol = False
-                        rol = True
-                    else:
-                        rol = False
+                    es_admin = confirmar("¿Tendrá rol de administrador?", self.usuario)
+                    rol = "Administrador" if es_admin else "Empleado"
                     self.agregar_empleado(rol)
                 elif opcion in (2,3,4):
                     rut = input("Ingrese su rut: ")
@@ -62,20 +53,26 @@ class EmpleadoController:
 
     def agregar_empleado(self, valor): #crea usuario que no es el
         nuevo= self.empleado_view.formulario_empleado() #empleado view formulario
+        nuevo["contraseña"]=self.usuario.encriptar_credencial(nuevo["contraseña"])
         depa = self.escoger_depa()
         crear_empleado= Empleado( #creo el departamento
             sueldo=nuevo["sueldo"], inicio_contrato=nuevo["contrato"], estado="activo", 
             rut=nuevo["rut"], nombre=nuevo['nombre'], direccion=nuevo['dirección'],
-            telefono=nuevo['telefono'], correo=nuevo['correo'], selec_depa=depa
+            telefono=nuevo['telefono'], correo=nuevo['correo'], id_departamento=depa
         )
-        if EmpleadoDAO.crear_empleado(crear_empleado): # consultar linea (modificar)
-            mensaje="Empleado creado exitosamente"
+        if not EmpleadoDAO.agregar_empleado(crear_empleado): # consultar linea (modificar)
+            print("No se pudo guardar el empleado.")
+            return
+        
         crear_usuario = Usuario(
             username=nuevo['usuario'], password_hash=nuevo['contraseña'], 
             nombre_completo=nuevo['nombre'], rol=valor
         )
         if UsuarioDAO.crear(crear_usuario):
-            mensaje="Usuario creado exitosamente"
+            print("Empleado y usuario creados exitosamente.")
+        else:
+            EmpleadoDAO.eliminar_empleado(nuevo["rut"])  # deshacer para no tener inconcruencias
+            print("No se pudo crear el usuario; se canceló el registro del empleado.")
     
     def editar_empleado(self): #usar actualizar aqui 
         self.empleado_view.menu_edit()
@@ -89,15 +86,22 @@ class EmpleadoController:
             autorizado = confirmar("¿Está seguro de editar esto?", self.usuario) #cuestionar si se autorizo o no
 
     def escoger_depa(self)->int | None:
-        cant = self.departamento_dao.contar_departamentos()
-        if cant == 1:
-            print(f"Fuiste asignado al departamento {self.departamento_dao.obtener_por_id(1)}")
-            return cant
-        regla_op_depa = Annotated[int, Field(ge=1,le=self.departamento_dao.contar_departamentos())]
+        departamentos = self.departamento_dao.obtener_todos()
+        if not departamentos:
+            print("No hay departamentos: el empleado quedará sin departamento temporalmente.")
+            return None
+
+        if len(departamentos) == 1:
+            unico_dep = departamentos[0]
+            print(f"Fuiste asignado al departamento {unico_dep.nombre}")
+            return unico_dep.id_departamento
+        
+        regla_op_depa = Annotated[int, Field(ge=1,le={d.id_departamento for d in departamentos})]
         validador_depa = TypeAdapter(regla_op_depa)
+
         while True:
             self.departamento_controller.mostrar_depa()
-            op = pedir("opción")
+            op = pedir("ID del departamento")
             eleccion(validador_depa,op)
             try:
                 op = int(op)

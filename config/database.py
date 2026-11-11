@@ -57,7 +57,7 @@ class Database:
                     correo TEXT NOT NULL UNIQUE,
                     estado TEXT NOT NULL DEFAULT 'activo',
                     inicio_contrato DATE NOT NULL,
-                    sueldo INTEGER NOT NULL CHECK (salario > 0),
+                    sueldo INTEGER NOT NULL CHECK (sueldo > 0),
                     id_departamento INTEGER,
                     FOREIGN KEY (id_departamento)
                         REFERENCES departamento(id_departamento) ON DELETE SET NULL

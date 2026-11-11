@@ -46,4 +46,5 @@ class DepartamentoView():
                 f"Nombre: {departamento.nombre} | "
                 f"Gerente: {departamento.gerente or 'Sin gerente'}"
             )
+            print("-"*60)
         print(">"*60)

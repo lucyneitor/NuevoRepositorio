@@ -19,6 +19,6 @@ class Settings:
     ENABLE_OFFLINE_FALLBACK: bool = (os.getenv("ENABLE_OFFLINE_FALLBACK", "True").lower() in ("true", "1", "yes"))
 
     #login del sistema [usuario administrador]
-    ADMIN_INITIAL_USER: str = os.getenv("ADMIN_INITIAL_USER","admin")
-    ADMIN_INITIAL_CLAVE: str = os.getenv("ADMIN_INITIAL_CLAVE","admin1234")
+    ADMIN_INITIAL_USER: str = os.getenv("ADMIN_INITIAL_USER","")
+    ADMIN_INITIAL_CLAVE: str = os.getenv("ADMIN_INITIAL_CLAVE","")
     MAX_LOGIN_ATTEMPTS: int = int(os.getenv("MAX_LOGIN_ATTEMPTS","3"))

@@ -14,11 +14,13 @@ class Empleado(Persona):
         direccion:str,
         telefono:str,
         correo:str,
+        id_departamento:int | None = None,
         ):
         super().__init__(rut, nombre, direccion, telefono, correo)
         self.sueldo = sueldo
         self.inicio_contrato = inicio_contrato
         self.estado = estado 
+        self.id_departamento = id_departamento
 
     @property
     def sueldo(self)->int:
