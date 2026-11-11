@@ -127,3 +127,46 @@ class ClimaService:
             f"Se cargaron datos locales de emergencia para {datos_local['ciudad']}."
         )
         return (datos_local, msg)
+
+    @classmethod
+    def probar_conectividad(cls) -> Tuple[bool, str]:
+      """Verifica si la API externa de clima está accesible y la key es válida."""
+      if not REQUESTS_AVAILABLE:
+        return (
+            False,
+            "Librería 'requests' no instalada. Ejecute 'pip install requests'.",
+        )
+
+      try:
+        # WeatherAPI exige la 'key' y una ubicación 'q' obligatorias
+        params = {"key": Settings.API_KEY_CLIMA, "q": "Chillan"}
+
+        resp = requests.get(
+            Settings.API_BASE_URL_CLIMA,
+            params=params,
+            timeout=Settings.REQUEST_TIMEOUT,
+        )
+
+        # Si responde 200 (OK), la conexión y la API Key son correctas
+        if resp.status_code == 200:
+          return (
+              True,
+              f"Conexión exitosa con WeatherAPI (Código HTTP: {resp.status_code})",
+          )
+        elif resp.status_code == 401:
+          return (
+              False,
+              "Error 401: La API Key de Clima es inválida o no está autorizada.",
+          )
+
+        return (
+            False,
+            f"El servidor respondió con código HTTP: {resp.status_code}",
+        )
+
+      except requests.exceptions.Timeout:
+        return (False, "Timeout al contactar el servicio de clima.")
+      except requests.exceptions.ConnectionError:
+        return (False, "Sin conexión de red hacia el servidor de WeatherAPI.")
+      except Exception as e:
+        return (False, f"Error de red: {str(e)}")
