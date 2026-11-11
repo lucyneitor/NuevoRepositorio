@@ -56,8 +56,8 @@ class Database:
                     telefono TEXT NOT NULL,
                     correo TEXT NOT NULL UNIQUE,
                     estado TEXT NOT NULL DEFAULT 'activo',
-                    fecha_inicio_contrato DATE NOT NULL,
-                    salario INTEGER NOT NULL CHECK (salario > 0),
+                    inicio_contrato DATE NOT NULL,
+                    sueldo INTEGER NOT NULL CHECK (salario > 0),
                     id_departamento INTEGER,
                     FOREIGN KEY (id_departamento)
                         REFERENCES departamento(id_departamento) ON DELETE SET NULL
@@ -100,7 +100,7 @@ class Database:
                     nombre_completo TEXT NOT NULL,
                     rol TEXT NOT NULL
                         CHECK (rol IN ('Administrador', 'Empleado')),
-                    rut_empleado TEXT UNIQUE DEFAULT NULL
+                    rut_empleado TEXT UNIQUE DEFAULT NULL,
                         FOREIGN KEY (rut_empleado)
                             REFERENCES empleado(rut) ON DELETE CASCADE,
                         CHECK (

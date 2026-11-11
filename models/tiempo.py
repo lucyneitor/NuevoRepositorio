@@ -9,7 +9,7 @@ class Tiempo:
         fecha: date | str,
         hora_entrada: time | str,
         hora_salida: time | str,
-        id_empleado: str,
+        rut_empleado: str,
         id_proyecto: int,
         pausa_minutos: int = 0,
     ) -> None:
@@ -17,7 +17,7 @@ class Tiempo:
         self.fecha = fecha
         self.hora_entrada = hora_entrada
         self.hora_salida = hora_salida
-        self.id_empleado = id_empleado
+        self.rut_empleado = rut_empleado
         self.id_proyecto = id_proyecto
         self.pausa_minutos = pausa_minutos
 
@@ -81,18 +81,47 @@ class Tiempo:
         self.__pausa_minutos = valor
 
     @property
-    def tiempo_trabajado(self) -> float:
-        """Devuelve las horas trabajadas, descontando la pausa."""
+    def duracion_trabajada(self) -> timedelta:
+        """Devuelve la duración trabajada, descontando la pausa."""
+
         inicio = datetime.combine(self.fecha, self.hora_entrada)
         fin = datetime.combine(self.fecha, self.hora_salida)
-        if fin>=inicio:
-            raise ValueError("Ingrese fecha valida")
-        # Si la salida es antes de la entrada, se considera que terminó al día siguiente.
+
+        # Si la salida es anterior a la entrada,
+        # significa que la jornada terminó al día siguiente.
         if fin < inicio:
             fin += timedelta(days=1)
 
         duracion = fin - inicio - timedelta(minutes=self.pausa_minutos)
-        return max(0, duracion.total_seconds() / 3600)
+
+        if duracion <= timedelta(0):
+            raise ValueError(
+                "La pausa no puede ser igual o superior "
+                "a la duración de la jornada."
+            )
+
+        return duracion
+
+    @property
+    def rut_empleado(self) -> str:
+        """Devuelve el RUT del empleado asociado al registro."""
+        return self.__rut_empleado
+    
+    @rut_empleado.setter
+    def rut_empleado(self, valor: str) -> None:
+        """Valida y asigna el RUT del empleado."""
+
+        if not isinstance(valor, str):
+            raise TypeError("El RUT del empleado debe ser texto.")
+
+        valor = valor.strip().upper()
+
+        if not valor:
+            raise ValueError("El RUT del empleado no puede estar vacío.")
+
+        self.__rut_empleado = valor
+
+    
 
     def __str__(self) -> str:
         return (
