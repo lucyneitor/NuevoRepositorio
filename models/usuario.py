@@ -26,7 +26,7 @@ class Usuario:
             self.password_hash = password_hash
             self.nombre_completo = nombre_completo
             self.rol = rol
-    
+            self.rut_empleado = rut_empleado
 
     @property
     def username(self)->str:
