@@ -5,8 +5,8 @@ from sqlite3 import Connection, Cursor
 
 class Database:
     """
-    Singleton para manejar la conexión a SQLite.
-    Modela la herencia: Persona -> Empleado
+    Singleton para gestionar la conexión
+    y la inicialización de la base de datos SQLite.
     """
     _instance = None
     _db_path = str(Path(__file__).resolve().parent.parent / "sistema_gestion.db")
@@ -98,7 +98,16 @@ class Database:
                     username TEXT NOT NULL UNIQUE,
                     password_hash TEXT NOT NULL,
                     nombre_completo TEXT NOT NULL,
-                    rol TEXT NOT NULL,
+                    rol TEXT NOT NULL
+                        CHECK (rol IN ('Administrador', 'Empleado')),
+                    rut_empleado TEXT UNIQUE DEFAULT NULL
+                        FOREIGN KEY (rut_empleado)
+                            REFERENCES empleado(rut) ON DELETE CASCADE,
+                        CHECK (
+                            (rol = 'Administrador')
+                            OR
+                            (rol = 'Empleado' AND rut_empleado IS NOT NULL)
+                        )
                 )
             """)
 
