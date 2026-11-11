@@ -36,7 +36,7 @@ class ClimaService:
             raise ValueError("El nombre de la ciudad debe ser un texto válido.")
         
         limpio = ciudad.strip()
-        if not re.match(r"^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$", limpio):
+        if not re.fullmatch(r"[^\W\d_]+(?:[ '\-][^\W\d_]+)*", limpio, re.UNICODE):
             raise ValueError("El nombre de la ciudad contiene caracteres no permitidos.")
         
         if len(limpio) < 2:
