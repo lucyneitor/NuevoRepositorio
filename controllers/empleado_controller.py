@@ -76,7 +76,7 @@ class EmpleadoController:
     
     def editar_empleado(self): #usar actualizar aqui 
         self.empleado_view.menu_edit()
-        op = pedir("opinión")
+        op = pedir("opción")
         try:
             op = int(op)
             eleccion(validador_op_sup, op)

@@ -36,8 +36,25 @@ class Empleado(Persona):
 
     @inicio_contrato.setter
     def inicio_contrato(self, inicio_contrato:date)->None:
-        self.__inicio_contrato = inicio_contrato #agregar validación en contrato
+        """Valida y asigna la fecha de inicio del contrato."""
 
+        if isinstance(inicio_contrato, str):
+            try:
+                inicio_contrato = date.strptime(
+                    inicio_contrato.strip(),
+                    "%d-%m-%Y"
+                )
+            except ValueError as error:
+                raise ValueError(
+                    "La fecha de inicio de contrato debe tener formato DD-MM-YYYY."
+                ) from error
+
+        if not isinstance(inicio_contrato, date):
+            raise TypeError(
+                "La fecha de inicio de contrato debe ser un objeto date o texto."
+            )
+
+        self.__inicio_contrato = inicio_contrato
     @property
     def estado(self)->str:
         return self.__estado
