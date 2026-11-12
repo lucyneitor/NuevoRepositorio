@@ -5,7 +5,7 @@ class Departamento:
         self.id_departamento = id_departamento
         self.nombre = nombre
         self.gerente = gerente
-        self.empleados = empleados
+        self.empleados = empleados if empleados is not None else []
 
     @property
     def nombre(self)->str:

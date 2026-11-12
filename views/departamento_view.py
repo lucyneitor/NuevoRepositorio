@@ -16,13 +16,14 @@ class DepartamentoView():
         print("0. Volver al menú principal")
         print(">"*40)
 
-    def menu_edit(self) -> None:
+    def menu_edit_condicion(self,condicion) -> None:
         print("=" * 50)
-        print("Editar departamento")
+        print(f"{condicion.capitalize()} departamento")
         print("=" * 50)
-        print("1. Cambiar nombre")
-        print("2. Cambiar gerente")
-        print("3. Cambiar nombre y gerente")
+        print(f"1. {condicion} nombre")
+        print(f"2. {condicion} gerente")
+        print(f"3. {condicion} lista de empleados")
+        print(f"4. {condicion} todo")
         print("0. Cancelar y volver")
         print("=" * 50)
 
@@ -37,6 +38,7 @@ class DepartamentoView():
         print("0. Volver")
         print("=" * 50)
 
+    @staticmethod
     def mostrar_departamentos(departamentos:list):
         print("Departamentos")
         print(">"*60)
@@ -48,3 +50,12 @@ class DepartamentoView():
             )
             print("-"*60)
         print(">"*60)
+
+    @staticmethod
+    def resultados(depa:list, nom:str):
+        print("-"*60)
+        print(f"Lista de departamentos al mando de {nom}")
+        print("-"*60)
+        print("| ID | nombre de departamento |")
+        for d in depa:
+            print("| ",d["id_departamento"], " | ", d["nombre"], " | ")
