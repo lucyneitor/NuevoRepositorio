@@ -115,3 +115,11 @@ class EmpleadoController:
                     return op
                 print("Operación fallida: No estas autorizado")
                 return None
+
+    def eliminar_empleado(self, rut:str): #cambia solo el estado
+        empleados=EmpleadoDAO.obtener_todos_empleado_estado("activo")
+        EmpleadoDAO.obtener_empleado_por_rut
+        if EmpleadoDAO.eliminar_empleado(rut):
+            print("Usuario eliminado de contrato")
+    def imprimir_empleado(rut):
+

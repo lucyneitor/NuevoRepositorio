@@ -202,14 +202,18 @@ class EmpleadoDAO:
             conn.close()
 
     @staticmethod # revisar
-    def eliminar_empleado(rut: str) -> bool:
+    def eliminar_empleado(empleado:Empleado) -> bool:
         """
         Elimina un empleado de la base de datos por su RUT.
         """
         conn = Database().get_connection()
         cursor: Cursor = conn.cursor()
         try:
-            cursor.execute("DELETE FROM empleado WHERE rut = ?", (rut,))
+            cursor.execute("""
+                UPDATE empleado
+                SET estado = 'inactivo'
+                WHERE rut = ?
+            """, (empleado.rut,))
             conn.commit()
             return cursor.rowcount > 0
         except Exception as e:
@@ -225,5 +229,22 @@ class EmpleadoDAO:
             cursor = conn.cursor()
             cursor.execute("SELECT COUNT(*) FROM empleado")
             return cursor.fetchone()[0]
+        finally:
+            conn.close()
+
+    def esta_empleado(rut:str)->bool:
+        conn = Database().get_connection()
+        cursor: Cursor = conn.cursor()
+        try:
+            cursor.execute("""
+                SELECT estado
+                FROM empleado
+                WHERE rut = ?
+            """, (rut,))
+            conn.commit()
+            return cursor.rowcount > 0
+        except Exception as e:
+            print(f"Error al eliminar empleado de BD: {e}")
+            return False
         finally:
             conn.close()

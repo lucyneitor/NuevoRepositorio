@@ -110,7 +110,7 @@ class DepartamentoController:
         )
         self.departamento_dao.crear(depa) 
 
-    def editar_departamento(self,elemento:object): #falta confirmacion
+    def editar_departamento(self,elemento:object): #incompleto
         if opcion == 1:
             elemento.nombre = nuevo
         else:
@@ -142,7 +142,7 @@ class DepartamentoController:
                 return False
             return True
         elif alternativa == 3: #lista empleado
-            booleano = self.departamento_dao.verificar_departamento_gerente(resp[0]["valor"],resp[1]["valor"])
+            booleano = self.departamento_dao.verificar_depa_gerente(resp[0]["valor"],resp[1]["valor"])
             return booleano
 
             

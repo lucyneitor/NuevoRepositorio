@@ -222,7 +222,7 @@ class DepartamentoDAO:
 
     
     @staticmethod
-    def verificar_departamento_gerente(
+    def verificar_depa_gerente(
         nombre: str,
         gerente: str
     ) -> tuple[bool, list]:
