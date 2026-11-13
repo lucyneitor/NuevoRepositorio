@@ -6,19 +6,6 @@ class MainView:
         self.empleado_dao = EmpleadoDAO()
 
     @staticmethod
-    def inicio_seccion(booleano:bool): #en controller se gestiona
-        MainView.mostrar_menu() 
-        if booleano: #si rol_admi es verdadero le mostrara la opción 5
-            print("5. Gestionar Informes")
-    @staticmethod
-    def enunciado_inicio():
-        print("Bienvenido a la plataforma")
-        print("-" * 50)
-        print("1. Iniciar sesión")
-        print("2. Registrarse")
-        print("0. Salir")
-
-    @staticmethod
     def mostrar_menu(admin:bool):
         print("Bienvenido al sistema de ecotech")
         print(">"*40)
