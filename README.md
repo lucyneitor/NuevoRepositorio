@@ -1,24 +1,23 @@
 ## Progreso estimado
 
 Estimación basada en revisión del código y ejecución de modelos y DAOs sobre una
-base temporal (revisión del 11-11-2026). Mide **funcionamiento comprobado**, no solo
+base temporal (revisión del 13-11-2026). Mide **funcionamiento comprobado**, no solo
 código escrito.
 
-| Módulo | Avance | Estado |
+| Módulo | Avance | Cambio |
 |---|---:|---|
-| Estructura general | 🟢 75% | Capas definidas; `main.py` ignora fallos de `init_db()`; archivos vacíos y restos de otro proyecto |
-| Base de datos | 🟡 60% | Esquema sólido, pero `init_db()` falla (`CHECK (salario > 0)`, la columna es `sueldo`) |
-| Autenticación y usuarios | 🟡 60% | Login y hash verificados; no se pueden crear usuarios "Empleado" (`rut_empleado` no se guarda); opción 6 sin control de rol; SHA-256 sin sal |
-| Empleados | 🔴 25% | DAO usa columnas inexistentes (`user`, `password`, `rol_admin`); controller llama métodos que no existen |
-| Departamentos | 🔴 35% | DAO correcto; el modelo exige lista de empleados y el controller tiene métodos inexistentes |
-| Tiempos | 🟡 45% | Modelo y consultas de lectura verificados; `agregar_tiempo`, controller y vistas rotos |
-| Proyectos | 🔴 35% | Lecturas funcionan; modelo sin `id_proyecto`, `estado` no se guarda, controller y vistas con errores |
-| Informes | 🔴 15% | Solo menú; 1 de 3 consultas funciona |
-| Servicios externos | 🔴 30% | `ClimaService` listo pero sin usar; `moneda_service.py` vacío; `.env.example` desalineado |
-| Integración y pruebas | 🔴 5% | Sin tests; solo el login funciona de punta a punta |
+| Estructura general | 🟢 80% | ▲ +2: `.env.example` documenta `ADMIN_*`; código muerto eliminado |
+| Base de datos | 🟢 85% | = |
+| Autenticación y usuarios | 🟡 58% | ▼ −2: guarda `rut_empleado`, pero `registrar_usuario` falla en todos los roles |
+| Empleados | 🔴 38% | ▲ +3: nuevas vistas y métodos; DAO de insertar/leer sigue desalineado |
+| Departamentos | 🟡 50% | ▲ +12: modelo y DAO corregidos; falta `formulario_departamento`, editar y buscar |
+| Tiempos | 🟡 46% | ▲ +1: menú con validador correcto |
+| Proyectos | 🔴 35% | = |
+| Informes | 🔴 15% | = |
+| Servicios externos | 🔴 30% | = |
+| Integración y pruebas | 🔴 8% | = |
 
-**Avance global ponderado: 41%.**
-**Funcionamiento integrado comprobado: no. La aplicación no inicializa la base de datos.**
+**Avance global ponderado: 49%** (anterior 47%).
 
 ## Próximas tareas recomendadas
 
