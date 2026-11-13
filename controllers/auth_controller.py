@@ -134,7 +134,7 @@ class AuthController:
     @staticmethod
     def completar_datos(rut: str, nom:str) -> bool:
         while True:
-            print(f"\n--- Completar Ficha de Empleado ({nombre} | RUT: {rut}) ---")
+            print(f"\n--- Completar Ficha de Empleado ({nom} | RUT: {rut}) ---")
             direccion = pedir("dirección").strip()
             telefono = pedir("teléfono").strip()
             correo = pedir("correo").strip()
