@@ -3,7 +3,7 @@ from views.departamento_view import DepartamentoView
 from models.departamento import Departamento
 from models.departamento_dao import DepartamentoDAO
 from models.empleado_dao import EmpleadoDAO
-from views.utils import validador_op, ValidationError, eleccion, pedir, validador_time
+from views.utils import validador_op, ValidationError, eleccion, pedir, validador_time, obtener_validador_depa
 
 class DepartamentoController:
     def __init__(self):
@@ -78,12 +78,12 @@ class DepartamentoController:
                             else:
                                 self.mostrar_depa() # falta
                 elif opcion in (3,4): # opciones de busqueda
-
-                    self.mostrar_depa()
+                    departamentos = self.mostrar_depa()
+                    valida = obtener_validador_depa(departamentos)
                     op = pedir("opcion")
                     try:
                         op = int(op)
-                        eleccion(validador_op1, opcion)
+                        eleccion(valida, opcion)
                     except (TypeError, ValueError, ValidationError) as e:
                         print(e)
                         continue
@@ -99,7 +99,7 @@ class DepartamentoController:
                             list_dict = self.departamento_dao.obtener_gerente(gerente) 
                             print("Encontrado!!!")
                             self.departamento_view.resultados(list_dict,gerente)
-                else:
+                else: #agregar opcion eliminar departamento
                     self.main_view.mostrar_mensaje("Opción no válida.")
 
     def agregar_departamento(self):
@@ -118,12 +118,13 @@ class DepartamentoController:
         self.departamento_dao.actualizar(elemento)
         print(f"{pal} editado exitosamente")
 
-    def mostrar_depa(self):
+    def mostrar_depa(self)->int:
         if self.departamento_dao.contar_departamentos() == 0:
             print("No hay Departamentos")
             return
         departamentos = self.departamento_dao.obtener_todos() #
         self.departamento_view.mostrar_departamentos(departamentos)
+        return len(departamentos)
 
     def buscar(self, op):
         self.mostrar_depa()

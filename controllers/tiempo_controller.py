@@ -126,7 +126,7 @@ class TiempoController:
         cant_proyectos = self.tiempo_dao.contar_proyectos_en_tiempos()
         self.tiempo_view.mostrar_registros_por_fecha(registros, fecha)
 
-    def listar_registros_rango_fecha(self, fecha1:str, fecha2:str):
+    def listar_registros_rango_fecha(self, fecha1:str, fecha2:str): #pendiente
         pass
         registros = self.tiempo_dao.contar_tiempos_por_intervalo(fecha1,fecha2)
 

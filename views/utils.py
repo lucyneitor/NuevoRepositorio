@@ -88,3 +88,9 @@ def validacion_fechas(fecha_inicio: str, fecha_fin: str, msg: str) -> tuple[str,
         raise ValueError(msg)
 
     return inicio.isoformat(), fin.isoformat()
+
+def obtener_validador_depa(departamentos: list) -> TypeAdapter:
+    max_id = max(d.id_departamento for d in departamentos)
+    regla_op_depa = Annotated[int, Field(ge=1, le=max_id)]
+    validador_depa = TypeAdapter(regla_op_depa)
+    return validador_depa

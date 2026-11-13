@@ -36,7 +36,7 @@ class EmpleadoController:
                     rol = "Administrador" if es_admin else "Empleado"
                     self.agregar_empleado(rol)
                 elif opcion in (2,3,4):
-                    rut = input("Ingrese su rut: ")
+                    rut = input("Ingrese su rut: ") #antes de distribuirse se debe verificar existencia 
                     if opcion==2:
                         self.editar_empleado(self.usuario)
                     elif opcion == 3:

@@ -11,7 +11,7 @@ class EmpleadoView():
         print("2. Modificar Empleado")
         print("3. Eliminar empleado")
         print("4. Buscar Empleado")
-        print("4. Mostrar Empleados")
+        print("5. Mostrar Empleados")
         print("0. Volver al menú principal")
         print(">"*40)
 
@@ -60,7 +60,8 @@ class EmpleadoView():
         print("3. telefono")
         print("4. correo")
         print("5. sueldo")
-        print("6. Acceder o desender de Administrador")#cambiar
+        print("6. Acceder o desender de Administrador")#cambiar a 
+        print("0. Volver al menu de gestionar empleados")
         print("="*50)
 
     @staticmethod

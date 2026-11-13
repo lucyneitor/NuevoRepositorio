@@ -13,6 +13,7 @@ class DepartamentoView():
         print("3. Buscar Departamento")
         print("4. Buscar Gerente")
         print("5. Mostrar departamentos")
+        print("6. Eliminar departamento")
         print("0. Volver al menú principal")
         print(">"*40)
 
