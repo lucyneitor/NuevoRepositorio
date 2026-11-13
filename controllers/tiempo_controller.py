@@ -45,7 +45,7 @@ class TiempoController:
             op = pedir("opción")
             try:
                 op = int(op)
-                eleccion(validador_time,op)
+                eleccion(validador_op_sup,op)
             except (TypeError, ValueError, ValidationError) as e:
                 print(e)
             else:

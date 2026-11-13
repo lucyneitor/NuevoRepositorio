@@ -3,7 +3,7 @@ from views.departamento_view import DepartamentoView
 from models.departamento import Departamento
 from models.departamento_dao import DepartamentoDAO
 from models.empleado_dao import EmpleadoDAO
-from views.utils import validador_op, ValidationError, eleccion, pedir, validador_time, obtener_validador_depa
+from views.utils import validador_op_sup, ValidationError, eleccion, pedir, validador_time, obtener_validador_depa
 
 class DepartamentoController:
     def __init__(self):
@@ -17,7 +17,7 @@ class DepartamentoController:
             opcion = pedir("opción")
             try:
                 opcion = int(opcion)
-                eleccion(validador_op, opcion)
+                eleccion(validador_op_sup, opcion)
             except (TypeError, ValueError, ValidationError) as e:
                 print(e)
                 continue
@@ -131,7 +131,7 @@ class DepartamentoController:
         if op == 1:
             self.departamento_dao.obtener_por_id()
 
-    def busqueda_especifica(self,alternativa:int,resp)->bool:
+    def busqueda_especifica(self,alternativa:int,resp)->bool: #incompleto
         if alternativa == 1: # existencia del nombre de departamento
             objeto = self.departamento_dao.obtener_nombre(resp[0]["valor"])
             if objeto is None:

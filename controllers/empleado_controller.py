@@ -2,7 +2,7 @@ from views.main_view import MainView
 from views.empleado_view import EmpleadoView
 from models.empleado import Empleado
 from models.empleado_dao import EmpleadoDAO
-from views.utils import validador_time, eleccion, pwinput, pedir, validador_op_sup,ValidationError,confirmar
+from views.utils import validador_op, eleccion, pwinput, pedir, validador_op_sup,ValidationError,confirmar
 from config.settings import Settings
 from models.usuario import Usuario
 from models.usuario_dao import UsuarioDAO
@@ -26,7 +26,7 @@ class EmpleadoController:
             self.empleado_view.sub_menu()
             opcion = pedir("opción") 
             try:
-                eleccion(validador_time, opcion)
+                eleccion(validador_op, opcion)
                 opcion = int(opcion)
             except (TypeError, ValueError, ValidationError) as e:
                 print(e)
@@ -118,7 +118,7 @@ class EmpleadoController:
                 print("Operación fallida: No estas autorizado")
                 return None
 
-    def eliminar_empleado(self, rut:str): #cambia solo el estado
+    def eliminar_empleado(self, rut:str): #cambia solo el estado para dejar registro
         empleados=EmpleadoDAO.obtener_todos_empleado_estado("activo")
         EmpleadoDAO.obtener_empleado_por_rut
         if EmpleadoDAO.eliminar_empleado(rut):
