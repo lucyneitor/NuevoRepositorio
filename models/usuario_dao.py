@@ -10,7 +10,17 @@ class UsuarioDAO:
     Gestiona la persistencia de cuentas y credenciales encriptadas en SQLite
     utilizando consultas parametrizadas (?) contra SQL Injection (Bandit B608).
     """
-
+    @staticmethod
+    def crear_usuario(fila) -> Usuario:
+        return Usuario(
+            id_usuario=fila["id_usuario"],
+            username=fila["username"],
+            password_hash=fila["password_hash"],
+            nombre_completo=fila["nombre_completo"],
+            rol=fila["rol"],
+            rut_empleado=fila["rut_empleado"],
+        )
+    
     @staticmethod
     def crear(usuario: Usuario) -> bool:
         conn = Database().get_connection()
@@ -48,15 +58,7 @@ class UsuarioDAO:
                 """,
                 (username.strip().lower(),)
             )
-            fila = cursor.fetchone()
-            if fila:
-                usuario = Usuario(
-                    username=fila["username"],
-                    password_hash=fila["password_hash"],
-                    nombre_completo=fila["nombre_completo"],
-                    rol=fila["rol"],
-                    id_usuario=fila["id_usuario"]
-                )
+            return [UsuarioDAO.crear_usuario(fila) for fila in cursor.fetchall()]
         except sqlite3.Error as e:
             print(f"Error al consultar usuario: {e}")
         finally:
@@ -70,18 +72,11 @@ class UsuarioDAO:
         try:
             cursor: Cursor = conn.cursor()
             cursor.execute(
-                "SELECT id_usuario, username, password_hash, nombre_completo, rol FROM usuario WHERE id_usuario = ?",
+                "SELECT id_usuario, username, password_hash, nombre_completo, rol, rut_empleado FROM usuario WHERE id_usuario = ?",
                 (id_usuario,)
             )
             fila = cursor.fetchone()
-            if fila:
-                usuario = Usuario(
-                    username=fila["username"],
-                    password_hash=fila["password_hash"],
-                    nombre_completo=fila["nombre_completo"],
-                    rol=fila["rol"],
-                    id_usuario=fila["id_usuario"]
-                )
+            return UsuarioDAO.crear_usuario(fila) if fila else None
         except sqlite3.Error as e:
             print(f"Error al obtener usuario por ID: {e}")
         finally:
@@ -95,18 +90,9 @@ class UsuarioDAO:
         try:
             cursor: Cursor = conn.cursor()
             cursor.execute(
-                "SELECT id_usuario, username, password_hash, nombre_completo, rol FROM usuario ORDER BY id_usuario ASC"
+                "SELECT id_usuario, username, password_hash, nombre_completo, rol, rut_empleado FROM usuario ORDER BY id_usuario ASC"
             )
-            for fila in cursor.fetchall():
-                usuarios.append(
-                    Usuario(
-                        username=fila["username"],
-                        password_hash=fila["password_hash"],
-                        nombre_completo=fila["nombre_completo"],
-                        rol=fila["rol"],
-                        id_usuario=fila["id_usuario"]
-                    )
-                )
+            return [UsuarioDAO.crear_usuario(fila) for fila in cursor.fetchall()]
         except sqlite3.Error as e:
             print(f"Error al listar usuarios: {e}")
         finally:
@@ -147,4 +133,21 @@ class UsuarioDAO:
             except ValueError as e:
                 print(f"Error al inicializar el usuario administrador por defecto: {e}")
 
-    
+    @staticmethod
+    def obtener_por_rut_empleado(rut: str) -> Usuario | None:
+        conn = Database().get_connection()
+        try:
+            cursor = conn.cursor()
+            cursor.execute(
+                """
+                SELECT id_usuario, username, password_hash,
+                    nombre_completo, rol, rut_empleado
+                FROM usuario
+                WHERE rut_empleado = ?
+                """,
+                (rut.strip(),)
+            )
+            fila = cursor.fetchone()
+            return UsuarioDAO.crear_usuario(fila) if fila else None
+        finally:
+            conn.close()

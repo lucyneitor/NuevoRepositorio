@@ -37,12 +37,14 @@ class EmpleadoController:
                     self.agregar_empleado(rol)
                 elif opcion in (2,3,4):
                     rut = input("Ingrese su rut: ") #antes de distribuirse se debe verificar existencia 
-                    if opcion==2:
-                        self.editar_empleado(self.usuario)
-                    elif opcion == 3:
-                        self.eliminar_empleado(rut)
-                    elif opcion == 4:
-                        self.imprimir_empleado(rut)
+                    existe=EmpleadoDAO.obtener_empleado_por_rut(rut)
+                    if existe is not None:
+                        if opcion==2:
+                            self.editar_empleado(existe)
+                        elif opcion == 3:
+                            self.eliminar_empleado(existe)
+                        elif opcion == 4:
+                            self.imprimir_empleado(existe)
                 elif opcion == 5:
                     self.mostrar_empleados()
                 elif opcion == 0:
@@ -75,8 +77,9 @@ class EmpleadoController:
             EmpleadoDAO.eliminar_empleado(nuevo["rut"])  # eliminar del sistema por completo, no solo modificar
             self.main_view.mostrar_mensaje("No se pudo crear el usuario; se canceló el registro del empleado.")
     
-    def editar_empleado(self): #usar actualizar aqui 
-        self.empleado_view.menu_edit()
+    def editar_empleado(self, empleado:Empleado): #usar actualizar aqui 
+        user = UsuarioDAO.obtener_por_rut_empleado(empleado.rut)
+        self.empleado_view.menu_edit(user.rol)
         op = pedir("opción")
         try:
             op = int(op)

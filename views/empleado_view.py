@@ -51,7 +51,7 @@ class EmpleadoView():
         print("4. Suspendido")
 
     @staticmethod
-    def menu_edit():
+    def menu_edit(rol:str):
         print("="*50)
         MainView.titulo_funcion(2,"Empleado")
         print("="*50)
@@ -60,7 +60,7 @@ class EmpleadoView():
         print("3. telefono")
         print("4. correo")
         print("5. sueldo")
-        print("6. Acceder o desender de Administrador")#cambiar a 
+        print("6. Desender de Administrador" if rol=="Administrador" else "6. Accender a Administrador")#cambiar a 
         print("0. Volver al menu de gestionar empleados")
         print("="*50)
 
