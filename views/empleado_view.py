@@ -1,5 +1,6 @@
 from views.main_view import MainView
 from views.utils import pedir, pwinput
+from models.empleado import Empleado
 
 class EmpleadoView():
     @staticmethod
