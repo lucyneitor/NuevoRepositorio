@@ -110,7 +110,7 @@ class DepartamentoController:
         )
         self.departamento_dao.crear(depa) 
 
-    def editar_departamento(self,elemento:object): #incompleto
+    def editar_departamento(self,elemento:object): #incompleto nada creado
         if opcion == 1:
             elemento.nombre = nuevo
         else:
