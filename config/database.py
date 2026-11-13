@@ -133,3 +133,5 @@ class Database:
 if __name__ == "__main__":
     if Database().init_db():
         print("Base de datos inicializada correctamente.")
+    else:
+        print("Base de datos no inicializada")

@@ -8,7 +8,7 @@ from models.empleado import Empleado
 
 class EmpleadoDAO:
     """
-    Data Access Object para la entidad Paciente.
+    Data Access Object para la entidad Empleado.
     Maneja todas las operaciones CRUD en la base de datos.
     """
     @staticmethod
@@ -21,7 +21,7 @@ class EmpleadoDAO:
             cursor: Cursor = conn.cursor()
             cursor.execute(
                 """
-                INSERT INTO empleado (rut, nombre, direccion, telefono, correo, id_departamento, sueldo, TO_DATE(inicio_contrato), estado)
+                INSERT INTO empleado (rut, nombre, direccion, telefono, correo, id_departamento, sueldo, inicio_contrato, estado)
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
                 """, 
                 (
@@ -44,16 +44,16 @@ class EmpleadoDAO:
         if isinstance(inicio_contrato, str):
             inicio_contrato = date.fromisoformat(inicio_contrato)
 
-        return Empleado(
-            fila["id_departamento"],
-            fila["sueldo"],
-            inicio_contrato,
-            fila["rut"],
-            fila["nombre"],
-            fila["direccion"],
-            fila["telefono"],
-            fila["correo"],
-            fila["estado"],
+        return  Empleado(
+            sueldo=fila["sueldo"],
+            inicio_contrato= inicio_contrato,
+            estado=fila["estado"],
+            rut=fila["rut"],
+            nombre=fila["nombre"],
+            direccion=fila["direccion"],
+            telefono=fila["telefono"],
+            correo=fila["correo"],
+            id_departamento=fila["id_departamento"],
         )
 
     @staticmethod
@@ -66,8 +66,8 @@ class EmpleadoDAO:
             cursor: Cursor = conn.cursor()
             cursor.execute(
                 """
-                SELECT id_departamento, sueldo, inicio_contrato, rut, nombre, 
-                        direccion, telefono, correo, estado
+                SELECT sueldo, inicio_contrato, estado, rut, nombre, 
+                        direccion, telefono, correo, id_departamento
                 FROM empleado
                 ORDER BY nombre
                 """
@@ -113,8 +113,8 @@ class EmpleadoDAO:
             cursor: Cursor = conn.cursor()
             cursor.execute(
                 """
-                SELECT id_departamento, sueldo, rut, nombre, direccion, telefono, correo,
-                        inicio_contrato, estado
+                SELECT sueldo, inicio_contrato, estado, rut, nombre, direccion, telefono, correo,
+                        id_departamento
                 FROM empleado
                 WHERE rut = ?
                 """,
@@ -122,45 +122,6 @@ class EmpleadoDAO:
             )
             fila = cursor.fetchone()
             return EmpleadoDAO.crear_empleado(fila) if fila else None
-        finally:
-            conn.close()
-
-    @staticmethod
-    def obtener_empleado_por_user(credencial: dict) -> bool: #bajo observación de modificarlo
-        """
-        Retorna True si encuentra el usuario en la base de datos; False si no existe.
-        """
-        conn = Database().get_connection()
-        try:
-            cursor: Cursor = conn.cursor()
-            cursor.execute(
-                """
-                SELECT 1
-                FROM empleado
-                WHERE user = ? AND password = ?
-                """,
-                (credencial["usuario"],credencial["contraseña"]),
-            )
-            encontrado = cursor.fetchone()
-            return encontrado is not None
-        finally:
-            conn.close()
-
-    @staticmethod
-    def obtener_estado(user:str)->bool: #observación de traslado a user
-        conn = Database().get_connection()
-        try:
-            cursor : Cursor = conn.cursor()
-            cursor.execute(
-                """
-                SELECT rol_admin
-                FROM empleado
-                WHERE user = ?
-                """,
-                (user,),
-            )
-            rol = cursor.fetchone()
-            return rol
         finally:
             conn.close()
     
@@ -177,7 +138,7 @@ class EmpleadoDAO:
                 UPDATE empleado
                 SET nombre = ?, direccion = ?, telefono = ?, correo = ?,
                     id_departamento = ?, sueldo = ?, inicio_contrato = ?,
-                    rol_admin = ?, estado = ?
+                    estado = ?
                 WHERE rut = ?
                 """,
                 (

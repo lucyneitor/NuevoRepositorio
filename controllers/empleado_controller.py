@@ -2,7 +2,7 @@ from views.main_view import MainView
 from views.empleado_view import EmpleadoView
 from models.empleado import Empleado
 from models.empleado_dao import EmpleadoDAO
-from views.utils import validador_op, eleccion, pwinput, pedir, validador_op_sup,ValidationError,confirmar
+from views.utils import validador_op, eleccion, pedir, validador_op_sup,ValidationError,confirmar
 from config.settings import Settings
 from models.usuario import Usuario
 from models.usuario_dao import UsuarioDAO
@@ -61,18 +61,19 @@ class EmpleadoController:
             telefono=nuevo['telefono'], correo=nuevo['correo'], id_departamento=depa
         )
         if not EmpleadoDAO.agregar_empleado(crear_empleado): # consultar linea (modificar)
-            print("No se pudo guardar el empleado.")
+            self.main_view.mostrar_mensaje("No se pudo guardar el empleado.")
             return
         
         crear_usuario = Usuario(
             username=nuevo['usuario'], password_hash=nuevo['contraseña'], 
             nombre_completo=nuevo['nombre'], rol=valor
         )
+
         if UsuarioDAO.crear(crear_usuario):
-            print("Empleado y usuario creados exitosamente.")
+            self.main_view.mostrar_mensaje("Empleado y usuario creados exitosamente.")
         else:
             EmpleadoDAO.eliminar_empleado(nuevo["rut"])  # eliminar del sistema por completo, no solo modificar
-            print("No se pudo crear el usuario; se canceló el registro del empleado.")
+            self.main_view.mostrar_mensaje("No se pudo crear el usuario; se canceló el registro del empleado.")
     
     def editar_empleado(self): #usar actualizar aqui 
         self.empleado_view.menu_edit()
@@ -85,7 +86,10 @@ class EmpleadoController:
         else:
             autorizado = confirmar("¿Está seguro de editar esto?", self.usuario) #cuestionar si se autorizo o no
             if autorizado:
-                EmpleadoDAO.actualizar_empleado()
+                if EmpleadoDAO.actualizar_empleado():
+                    self.main_view.mostrar_mensaje("Empleado actualizado exitosamente")
+                    return
+                self.main_view.mostrar_mensaje("Empleado no actualizado")
 
     def escoger_depa(self)->int | None:
         departamentos = self.departamento_dao.obtener_todos()
@@ -113,20 +117,21 @@ class EmpleadoController:
                 continue
             else:
                 if confirmar("¿Está seguro de pertenecer a este departamento?", self.usuario):
-                    print("Operación exitosa")
+                    self.main_view.mostrar_mensaje("Operación exitosa: Empleado asignado en departamento")
                     return op
-                print("Operación fallida: No estas autorizado")
+                self.main_view.mostrar_mensaje("Operación fallida: No estas autorizado")
                 return None
 
     def eliminar_empleado(self, rut:str): #cambia solo el estado para dejar registro
         empleado=EmpleadoDAO.obtener_empleado_por_rut(rut)
         if EmpleadoDAO.eliminar_empleado(empleado):
-            print("Empleado eliminado de contrato")
+            self.main_view.mostrar_mensaje("Empleado eliminado de contrato")
     
     def imprimir_empleado(self,rut):
         existe=EmpleadoDAO.obtener_empleado_por_rut(rut)
         if existe is not None:
             self.empleado_view.mostrar_empleado(existe)
+            self.main_view.mostrar_mensaje("Empleado impreso exitosamente")
         else:
             print("No se encontró ningún empleado con el RUT ingresado.")
             print("=" * 50)
@@ -135,4 +140,5 @@ class EmpleadoController:
     def mostrar_empleados(self):
         empleados = EmpleadoDAO.obtener_todos_empleado_estado("activo") #los que estan contratados
         self.empleado_view.mostrar_empleados(empleados)
+        self.main_view.mostrar_mensaje("Lista de empleados impresos exitosamente")
 

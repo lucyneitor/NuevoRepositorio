@@ -41,7 +41,11 @@ class UsuarioDAO:
         try:
             cursor: Cursor = conn.cursor()
             cursor.execute(
-                "SELECT id_usuario, username, password_hash, nombre_completo, rol FROM usuario WHERE username = ?",
+                """
+                SELECT id_usuario, username, password_hash, nombre_completo, rol, rut_empleado 
+                FROM usuario 
+                WHERE username = ?
+                """,
                 (username.strip().lower(),)
             )
             fila = cursor.fetchone()
@@ -142,3 +146,5 @@ class UsuarioDAO:
                 cls.crear(admin_default)
             except ValueError as e:
                 print(f"Error al inicializar el usuario administrador por defecto: {e}")
+
+    

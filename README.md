@@ -1,48 +1,192 @@
-## Progreso estimado
+# Sistema de Gestión Empresarial
 
-Estimación basada en revisión del código y ejecución de modelos y DAOs sobre una
-base temporal (revisión del 13-11-2026). Mide **funcionamiento comprobado**, no solo
-código escrito.
+Aplicación de consola desarrollada en Python para administrar empleados,
+departamentos, proyectos, registros de tiempo, usuarios e informes.
 
-| Módulo | Avance | Cambio |
-|---|---:|---|
-| Estructura general | 🟢 80% | ▲ +2: `.env.example` documenta `ADMIN_*`; código muerto eliminado |
-| Base de datos | 🟢 85% | = |
-| Autenticación y usuarios | 🟡 58% | ▼ −2: guarda `rut_empleado`, pero `registrar_usuario` falla en todos los roles |
-| Empleados | 🔴 38% | ▲ +3: nuevas vistas y métodos; DAO de insertar/leer sigue desalineado |
-| Departamentos | 🟡 50% | ▲ +12: modelo y DAO corregidos; falta `formulario_departamento`, editar y buscar |
-| Tiempos | 🟡 46% | ▲ +1: menú con validador correcto |
-| Proyectos | 🔴 35% | = |
-| Informes | 🔴 15% | = |
-| Servicios externos | 🔴 30% | = |
-| Integración y pruebas | 🔴 8% | = |
+## Estado del proyecto
 
-**Avance global ponderado: 49%** (anterior 47%).
+El proyecto se encuentra en desarrollo.
 
-## Próximas tareas recomendadas
+**Avance funcional estimado: 40%**
 
-### Prioridad 1: que la aplicación arranque
-- Corregir `CHECK (salario > 0)` por `sueldo` en `config/database.py` y detener `main.py` si `init_db()` falla.
-- Quitar `@staticmethod` o `self` en `TiempoDAO.agregar_tiempo`.
-- Reemplazar `Tiempo.tiempo_trabajado` e `id_empleado` por `duracion_trabajada` y `rut_empleado` (modelo, vistas y controller).
+La estimación considera la implementación actual, la integración entre módulos
+y la posibilidad de ejecutar correctamente los flujos principales.
 
-### Prioridad 2: alinear DAOs con el esquema
-- `EmpleadoDAO`: eliminar `user`, `password` y `rol_admin`; separar insertar de convertir fila a objeto.
-- `Departamento`: `empleados` con valor por defecto `[]` y orden de argumentos coherente en el DAO.
-- `Proyecto`: agregar `id_proyecto`, guardar `estado` en INSERT y UPDATE, y decidir si el DAO devuelve objetos o `Row`.
+| Módulo | Avance |
+|---|---:|
+| Estructura general | 70% |
+| Configuración | 55% |
+| Base de datos | 65% |
+| Modelos de dominio | 55% |
+| Usuarios y autenticación | 50% |
+| Empleados | 35% |
+| Departamentos | 50% |
+| Proyectos | 35% |
+| Control de tiempos | 30% |
+| Informes | 15% |
+| Servicios externos | 35% |
+| Validaciones | 45% |
+| Seguridad | 35% |
+| Pruebas automatizadas | 5% |
+| Documentación | 40% |
 
-### Prioridad 3: seguridad y usuarios
-- Restringir la gestión de usuarios (opción 6) al rol Administrador.
-- Guardar y leer `rut_empleado` en `UsuarioDAO`; distinguir `CHECK` de `UNIQUE` en los mensajes de error.
-- Reemplazar SHA-256 sin sal por PBKDF2, bcrypt o argon2.
-- Quitar la contraseña por defecto del banner y definir el flujo del administrador inicial.
+## Funcionalidades previstas
 
-### Prioridad 4: completar controllers y vistas
-- Implementar los métodos faltantes (buscar, eliminar y mostrar empleados y departamentos, listar por rango de fechas).
-- Alinear los validadores de menú con las opciones mostradas.
-- Corregir las vistas sin `self` y las variables no definidas.
+- Autenticación de usuarios.
+- Gestión de roles:
+  - Administrador.
+  - Empleado.
+- Gestión de empleados.
+- Gestión de departamentos.
+- Gestión de proyectos.
+- Registro de horas trabajadas.
+- Consulta de tiempos por empleado, proyecto y fecha.
+- Generación de informes.
+- Consulta del clima mediante WeatherAPI.
+- Persistencia local mediante SQLite.
 
-### Prioridad 5: informes, servicios y pruebas
-- Implementar los informes y corregir las consultas de `InformeDAO`.
-- Integrar o retirar `ClimaService` y `moneda_service.py`, y actualizar `.env.example`.
-- Agregar tests con pytest sobre una base temporal y registrar los resultados aquí.
+## Tecnologías
+
+- Python 3.10 o superior.
+- SQLite.
+- Pydantic.
+- python-dotenv.
+- Requests.
+- pwinput.
+
+## Estructura del proyecto
+
+```text
+config/
+  database.py
+  settings.py
+
+models/
+  modelos de dominio y DAO
+
+controllers/
+  lógica de navegación y aplicación
+
+views/
+  menús, formularios y presentación por consola
+
+services/
+  integraciones con servicios externos
+
+main.py
+requirements.txt
+.env.example
+```
+
+## Instalación
+
+Crear y activar un entorno virtual:
+
+### Windows
+
+```bash
+python -m venv .venv
+.venv\Scripts\activate
+```
+
+### Linux/macOS
+
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+```
+
+Instalar dependencias:
+
+```bash
+pip install -r requirements.txt
+```
+
+## Configuración
+
+Crear el archivo `.env` a partir de `.env.example`:
+
+### Windows
+
+```bash
+copy .env.example .env
+```
+
+### Linux/macOS
+
+```bash
+cp .env.example .env
+```
+
+Configurar las variables:
+
+```dotenv
+API_BASE_URL_CLIMA=http://api.weatherapi.com/v1/current.json
+API_KEY_CLIMA=tu_api_key
+REQUEST_TIMEOUT=5
+ENABLE_OFFLINE_FALLBACK=True
+ADMIN_INITIAL_USER=admin
+ADMIN_INITIAL_CLAVE=cambiar_esta_clave
+MAX_LOGIN_ATTEMPTS=3
+```
+
+No subir el archivo `.env` al repositorio.
+
+## Ejecución
+
+```bash
+python main.py
+```
+
+La aplicación inicializa la base de datos SQLite y muestra el flujo de
+autenticación antes de acceder al menú principal.
+
+## Base de datos
+
+La base de datos se crea automáticamente en:
+
+```text
+sistema_gestion.db
+```
+
+Las entidades principales son:
+
+- `usuario`
+- `empleado`
+- `departamento`
+- `proyecto`
+- `tiempo`
+- `informe`
+
+## Trabajo pendiente
+
+- Corregir la integración entre modelos, DAO, controladores y vistas.
+- Completar el CRUD de empleados.
+- Completar el CRUD de departamentos.
+- Corregir el CRUD de proyectos.
+- Completar el registro y consulta de tiempos.
+- Implementar los informes.
+- Integrar o eliminar el servicio de moneda.
+- Corregir la configuración de WeatherAPI.
+- Sustituir SHA-256 por un algoritmo seguro para contraseñas.
+- Agregar pruebas automatizadas.
+- Añadir integración continua con GitHub Actions.
+- Mejorar el manejo de errores y los mensajes al usuario.
+
+## Pruebas
+
+Actualmente el proyecto no cuenta con una suite de pruebas automatizadas.
+
+Se recomienda agregar pruebas con `pytest` para:
+
+- Inicialización de la base de datos.
+- Creación y consulta de empleados.
+- Autenticación de usuarios.
+- Gestión de departamentos.
+- Gestión de proyectos.
+- Registro de tiempos.
+- Generación de informes.
+
+## Licencia
+
+La licencia del proyecto aún no ha sido definida.

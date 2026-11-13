@@ -1,4 +1,4 @@
-from datetime import date
+from datetime import date, datetime
 from models.persona import Persona
 
 ESTADO = ["activo", "inactivo", "vacaciones", "suspendido"]
@@ -40,10 +40,10 @@ class Empleado(Persona):
 
         if isinstance(inicio_contrato, str): #error en validación en tipo de dato
             try:
-                inicio_contrato = date.strptime(
+                inicio_contrato = datetime.strptime(
                     inicio_contrato.strip(),
                     "%d-%m-%Y"
-                )
+                ).date()
             except ValueError as error:
                 raise ValueError(
                     "La fecha de inicio de contrato debe tener formato DD-MM-YYYY."

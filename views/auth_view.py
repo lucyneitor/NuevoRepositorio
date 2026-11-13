@@ -9,7 +9,7 @@ class AuthView:
     @staticmethod
     def mostrar_banner_login(intento_actual: int, max_intentos: int) -> None:
         print("\n" + "=" * 55)
-        print("   CLÍNICA SANITARIA - INICIO DE SESIÓN SEGURO (SHA-256)")
+        print("   SISTEMA DE ECOTECH - INICIO DE SESIÓN SEGURO (SHA-256)")
         print("=" * 55)
         print(f"Intento {intento_actual} de {max_intentos} (Por defecto: admin / admin1234)")
         print("-" * 55)
