@@ -107,7 +107,7 @@ class EmpleadoView():
         print(f"ID Departamento : {departamento}")
         print("=" * 50)
 
-
+    @staticmethod
     def mostrar_empleados(empleados):
         print("=" * 50)
         print("Mostrar empleados")

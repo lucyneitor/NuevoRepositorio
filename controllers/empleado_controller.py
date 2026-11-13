@@ -71,7 +71,7 @@ class EmpleadoController:
         if UsuarioDAO.crear(crear_usuario):
             print("Empleado y usuario creados exitosamente.")
         else:
-            EmpleadoDAO.eliminar_empleado(nuevo["rut"])  # deshacer para no tener inconcruencias
+            EmpleadoDAO.eliminar_empleado(nuevo["rut"])  # eliminar del sistema por completo, no solo modificar
             print("No se pudo crear el usuario; se canceló el registro del empleado.")
     
     def editar_empleado(self): #usar actualizar aqui 

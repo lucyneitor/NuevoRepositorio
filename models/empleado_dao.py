@@ -12,7 +12,7 @@ class EmpleadoDAO:
     Maneja todas las operaciones CRUD en la base de datos.
     """
     @staticmethod
-    def agregar_empleado(empleado: Empleado) -> bool:
+    def agregar_empleado(empleado: Empleado) -> bool: # en proceso TO_DATE('variable','DD-MM-YYYY')
         """
         Agrega un nuevo empleado a la base de datos.
         """
@@ -21,7 +21,7 @@ class EmpleadoDAO:
             cursor: Cursor = conn.cursor()
             cursor.execute(
                 """
-                INSERT INTO empleado (rut, nombre, direccion, telefono, correo, id_departamento, sueldo, inicio_contrato, estado)
+                INSERT INTO empleado (rut, nombre, direccion, telefono, correo, id_departamento, sueldo, TO_DATE(inicio_contrato), estado)
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
                 """, 
                 (
@@ -66,8 +66,8 @@ class EmpleadoDAO:
             cursor: Cursor = conn.cursor()
             cursor.execute(
                 """
-                SELECT rut, nombre, direccion, telefono, correo,
-                       id_departamento, sueldo, inicio_contrato, estado
+                SELECT id_departamento, sueldo, inicio_contrato, rut, nombre, 
+                        direccion, telefono, correo, estado
                 FROM empleado
                 ORDER BY nombre
                 """
@@ -87,7 +87,7 @@ class EmpleadoDAO:
             cursor: Cursor = conn.cursor()
             cursor.execute(
                 """
-                SELECT rut, nombre, correo, d.nombre, sueldo, inicio_contrato, estado 
+                SELECT rut, e.nombre, correo, d.nombre, sueldo, inicio_contrato, estado 
                 FROM empleado e, departamento d 
                 WHERE e.id_departamento = d.id_departamento 
                 AND estado = ?
@@ -113,8 +113,8 @@ class EmpleadoDAO:
             cursor: Cursor = conn.cursor()
             cursor.execute(
                 """
-                SELECT rut, nombre, direccion, telefono, correo,
-                       id_departamento, sueldo, inicio_contrato, estado
+                SELECT id_departamento, sueldo, rut, nombre, direccion, telefono, correo,
+                        inicio_contrato, estado
                 FROM empleado
                 WHERE rut = ?
                 """,

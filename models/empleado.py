@@ -35,10 +35,10 @@ class Empleado(Persona):
         return self.__inicio_contrato
 
     @inicio_contrato.setter
-    def inicio_contrato(self, inicio_contrato:date)->None:
+    def inicio_contrato(self, inicio_contrato: date | str)->None:
         """Valida y asigna la fecha de inicio del contrato."""
 
-        if isinstance(inicio_contrato, str):
+        if isinstance(inicio_contrato, str): #error en validación en tipo de dato
             try:
                 inicio_contrato = date.strptime(
                     inicio_contrato.strip(),
