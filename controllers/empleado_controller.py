@@ -119,10 +119,9 @@ class EmpleadoController:
                 return None
 
     def eliminar_empleado(self, rut:str): #cambia solo el estado para dejar registro
-        empleados=EmpleadoDAO.obtener_todos_empleado_estado("activo")
-        EmpleadoDAO.obtener_empleado_por_rut
-        if EmpleadoDAO.eliminar_empleado(rut):
-            print("Usuario eliminado de contrato")
+        empleado=EmpleadoDAO.obtener_empleado_por_rut(rut)
+        if EmpleadoDAO.eliminar_empleado(empleado):
+            print("Empleado eliminado de contrato")
     
     def imprimir_empleado(self,rut):
         existe=EmpleadoDAO.obtener_empleado_por_rut(rut)

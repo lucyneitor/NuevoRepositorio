@@ -208,8 +208,8 @@ class EmpleadoDAO:
             cursor.execute("""
                 UPDATE empleado
                 SET estado = 'inactivo'
-                WHERE rut = ?
-            """, (empleado.rut,))
+                WHERE rut = ? AND estado = 'activo'
+            """, (empleado.rut,empleado.estado))
             conn.commit()
             return cursor.rowcount > 0
         except Exception as e:
