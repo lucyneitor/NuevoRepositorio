@@ -2,7 +2,8 @@ from config.settings import Settings
 from models.usuario import Usuario
 from models.usuario_dao import UsuarioDAO
 from views.auth_view import AuthView
-
+from models.empleado_dao import EmpleadoDAO
+from views.utils import pedir
 class AuthController:
     """
     Controlador de Autenticación y Gestión de Usuarios.
@@ -12,6 +13,7 @@ class AuthController:
 
     def __init__(self):
         self.view = AuthView()
+        self.empleado_dao = EmpleadoDAO()
 
     def iniciar_sesion(self) -> Usuario | None:
         """
@@ -66,7 +68,6 @@ class AuthController:
 
     def registrar_usuario(self) -> Usuario | None:
         datos = self.view.formulario_nuevo_usuario()
-
         es_valido, msg = Usuario.validar_credenciales_ingreso(datos["username"], datos["clave"])
         
         if not es_valido:
@@ -85,13 +86,17 @@ class AuthController:
             self.view.mostrar_error(f"Ya existe un usuario registrado con el login '{datos['username']}'.")
             return None
 
+        if not(self.empleado_dao.esta_empleado(datos["rut_empleado"])):
+            self.completar_datos(datos["rut_empleado"],datos["nombre_completo"])
+
         try:
             password_encriptada = Usuario.encriptar_credencial(datos["clave"])
             nuevo_usuario = Usuario(
                 username=datos["username"],
                 password_hash=password_encriptada,
                 nombre_completo=datos["nombre_completo"],
-                rol=datos["rol"]
+                rol=datos["rol"],
+                rut_empleado=datos["rut_empleado"],
             )
             if UsuarioDAO.crear(nuevo_usuario):
                 self.view.mostrar_mensaje(
@@ -125,3 +130,33 @@ class AuthController:
                 self.view.mostrar_error("Error al eliminar el usuario en la base de datos.")
         else:
             self.view.mostrar_mensaje("Operación cancelada.")
+
+    @staticmethod
+    def completar_datos(rut: str, nom:str) -> bool:
+        while True:
+            print(f"\n--- Completar Ficha de Empleado ({nombre} | RUT: {rut}) ---")
+            direccion = pedir("dirección").strip()
+            telefono = pedir("teléfono").strip()
+            correo = pedir("correo").strip()
+            while True:
+                try:
+                    sueldo = int(pedir("sueldo (entero positivo)").strip())
+                    if sueldo <= 0:
+                        raise ValueError
+                    break
+                except ValueError:
+                    print("Error: El sueldo debe ser un número entero mayor a 0.")
+                contrato = pedir("fecha de contrato 'DD-MM-YYYY'").strip()
+        
+            empleado = {
+                "rut": rut,
+                "nombre": nom,
+                "direccion": direccion,
+                "telefono": telefono,
+                "correo": correo,
+                "sueldo": sueldo,
+                "contrato": contrato,
+            }
+            if EmpleadoDAO.agregar_empleado(empleado):
+                return 
+            print("No quedo bien registrado")

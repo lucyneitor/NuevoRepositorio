@@ -51,16 +51,21 @@ class AuthView:
         confirmacion = pwinput.pwinput("Confirme la contraseña: ").strip()
 
         print("Roles disponibles: 1.- Administrador, 2.- Empleado")
-        opcion_rol = leer_numero("Seleccione un rol (1-3): ")
+        opcion_rol = leer_numero("Seleccione un rol (1-2): ")
         mapa_roles = {1: "Administrador", 2: "Empleado"}
         rol = mapa_roles.get(opcion_rol, "")
+
+        rut_empleado = None
+        if rol == "Empleado":
+            rut_empleado = input("Ingrese el RUT del empleado registrado: ").strip()
 
         return {
             "username": username,
             "nombre_completo": nombre_completo,
             "clave": clave,
             "confirmacion": confirmacion,
-            "rol": rol
+            "rol": rol,
+            "rut_empleado": rut_empleado,
         }
 
     @staticmethod

@@ -59,7 +59,8 @@ class EmpleadoView():
         print("6. Acceder o desender de Administrador")#cambiar
         print("="*50)
 
-    def mostrar_por_estado():
+    @staticmethod
+    def mostrar_por_estado(self):
         print("="*50)
         print("Mostrar registros Empleados")
         print("="*50)
@@ -68,3 +69,51 @@ class EmpleadoView():
         print("3. En vacaciones")
         print("4. Suspendidos")
         print("="*50)
+
+    @staticmethod
+    def mostrar_empleado(empleado: Empleado) -> None:
+        print("=" * 50)
+        print("   FICHA DE EMPLEADO")
+        print("=" * 50)
+        if empleado is None:
+            print("No se encontró ningún empleado con el RUT ingresado.")
+            print("=" * 50)
+            return
+
+        fecha_contrato = (
+            empleado.inicio_contrato.strftime("%d-%m-%Y")
+            if hasattr(empleado.inicio_contrato, "strftime")
+            else str(empleado.inicio_contrato)
+        )
+        departamento = (
+            empleado.id_departamento
+            if empleado.id_departamento is not None
+            else "Sin departamento asignado"
+        )
+
+        print(f"RUT             : {empleado.rut}")
+        print(f"Nombre          : {empleado.nombre}")
+        print(f"Dirección       : {empleado.direccion}")
+        print(f"Teléfono        : {empleado.telefono}")
+        print(f"Correo          : {empleado.correo}")
+        print(f"Sueldo          : ${empleado.sueldo:,}")
+        print(f"Inicio contrato : {fecha_contrato}")
+        print(f"Estado          : {empleado.estado.capitalize()}")
+        print(f"ID Departamento : {departamento}")
+        print("=" * 50)
+
+    def mostrar_empleados(empleados):
+        print("=" * 50)
+        print("Mostrar empleados")
+        print("=" * 50)
+        for empleado in empleados:   
+            print(f"RUT             : {empleado.rut}")
+            print(f"Nombre          : {empleado.nombre}")
+            print(f"Dirección       : {empleado.direccion}")
+            print(f"Teléfono        : {empleado.telefono}")
+            print(f"Correo          : {empleado.correo}")
+            print(f"Sueldo          : ${empleado.sueldo}")
+            print(f"Inicio contrato : {empleado.inicio_contrato}")
+            print(f"Estado          : {empleado.estado.capitalize()}")
+            print(f"ID Departamento : {empleado.id_departamento}")
+            print("=" * 50)

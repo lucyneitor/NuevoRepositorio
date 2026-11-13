@@ -17,7 +17,7 @@ class UsuarioDAO:
         try:
             cursor: Cursor = conn.cursor()
             cursor.execute(
-                "INSERT INTO usuario (username, password_hash, nombre_completo, rol) VALUES (?, ?, ?, ?)",
+                "INSERT INTO usuario (username, password_hash, nombre_completo, rol, rut_empleado) VALUES (?, ?, ?, ?, ?)",
                 (usuario.username, usuario.password_hash, usuario.nombre_completo, usuario.rol, usuario.rut_empleado)
             )
             conn.commit()

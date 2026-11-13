@@ -84,6 +84,8 @@ class EmpleadoController:
             print(e)
         else:
             autorizado = confirmar("¿Está seguro de editar esto?", self.usuario) #cuestionar si se autorizo o no
+            if autorizado:
+                EmpleadoDAO.actualizar_empleado()
 
     def escoger_depa(self)->int | None:
         departamentos = self.departamento_dao.obtener_todos()
@@ -121,5 +123,17 @@ class EmpleadoController:
         EmpleadoDAO.obtener_empleado_por_rut
         if EmpleadoDAO.eliminar_empleado(rut):
             print("Usuario eliminado de contrato")
-    def imprimir_empleado(rut):
+    
+    def imprimir_empleado(self,rut):
+        existe=EmpleadoDAO.obtener_empleado_por_rut(rut)
+        if existe is not None:
+            self.empleado_view.mostrar_empleado(existe)
+        else:
+            print("No se encontró ningún empleado con el RUT ingresado.")
+            print("=" * 50)
+            return
+
+    def mostrar_empleados(self):
+        empleados = EmpleadoDAO.obtener_todos_empleado_estado("activo")
+        self.empleado_view.mostrar_empleados(empleados)
 
