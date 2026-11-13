@@ -44,7 +44,7 @@ class EmpleadoController:
                     elif opcion == 4:
                         self.imprimir_empleado(rut)
                 elif opcion == 5:
-                    self.imprimir_empleados()
+                    self.mostrar_empleados()
                 elif opcion == 0:
                     self.main_view.mostrar_mensaje("Saliendo de la gestión de empleados.")
                     return
@@ -134,6 +134,6 @@ class EmpleadoController:
             return
 
     def mostrar_empleados(self):
-        empleados = EmpleadoDAO.obtener_todos_empleado_estado("activo")
+        empleados = EmpleadoDAO.obtener_todos_empleado_estado("activo") #los que estan contratados
         self.empleado_view.mostrar_empleados(empleados)
 

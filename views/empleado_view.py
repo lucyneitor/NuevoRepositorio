@@ -9,7 +9,8 @@ class EmpleadoView():
         print(">"*40)
         print("1. Agregar Empleado")
         print("2. Modificar Empleado")
-        print("3. Buscar Empleado")
+        print("3. Eliminar empleado")
+        print("4. Buscar Empleado")
         print("4. Mostrar Empleados")
         print("0. Volver al menú principal")
         print(">"*40)
@@ -39,7 +40,8 @@ class EmpleadoView():
             "contrato":contrato
         }
 
-    def menu_edit_estado(self):
+    @staticmethod
+    def menu_edit_estado():
         print("="*50)
         MainView.titulo_funcion(2,"estado de Empleado")
         print("="*50)
@@ -48,7 +50,8 @@ class EmpleadoView():
         print("3. Vacaciones")
         print("4. Suspendido")
 
-    def menu_edit(self):
+    @staticmethod
+    def menu_edit():
         print("="*50)
         MainView.titulo_funcion(2,"Empleado")
         print("="*50)
@@ -102,6 +105,7 @@ class EmpleadoView():
         print(f"Estado          : {empleado.estado.capitalize()}")
         print(f"ID Departamento : {departamento}")
         print("=" * 50)
+
 
     def mostrar_empleados(empleados):
         print("=" * 50)
