@@ -21,13 +21,13 @@ class EmpleadoDAO:
             cursor: Cursor = conn.cursor()
             cursor.execute(
                 """
-                INSERT INTO empleado (rut, nombre, direccion, telefono, correo, id_departamento, sueldo, inicio_contrato, rol_admin, estado)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                INSERT INTO empleado (rut, nombre, direccion, telefono, correo, id_departamento, sueldo, inicio_contrato, estado)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
                 """, 
                 (
                     empleado.rut, empleado.nombre, empleado.direccion, empleado.telefono,
                     empleado.correo, empleado.id_departamento, 
-                    empleado.sueldo, empleado.inicio_contrato, empleado.rol_admin, empleado.estado
+                    empleado.sueldo, empleado.inicio_contrato, empleado.estado
                 )
             )
             conn.commit()
@@ -53,7 +53,6 @@ class EmpleadoDAO:
             fila["direccion"],
             fila["telefono"],
             fila["correo"],
-            bool(fila["rol_admin"]),
             fila["estado"],
         )
 
@@ -68,7 +67,7 @@ class EmpleadoDAO:
             cursor.execute(
                 """
                 SELECT rut, nombre, direccion, telefono, correo,
-                       id_departamento, sueldo, inicio_contrato, rol_admin, estado
+                       id_departamento, sueldo, inicio_contrato, estado
                 FROM empleado
                 ORDER BY nombre
                 """
@@ -115,7 +114,7 @@ class EmpleadoDAO:
             cursor.execute(
                 """
                 SELECT rut, nombre, direccion, telefono, correo,
-                       id_departamento, sueldo, inicio_contrato, rol_admin, estado
+                       id_departamento, sueldo, inicio_contrato, estado
                 FROM empleado
                 WHERE rut = ?
                 """,
@@ -189,7 +188,6 @@ class EmpleadoDAO:
                     empleado.id_departamento,
                     empleado.sueldo,
                     empleado.inicio_contrato.isoformat(),
-                    empleado.rol_admin,
                     empleado.estado,
                     empleado.rut,
                 ),
