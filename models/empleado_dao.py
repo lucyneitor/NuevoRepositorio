@@ -21,12 +21,12 @@ class EmpleadoDAO:
             cursor: Cursor = conn.cursor()
             cursor.execute(
                 """
-                INSERT INTO empleado (rut, nombre, direccion, telefono, correo, user, password, id_departamento, sueldo, inicio_contrato, rol_admin, estado)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                INSERT INTO empleado (rut, nombre, direccion, telefono, correo, id_departamento, sueldo, inicio_contrato, rol_admin, estado)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                 """, 
                 (
                     empleado.rut, empleado.nombre, empleado.direccion, empleado.telefono,
-                    empleado.correo, empleado.user, empleado.password, empleado.id_departamento, 
+                    empleado.correo, empleado.id_departamento, 
                     empleado.sueldo, empleado.inicio_contrato, empleado.rol_admin, empleado.estado
                 )
             )
@@ -53,8 +53,6 @@ class EmpleadoDAO:
             fila["direccion"],
             fila["telefono"],
             fila["correo"],
-            fila["user"],
-            fila["password"],
             bool(fila["rol_admin"]),
             fila["estado"],
         )
@@ -69,7 +67,7 @@ class EmpleadoDAO:
             cursor: Cursor = conn.cursor()
             cursor.execute(
                 """
-                SELECT rut, nombre, direccion, telefono, correo, user, password,
+                SELECT rut, nombre, direccion, telefono, correo,
                        id_departamento, sueldo, inicio_contrato, rol_admin, estado
                 FROM empleado
                 ORDER BY nombre
@@ -116,7 +114,7 @@ class EmpleadoDAO:
             cursor: Cursor = conn.cursor()
             cursor.execute(
                 """
-                SELECT rut, nombre, direccion, telefono, correo, user, password,
+                SELECT rut, nombre, direccion, telefono, correo,
                        id_departamento, sueldo, inicio_contrato, rol_admin, estado
                 FROM empleado
                 WHERE rut = ?
@@ -129,7 +127,7 @@ class EmpleadoDAO:
             conn.close()
 
     @staticmethod
-    def obtener_empleado_por_user(credencial: dict) -> bool:
+    def obtener_empleado_por_user(credencial: dict) -> bool: #bajo observación de modificarlo
         """
         Retorna True si encuentra el usuario en la base de datos; False si no existe.
         """
@@ -150,7 +148,7 @@ class EmpleadoDAO:
             conn.close()
 
     @staticmethod
-    def obtener_estado(user:str)->bool:
+    def obtener_estado(user:str)->bool: #observación de traslado a user
         conn = Database().get_connection()
         try:
             cursor : Cursor = conn.cursor()

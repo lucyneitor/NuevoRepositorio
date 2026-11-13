@@ -102,7 +102,7 @@ class DepartamentoController:
                 else: #agregar opcion eliminar departamento
                     self.main_view.mostrar_mensaje("Opción no válida.")
 
-    def agregar_departamento(self):
+    def agregar_departamento(self): #falta formulario en view
         nuevo= self.departamento_view.formulario_departamento() #departamento view formulario falta
         depa = Departamento( 
             nombre= nuevo["nombre de departamento"], 
