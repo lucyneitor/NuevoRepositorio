@@ -230,6 +230,7 @@ class EmpleadoDAO:
         finally:
             conn.close()
 
+    @staticmethod
     def esta_empleado(rut:str)->bool:
         conn = Database().get_connection()
         cursor: Cursor = conn.cursor()
