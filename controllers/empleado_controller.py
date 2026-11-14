@@ -157,12 +157,12 @@ class EmpleadoController:
     def escoger_depa(self)->int | None:
         departamentos = self.departamento_dao.obtener_todos()
         if not departamentos:
-            print("No hay departamentos: el empleado quedará sin departamento temporalmente.")
+            mostrar_mensaje("No hay departamentos: el empleado quedará sin departamento temporalmente.")
             return None
 
         if len(departamentos) == 1:
             unico_dep = departamentos[0]
-            print(f"Fuiste asignado al departamento {unico_dep.nombre}")
+            mostrar_mensaje(f"Fuiste asignado al departamento {unico_dep.nombre}")
             return unico_dep.id_departamento
         
         regla_op_depa = Annotated[int, Field(ge=1,le=len(departamentos))]

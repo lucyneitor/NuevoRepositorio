@@ -1,7 +1,7 @@
 from pydantic import (TypeAdapter, Field, StringConstraints,ValidationError)
 from models.usuario import Usuario
 from typing import Annotated
-from datetime import date
+from datetime import date, datetime
 import pwinput
 from config.settings import Settings
 
@@ -71,7 +71,7 @@ def confirmar(mensaje: str) -> bool:
             return False
         print("Respuesta no válida. Por favor, ingrese 'si' o 'no'.")
 
-def pedir_texto_valido(self, mensaje: str) -> str:
+def pedir_texto_valido(mensaje: str) -> str:
     while True:
         try:
             entrada = pedir(mensaje)
@@ -81,15 +81,21 @@ def pedir_texto_valido(self, mensaje: str) -> str:
 
 def validacion_fechas(fecha_inicio: str, fecha_fin: str, msg: str) -> tuple[str, str]:
     try:
-        inicio = date.fromisoformat(fecha_inicio.strip())
-        fin = date.fromisoformat(fecha_fin.strip())
+        inicio = datetime.strptime(
+            fecha_inicio.strip(),
+            "%d-%m-%Y"
+        ).date()
+        fin = datetime.strptime(
+            fecha_fin.strip(),
+            "%d-%m-%Y"    
+        ).date()
     except (TypeError, ValueError) as error:
-        raise ValueError("Usa el formato de fecha AAAA-MM-DD.") from error
+        raise ValueError("Usa el formato de fecha DD-MM-YYYY.") from error
 
     if inicio > fin:
         raise ValueError(msg)
 
-    return inicio.isoformat(), fin.isoformat()
+    return inicio, fin
 
 def obtener_validador_depa(departamentos: list) -> TypeAdapter:
     max_id = max(d.id_departamento for d in departamentos)

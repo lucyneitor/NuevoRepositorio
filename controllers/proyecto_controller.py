@@ -20,15 +20,15 @@ class ProyectoController:
                 print(e)
             else:
                 if op == 0:
-                    break
-                elif op == 1:
+                    mostrar_mensaje("Volver al menú de gestiones de empresa")
+                    return
+                elif op == 1: #Exitoso
                     self.agregar_proyecto()
                 elif op in (2,3,4):
                     while True:
                         nom = pedir("nombre del proyecto a modificar")
                         id = ProyectoDAO.obtener_id_por_nombre(nom)
                         try:
-                            id = int(id)
                             if not self.proyecto_dao.existe_proyecto(id):
                                 raise LookupError("No existe un proyecto con ese ID.")
                         except ValueError:
@@ -38,22 +38,20 @@ class ProyectoController:
                             print(error)
                             continue
                         else:
-                            datos=self.proyecto_dao.obtener_proyecto_id(id)
-                            proyecto = Proyecto(
-                                id_proyecto=datos["id_proyecto"],
-                                nombre=datos["nombre"],
-                                descripcion=datos["descripcion"],
-                                fecha_inicio=datos["fecha_inicio"],
-                                fecha_fin=datos["fecha_fin"],
-                                estado=datos["estado"],
-                            )
+                            proyecto=self.proyecto_dao.obtener_proyecto_id(id)
+                            if proyecto is None:
+                                mostrar_mensaje("Proyecto no se encontro")
+                                continue
                             if op == 2:   
                                 self.modificar_proyecto(proyecto)
+                                break
                             elif op == 3:
                                 self.buscar_proyecto(proyecto)
+                                break
                             elif op == 4:
                                 self.eliminar_proyecto(proyecto)
-                elif op == 5:
+                                break
+                elif op == 5: #Exitoso
                     self.mostrar_proyecto() #todos
 
     def agregar_proyecto(self):
@@ -64,7 +62,7 @@ class ProyectoController:
             estado=nuevo["estado"]
         )
         if self.proyecto_dao.agregar_proyecto(crear_proyecto): # consultar linea (modificar)
-            mostrar_mensaje("Empleado creado exitosamente")
+            mostrar_mensaje("Proyecto creado exitosamente")
 
     def modificar_proyecto(self,proyecto:Proyecto):
         while True:
@@ -79,7 +77,7 @@ class ProyectoController:
             else:
                 if op == 0:
                     print("Volviendo al menú de proyectos...")
-                    break
+                    return
                 
                 nombre = proyecto.nombre
                 descripcion = proyecto.descripcion
@@ -115,21 +113,21 @@ class ProyectoController:
                         print(error)
                         continue  # vuelve al menú de edición
                     
-                if confirmar("¿Seguro en editar esto?",self.usuario):
+                if confirmar("¿Seguro en editar esto?"):
                     proyecto.nombre = nombre
                     proyecto.descripcion = descripcion
                     proyecto.fecha_inicio = fecha_inicio
                     proyecto.fecha_fin = fecha_fin
                     proyecto.estado = estado
                     if self.proyecto_dao.actualizar_proyecto(proyecto):
-                        print("Proyecto actualizado exitosamente.")
+                        mostrar_mensaje("Proyecto actualizado exitosamente.")
                         
                     else:
-                        print("No se pudo actualizar el proyecto.")
-                    break
+                        mostrar_mensaje("No se pudo actualizar el proyecto.")
+                    
                 else:
-                    print("Cambio cancelado.")
-                    break
+                    mostrar_mensaje("Cambio cancelado.")
+                    
 
     def calcular_estado(self, fecha_inicio: str, fecha_fin: str) -> str:
         inicio = date.fromisoformat(fecha_inicio)
@@ -151,8 +149,9 @@ class ProyectoController:
         self.proyecto_view.mostrar_proyecto(proyecto)
 
     def eliminar_proyecto(self, proyecto:Proyecto):
-        if confirmar(f"¿Esta seguro en eliminar proyecto {proyecto.__nombre}?"):
-            self.proyecto_dao.eliminar_proyecto(proyecto.__id_proyecto)
+        if confirmar(f"¿Esta seguro en eliminar proyecto {proyecto.nombre}?"):
+            if self.proyecto_dao.eliminar_proyecto(proyecto.id_proyecto):
+                mostrar_mensaje("Proyecto eliminado existosamente")
 
     def mostrar_proyecto(self):
         proyectos = self.proyecto_dao.obtener_proyectos()
@@ -167,57 +166,66 @@ class ProyectoController:
 
         while True:
             self.proyecto_view.menu_mostrar()
-            op = pedir("opción")
+            opcion = pedir("opción")
+
             try:
-                op= int(op)
-                eleccion(validador_inicial,op)
+                opcion = int(opcion)
+                eleccion(validador_inicial, opcion)
             except (TypeError, ValueError, ValidationError) as e:
                 print(e)
                 continue
             else:
-                if op == 0:
-                    break
-                elif op == 1:
+                if opcion == 0:
+                    return
+
+                if opcion == 1:
                     self.proyecto_view.menu_op1(proyectos)
                     return
-                else:
-                    opciones = []
-                    registro = []
-                    while True:
-                        self.proyecto_view.menu_op2()
-                        op = pedir("opción")
-                        try:
-                            op = int(op)
-                            eleccion(validador_op_sup,op)
-                        except (TypeError, ValueError, ValidationError) as e:
-                            print(e)
-                            continue
-                        else:
-                            if op == 0:
-                                print("Volviendo al menú de gestiones...")
-                                return
-                            elif op == 1 and not(op in registro):
-                                opciones.append("nombre")
-                                registro.append(1)
-                            elif op == 2 and not(op in registro):
-                                opciones.append("descripción")
-                                registro.append(2)
-                            elif op == 3 and not(op in registro):
-                                opciones.append("fecha inicio")
-                                registro.append(3)
-                            elif op == 4 and not(op in registro):
-                                opciones.append("fecha fin")
-                                registro.append(4)
-                            elif op == 5 and not(op in registro):
-                                opciones.append("estado")
-                                registro.append(5)
-                            elif op == 6:
-                                if len(opciones) == 0:
-                                    print("Si quieres mostrar algo especifico")
-                                    continue
 
-                                self.proyecto_view.mostrar_detalle(opciones, proyectos)
+                opciones = []
+                seleccionadas = set()
 
-                                print("Volviendo al menú de proyectos...")
-                                break
+                while True:
+                    self.proyecto_view.menu_op2()
+                    op = pedir("opción")
+
+                    try:
+                        op = int(op)
+                        eleccion(validador_op_sup, op)
+                    except (TypeError, ValueError, ValidationError) as e:
+                        print(e)
+                        continue
+                    else:
+                        if op == 0:
+                            mostrar_mensaje("Volver a la gestion de Proyecto")
+                            return
+
+                        campos = {
+                            1: "nombre",
+                            2: "descripción",
+                            3: "fecha inicio",
+                            4: "fecha fin",
+                            5: "estado",
+                        }
+
+                        if op in campos:
+                            if op in seleccionadas:
+                                mostrar_mensaje("Ese campo ya fue seleccionado.")
+                                continue
+
+                            opciones.append(campos[op])
+                            seleccionadas.add(op)
+                            mostrar_mensaje("Campo agregado.")
+
+                        elif op == 6:
+                            if not opciones:
+                                mostrar_mensaje("Debes seleccionar al menos un campo.")
+                                continue
+
+                            self.proyecto_view.mostrar_detalle(
+                                opciones,
+                                proyectos
+                            )
+
+                            return
 

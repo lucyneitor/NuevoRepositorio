@@ -1,7 +1,7 @@
 from sqlite3 import Cursor
 from config.database import Database
 from models.proyecto import Proyecto
-
+from typing import Optional
 class ProyectoDAO:
     @staticmethod
     def crear_proyecto(fila) -> Proyecto:
@@ -61,7 +61,7 @@ class ProyectoDAO:
             conn.close()
     
     @staticmethod
-    def obtener_proyecto_id(id_proyecto : int):
+    def obtener_proyecto_id(id_proyecto : int)-> Optional[Proyecto]:
         conn = Database().get_connection()
         try:
             cursor : Cursor = conn.cursor()
@@ -100,7 +100,7 @@ class ProyectoDAO:
             conn.close()
     
     @staticmethod
-    def eliminar_proyecto(id_proyecto: int):
+    def eliminar_proyecto(id_proyecto: int)->bool:
         conn = Database().get_connection()
         try:
             cursor : Cursor = conn.cursor()
@@ -124,7 +124,7 @@ class ProyectoDAO:
                 (nombre.strip(),),
             )
             fila = cursor.fetchone()
-            return ProyectoDAO.crear_proyecto(fila) if fila else None
+            return fila["id_proyecto"] if fila else None
         except Exception as error:
             print(f"Error al buscar el proyecto por nombre: {error}")
             return None

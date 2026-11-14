@@ -15,6 +15,7 @@ class ProyectoView():
         print(">"*40)
 
     def menu_modificar(self):
+        print("-" * 45)
         print("Opciones de edición")
         print("-" * 45)
         print("1. Nombre")
@@ -109,7 +110,7 @@ class ProyectoView():
         print("6. Listo los seleccionados")
         print("0. Volver")
 
-    def mostrar_detalle(self,opciones:list[str],proyectos:list[Proyecto]):
+    def mostrar_detalle(self, opciones: list[str], proyectos: list[Proyecto]):
         campos_disponibles = {
             "nombre": ("Nombre", "nombre"),
             "descripción": ("Descripción", "descripcion"),
@@ -125,17 +126,46 @@ class ProyectoView():
         ]
 
         encabezados = [titulo for titulo, _ in campos]
+
         filas = [
-            [str(proyecto[columna]) for _, columna in campos]
+            [
+                str(getattr(proyecto, atributo))
+                for _, atributo in campos
+            ]
             for proyecto in proyectos
         ]
 
         anchos = [
-            max([len(encabezados[i])] + [len(fila[i]) for fila in filas])
-            for i in range(len(encabezados))
+            max(
+                len(encabezados[indice]),
+                *(len(fila[indice]) for fila in filas)
+            )
+            for indice in range(len(encabezados))
         ]
 
-        borde = "+" + "+".join("-" * (ancho + 2) for ancho in anchos) + "+"
+        borde = "+" + "+".join(
+            "-" * (ancho + 2)
+            for ancho in anchos
+        ) + "+"
+
+        def imprimir_fila(valores):
+            print(
+                "|"
+                + "|".join(
+                    f" {valor:<{anchos[indice]}} "
+                    for indice, valor in enumerate(valores)
+                )
+                + "|"
+            )
+
+        print(borde)
+        imprimir_fila(encabezados)
+        print(borde)
+
+        for fila in filas:
+            imprimir_fila(fila)
+
+        print(borde)
 
         def imprimir_fila(valores):
             celdas = [

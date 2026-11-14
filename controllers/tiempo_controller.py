@@ -1,7 +1,7 @@
 from views.tiempo_view import TiempoView
 from models.tiempo_dao import TiempoDAO
 from models.tiempo import Tiempo #ocupar al agregar un tiempo
-from views.utils import validador_time, pedir, eleccion, ValidationError, validador_op_sup
+from views.utils import validador_time, pedir, eleccion, ValidationError, validador_op_sup, mostrar_mensaje
 from models.empleado_dao import EmpleadoDAO
 from models.proyecto_dao import ProyectoDAO
 from datetime import date
@@ -144,7 +144,7 @@ class TiempoController:
             pausa_minutos = nuevo["pausa_minutos"]
         )
         if self.tiempo_dao.crear_tiempo(crear_tiempo): # consultar linea (modificar)
-            mensaje="Empleado creado exitosamente"
+            mostrar_mensaje("Tiempo agregado exitosamente")
 
     def buscar_tiempos(self):
         while True:
