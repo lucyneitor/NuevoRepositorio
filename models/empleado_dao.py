@@ -224,10 +224,9 @@ class EmpleadoDAO:
 
     @staticmethod
     def obtener_por_departamento(id_departamento: int) -> list[Empleado]:
-        conn = None
+        conn = Database().get_connection()
         try:
-            conn = Database.get_connection()
-            cursor = conn.cursor()
+            cursor:Cursor = conn.cursor()
             cursor.execute(
                 """
                 SELECT sueldo, inicio_contrato, estado, rut, nombre, 
@@ -239,6 +238,12 @@ class EmpleadoDAO:
                 """,
                 (id_departamento,)
             )
-            return [EmpleadoDAO.crear_empleado(fila) for fila in cursor.fetchall()]
+            return [
+                EmpleadoDAO.crear_empleado(fila) 
+                for fila in cursor.fetchall()
+            ]
+        except Exception as e:
+            print(f"Error al crear empleado en base de datos: {e}")
+            return []
         finally:
             conn.close()

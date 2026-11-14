@@ -42,19 +42,22 @@ class DepartamentoController:
                         empleados = EmpleadoDAO.obtener_por_departamento(depa.id_departamento)
                         roles=[]
                         for empleado in empleados:
-                            users=UsuarioDAO.obtener_empleado_por_rut(empleado.rut)
+                            users=UsuarioDAO.obtener_por_rut_empleado(empleado.rut)
                             roles.append(users.rol)
                         self.departamento_view.mostrar_departamento(depa,empleados,roles)
                     else: #eliminar el departamento
                         if self.departamento_dao.eliminar(depa.id_departamento):
                             mostrar_mensaje("Se elimino departamento exitosamente")
-                            return
+                            continue
                 elif opcion == 4:
                     gerente = pedir("nuevo gerente")
                     resultado=self.departamento_dao.obtener_gerente(gerente)
                     self.departamento_view.resultados(resultado,gerente)
                 elif opcion == 5:
                     cant_depas = self.mostrar_depa()
+                    if cant_depas is None:
+                        mostrar_mensaje("Departamento maldito")
+                        continue
                     mostrar_mensaje(f"Empresa Ecotech tiene {cant_depas} departamentos")
                 else: #agregar opcion eliminar departamento
                     mostrar_mensaje("Opción no válida.")
@@ -62,10 +65,13 @@ class DepartamentoController:
     def agregar_departamento(self): #falta formulario en view
         nuevo= self.departamento_view.formulario_departamento() #departamento view formulario falta
         depa = Departamento( 
-            nombre= nuevo["nombre de departamento"], 
-            gerente= nuevo["nombre del gerente"]
+            nombre = nuevo["nombre del departamento"], 
+            gerente = nuevo["gerente a cargo"]
         )
-        self.departamento_dao.crear(depa) 
+        if self.departamento_dao.crear(depa):
+            mostrar_mensaje("Se creo departamento exitosamente")
+            return
+        mostrar_mensaje("Operación fallida en creación de Departamento")
 
     def editar_departamento(self,depa:Departamento): #incompleto nada creado
         while True:
@@ -96,7 +102,7 @@ class DepartamentoController:
                     mostrar_mensaje("Sección editada exitosamente")
                     return
 
-    def mostrar_depa(self)->int:
+    def mostrar_depa(self)->int|None:
         if self.departamento_dao.contar_departamentos() == 0:
             print("No hay Departamentos")
             return

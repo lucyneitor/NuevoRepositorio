@@ -1,7 +1,7 @@
 from models.departamento_dao import DepartamentoDAO
 from models.departamento import Departamento
 from models.empleado import Empleado
-from views.utils import pedir
+from views.utils import pedir, mostrar_mensaje
 
 class DepartamentoView():
     def __init__(self):
@@ -26,8 +26,7 @@ class DepartamentoView():
         print("=" * 50)
         print("1. Editar nombre")
         print("2. Editar gerente")
-        print("3. Editar lista de empleados")
-        print("4. Editar todo")
+        print("3. Editar todo")
         print("0. Cancelar y volver")
         print("=" * 50)
 
@@ -48,10 +47,10 @@ class DepartamentoView():
         print(">"*60)
         for depa in depas:
             print(
-                f"ID: {depa.id_departamento} | "
+                f"| ID: {depa.id_departamento} | "
                 f"Nombre: {depa.nombre} | "
-                f"Gerente: {depa.gerente or 'Sin gerente'}"
-                f"Cantidad de empleados{len(depa.empleados)}"
+                f"Gerente: {depa.gerente or 'Sin gerente'} | "
+                f"Cantidad de empleados: {len(depa.empleados)} |"
             )
             print("-"*60)
         print(">"*60)
@@ -62,11 +61,13 @@ class DepartamentoView():
         print(f"RESULTADOS -> {depa.nombre}")
         print(">"*60)
         print(f"Gerente: {depa.gerente}")
-        for empleado in empleados:
+        if len(empleados) == 0:
+            mostrar_mensaje("Sin empleados asignados")
+        for indice, empleado in enumerate(empleados):
             print(
                 f"| RUT: {empleado.rut} | "
                 f"Nombre: {empleado.nombre} |"
-                f"Rol: {rol[empleado]} |"
+                f"Rol: {rol[indice]} |"
             )
             print("-"*60)
         print(">"*60)
