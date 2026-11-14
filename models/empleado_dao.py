@@ -213,7 +213,7 @@ class EmpleadoDAO:
             conn = Database().get_connection()
             try:
                 cursor: Cursor = conn.cursor()
-                cursor.execute("DELETE FROM empleado WHERE rut_empleado = ?", (rut,))
+                cursor.execute("DELETE FROM empleado WHERE rut = ?", (rut,))
                 conn.commit()
                 return cursor.rowcount > 0
             except sqlite3.Error as e:

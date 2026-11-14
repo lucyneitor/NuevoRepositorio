@@ -165,7 +165,7 @@ class EmpleadoController:
             print(f"Fuiste asignado al departamento {unico_dep.nombre}")
             return unico_dep.id_departamento
         
-        regla_op_depa = Annotated[int, Field(ge=1,le={d.id_departamento for d in departamentos})]
+        regla_op_depa = Annotated[int, Field(ge=1,le=len(departamentos))]
         validador_depa = TypeAdapter(regla_op_depa)
 
         while True:
@@ -187,7 +187,7 @@ class EmpleadoController:
 
     def eliminar_empleado(self, empleado:Empleado): #cambia solo el estado para dejar registro
         user =UsuarioDAO.obtener_por_rut_empleado(empleado.rut)
-        if user is None:
+        if user is not None:
             if EmpleadoDAO.despedir_empleado(empleado):
                 mostrar_mensaje("Empleado eliminado de contrato")
                 if UsuarioDAO.eliminar(user.id_usuario):
