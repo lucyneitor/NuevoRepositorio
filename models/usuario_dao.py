@@ -152,3 +152,44 @@ class UsuarioDAO:
             return UsuarioDAO.crear_usuario(fila) if fila else None
         finally:
             conn.close()
+
+    def actualizar_usuario(usuario: Usuario) -> bool:
+        conn = Database().get_connection()
+
+        try:
+            cursor: Cursor = conn.cursor()
+            cursor.execute(
+                """
+                UPDATE usuario
+                SET username = ?,
+                    password_hash = ?,
+                    nombre_completo = ?,
+                    rol = ?,
+                    rut_empleado = ?
+                WHERE id_usuario = ?
+                """,
+                (
+                    usuario.username,
+                    usuario.password_hash,
+                    usuario.nombre_completo,
+                    usuario.rol,
+                    usuario.rut_empleado,
+                    usuario.id_usuario,
+                ),
+            )
+
+            conn.commit()
+            return cursor.rowcount > 0
+
+        except sqlite3.IntegrityError as e:
+            conn.rollback()
+            print(f"Error: el usuario o RUT ya está registrado: {e}")
+            return False
+
+        except sqlite3.Error as e:
+            conn.rollback()
+            print(f"Error al actualizar usuario: {e}")
+            return False
+
+        finally:
+            conn.close()

@@ -37,6 +37,7 @@ class EmpleadoController:
                     self.agregar_empleado(rol)
                 elif opcion in (2,3,4):
                     rut = input("Ingrese su rut: ") #antes de distribuirse se debe verificar existencia 
+                    
                     existe=EmpleadoDAO.obtener_empleado_por_rut(rut)
                     if existe is not None:
                         if opcion==2:
@@ -79,6 +80,7 @@ class EmpleadoController:
     
     def editar_empleado(self, empleado:Empleado): #usar actualizar aqui 
         user = UsuarioDAO.obtener_por_rut_empleado(empleado.rut)
+        respaldo = empleado 
         if user is None:
             mostrar_mensaje(
                 "Este empleado no tiene un usuario asociado."
@@ -92,12 +94,43 @@ class EmpleadoController:
         except (TypeError, ValueError, ValidationError) as e:
             print(e)
         else:
+            if op == 0:
+                mostrar_mensaje("Volver al menu de gestión empleados")
+                return
+            campos = {
+                1: "nombre",
+                2: "dirección",
+                3: "telefono",
+                4: "correo",
+                5: "sueldo",
+                6: "Administrador" if user.rol=="Empleado" else "Empleado" 
+            }
+            pal = campos.get(op)
             autorizado = confirmar("¿Está seguro de editar esto?", self.usuario) #cuestionar si se autorizo o no
             if autorizado:
-                if EmpleadoDAO.actualizar_empleado():
-                    mostrar_mensaje("Empleado actualizado exitosamente")
-                    return
-                mostrar_mensaje("Empleado no actualizado")
+                nuevo = pedir(f"{pal} nuevo")
+                if op == 1:
+                    empleado.nombre = nuevo
+                    user.nombre_completo
+                elif op == 2:
+                    empleado.direccion = nuevo
+                elif op == 3:
+                    empleado.telefono = nuevo
+                elif op == 4:
+                    empleado.correo = nuevo
+                elif op == 5:
+                    empleado.sueldo = nuevo
+                else:
+                    user.rol="Administrador" if user.rol == "Empleado" else "Administrador"
+                if EmpleadoDAO.actualizar_empleado(empleado):
+                    if UsuarioDAO.actualizar_usuario(user):
+                        mostrar_mensaje("Actualizado correctamente")
+                        return
+                    if EmpleadoDAO.actualizar_empleado(respaldo):
+                        mostrar_mensaje("No se actualizo")
+                        return
+                mostrar_mensaje("No se actualizo")
+                return
 
     def escoger_depa(self)->int | None:
         departamentos = self.departamento_dao.obtener_todos()
@@ -130,9 +163,9 @@ class EmpleadoController:
                 mostrar_mensaje("Operación fallida: No estas autorizado")
                 return None
 
-    def eliminar_empleado(self, rut:str): #cambia solo el estado para dejar registro
-        empleado=EmpleadoDAO.obtener_empleado_por_rut(rut)
-        if EmpleadoDAO.eliminar_empleado(empleado):
+    def eliminar_empleado(self, empleado:Empleado): #cambia solo el estado para dejar registro
+        persona =EmpleadoDAO.obtener_empleado_por_rut(empleado.rut)
+        if EmpleadoDAO.eliminar_empleado(persona):
             mostrar_mensaje("Empleado eliminado de contrato")
     
     def imprimir_empleado(self,rut):

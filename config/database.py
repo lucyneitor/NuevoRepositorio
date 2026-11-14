@@ -104,7 +104,9 @@ class Database:
                         FOREIGN KEY (rut_empleado)
                             REFERENCES empleado(rut) ON DELETE CASCADE,
                         CHECK (
-                            (rol = 'Administrador')
+                            (rol = 'Administrador' AND rut_empleado IS NULL)
+                            OR
+                            (rol = 'Administrador' AND rut_empleado IS NOT NULL)
                             OR
                             (rol = 'Empleado' AND rut_empleado IS NOT NULL)
                         )

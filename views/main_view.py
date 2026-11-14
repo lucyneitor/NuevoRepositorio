@@ -37,7 +37,7 @@ class MainView:
                 print("Saliendo del sistema...")
             case _:
                 print("Opción no válida. Por favor, seleccione una opción del menú.")
-        print(">"*40)
+        
 
     
     

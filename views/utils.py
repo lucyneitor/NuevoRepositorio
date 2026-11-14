@@ -59,6 +59,7 @@ def conversor(num)->str:
 
 #crear funcion para confirmar movimiento
 def confirmar(mensaje: str, usuario:Usuario) -> bool:
+    print(">"*60)
     while True:
         resp = input(f"{mensaje} (si/no): ").strip().lower()
         if resp in ("si", "no"):
