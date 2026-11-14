@@ -187,15 +187,10 @@ class EmpleadoController:
             if UsuarioDAO.eliminar(user.id_usuario):
                 mostrar_mensaje(f"Se quito la credencial de {empleado.nombre}")
     
-    def imprimir_empleado(self,rut):
-        existe=EmpleadoDAO.obtener_empleado_por_rut(rut)
-        if existe is not None:
-            self.empleado_view.mostrar_empleado(existe)
-            mostrar_mensaje("Empleado impreso exitosamente")
-        else:
-            print("No se encontró ningún empleado con el RUT ingresado.")
-            print("=" * 50)
-            return
+    def imprimir_empleado(self,empleado:Empleado):
+        self.empleado_view.mostrar_empleado(empleado)
+        mostrar_mensaje("Empleado impreso exitosamente")
+        
 
     def mostrar_empleados(self):
         empleados = EmpleadoDAO.obtener_todos_empleado_estado("activo") #los que estan contratados
