@@ -221,3 +221,24 @@ class EmpleadoDAO:
                 return False
             finally:
                 conn.close()
+
+    @staticmethod
+    def obtener_por_departamento(id_departamento: int) -> list[Empleado]:
+        conn = None
+        try:
+            conn = Database.get_connection()
+            cursor = conn.cursor()
+            cursor.execute(
+                """
+                SELECT sueldo, inicio_contrato, estado, rut, nombre, 
+                        direccion, telefono, correo, id_departamento
+                FROM empleado
+                WHERE id_departamento = ?
+                AND estado = 'activo'
+                ORDER BY nombre
+                """,
+                (id_departamento,)
+            )
+            return [EmpleadoDAO.crear_empleado(fila) for fila in cursor.fetchall()]
+        finally:
+            conn.close()

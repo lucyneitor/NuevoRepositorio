@@ -1,4 +1,7 @@
 from models.departamento_dao import DepartamentoDAO
+from models.departamento import Departamento
+from models.empleado import Empleado
+from views.utils import pedir
 
 class DepartamentoView():
     def __init__(self):
@@ -17,14 +20,14 @@ class DepartamentoView():
         print("0. Volver al menú principal")
         print(">"*40)
 
-    def menu_edit_condicion(self,condicion) -> None:
+    def menu_edit(self) -> None:
         print("=" * 50)
-        print(f"{condicion.capitalize()} departamento")
+        print("Editar departamento")
         print("=" * 50)
-        print(f"1. {condicion} nombre")
-        print(f"2. {condicion} gerente")
-        print(f"3. {condicion} lista de empleados")
-        print(f"4. {condicion} todo")
+        print("1. Editar nombre")
+        print("2. Editar gerente")
+        print("3. Editar lista de empleados")
+        print("4. Editar todo")
         print("0. Cancelar y volver")
         print("=" * 50)
 
@@ -40,18 +43,42 @@ class DepartamentoView():
         print("=" * 50)
 
     @staticmethod
-    def mostrar_departamentos(departamentos:list):
+    def mostrar_departamentos(depas : list[Departamento]):
         print("Departamentos")
         print(">"*60)
-        for departamento in departamentos:
+        for depa in depas:
             print(
-                f"ID: {departamento.id_departamento} | "
-                f"Nombre: {departamento.nombre} | "
-                f"Gerente: {departamento.gerente or 'Sin gerente'}"
+                f"ID: {depa.id_departamento} | "
+                f"Nombre: {depa.nombre} | "
+                f"Gerente: {depa.gerente or 'Sin gerente'}"
+                f"Cantidad de empleados{len(depa.empleados)}"
             )
             print("-"*60)
         print(">"*60)
 
+    @staticmethod
+    def mostrar_departamento(depa: Departamento, empleados:list[Empleado], rol : list[str]):
+        print(">"*60)
+        print(f"RESULTADOS -> {depa.nombre}")
+        print(">"*60)
+        print(f"Gerente: {depa.gerente}")
+        for empleado in empleados:
+            print(
+                f"| RUT: {empleado.rut} | "
+                f"Nombre: {empleado.nombre} |"
+                f"Rol: {rol[empleado]} |"
+            )
+            print("-"*60)
+        print(">"*60)
+    
+    @staticmethod 
+    def formulario_departamento()->dict:
+        nom = pedir("nombre del departamento")
+        gerente = pedir("el nombre del gerente")
+        return{
+            "nombre del departamento": nom,
+            "gerente a cargo": gerente
+        }
     @staticmethod
     def resultados(depa:list, nom:str):
         print("-"*60)
