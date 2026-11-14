@@ -1,5 +1,5 @@
 from views.proyecto_view import ProyectoView
-from views.utils import pedir,eleccion, validador_op_sup, validador_inicial, validador_time, validador_op, mostrar_mensaje, ValidationError, confirmar, pedir_texto_valido, validacion_fechas
+from views.utils import pedir,eleccion, convertir_fecha, validador_op_sup, validador_inicial, validador_time, validador_op, mostrar_mensaje, ValidationError, confirmar, pedir_texto_valido, validacion_fechas
 from models.proyecto import Proyecto
 from models.proyecto_dao import ProyectoDAO
 from datetime import date
@@ -94,14 +94,18 @@ class ProyectoController:
                     fecha_fin = proyecto.fecha_fin
 
                     if op == 3:
-                        fecha_inicio = pedir(
+                        inicio = pedir(
                             "Nueva fecha de inicio (DD-MM-AAAA)"
                         ).strip()
+                        #YYYY-MM-DD -> DD-MM-YYYY
+                        fecha_inicio = convertir_fecha(inicio)
 
                     if op == 4:
-                        fecha_fin = pedir(
+                        fin = pedir(
                             "Nueva fecha de término (DD-MM-AAAA)"
                         ).strip()
+                        #YYYY-MM-DD -> DD-MM-YYYY
+                        fecha_fin = convertir_fecha(fin)
 
                     try:
                         fecha_inicio, fecha_fin = validacion_fechas(

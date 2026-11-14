@@ -106,3 +106,14 @@ def obtener_validador_depa(departamentos: list) -> TypeAdapter:
 @staticmethod
 def mostrar_mensaje(mensaje: str) -> None:
     print(f"\n[SISTEMA] {mensaje}")
+
+def convertir_fecha(fecha_texto: str) -> date:
+    try:
+        return datetime.strptime(
+            fecha_texto.strip(),
+            "%d-%m-%Y"
+        ).date()
+    except ValueError as error:
+        raise ValueError(
+            "La fecha debe tener el formato DD-MM-YYYY."
+        ) from error
