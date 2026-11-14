@@ -1,5 +1,5 @@
 from views.main_view import MainView
-from datetime import date
+from datetime import date, datetime
 from views.utils import pedir
 from models.proyecto import Proyecto
 class ProyectoView():
@@ -26,17 +26,24 @@ class ProyectoView():
         
     def formulario(self) -> dict:
         print(">"*50)
+        print("FICHA DE PROYECTO")
         print(">"*50)
         nombre = pedir("Nombre del proyecto").strip()
         descripcion = pedir("Descripción").strip()
 
         while True:
             try:
-                fecha_inicio_texto = pedir("Fecha de inicio (AAAA-MM-DD)").strip()
-                fecha_inicio = date.fromisoformat(fecha_inicio_texto)
+                fecha_inicio_texto = pedir("Fecha de inicio (DD-MM-AAAA)").strip()
+                fecha_inicio = datetime.strptime(
+                    fecha_inicio_texto,
+                    "%d-%m-%Y"
+                ).date()
 
-                fecha_fin_texto = pedir("Fecha de término (AAAA-MM-DD)").strip()
-                fecha_fin = date.fromisoformat(fecha_fin_texto)
+                fecha_fin_texto = pedir("Fecha de término (DD-MM-AAAA)").strip()
+                fecha_fin = datetime.strptime(
+                    fecha_fin_texto,
+                    "%d-%m-%Y"
+                ).date()
 
                 if fecha_fin < fecha_inicio:
                     print("La fecha de término no puede ser anterior a la fecha de inicio.")
@@ -44,7 +51,7 @@ class ProyectoView():
 
                 break
             except ValueError:
-                print("Ingresa las fechas con el formato AAAA-MM-DD.")
+                print("Ingresa las fechas con el formato DD-MM-AAAA.")
 
         hoy = date.today()
 

@@ -1,5 +1,5 @@
 from views.proyecto_view import ProyectoView
-from views.utils import pedir,eleccion, validador_op_sup, validador_inicial, validador_time, validador_op, ValidationError, confirmar, pedir_texto_valido, validacion_fechas
+from views.utils import pedir,eleccion, validador_op_sup, validador_inicial, validador_time, validador_op, mostrar_mensaje, ValidationError, confirmar, pedir_texto_valido, validacion_fechas
 from models.proyecto import Proyecto
 from models.proyecto_dao import ProyectoDAO
 from datetime import date
@@ -25,7 +25,8 @@ class ProyectoController:
                     self.agregar_proyecto()
                 elif op in (2,3,4):
                     while True:
-                        id = pedir("ID del proyecto a modificar")
+                        nom = pedir("nombre del proyecto a modificar")
+                        id = ProyectoDAO.obtener_id_por_nombre(nom)
                         try:
                             id = int(id)
                             if not self.proyecto_dao.existe_proyecto(id):
@@ -53,7 +54,7 @@ class ProyectoController:
                             elif op == 4:
                                 self.eliminar_proyecto(proyecto)
                 elif op == 5:
-                    self.mostrar_proyecto()
+                    self.mostrar_proyecto() #todos
 
     def agregar_proyecto(self):
         nuevo=self.proyecto_view.formulario()
@@ -63,7 +64,7 @@ class ProyectoController:
             estado=nuevo["estado"]
         )
         if self.proyecto_dao.agregar_proyecto(crear_proyecto): # consultar linea (modificar)
-            mensaje="Empleado creado exitosamente"
+            mostrar_mensaje("Empleado creado exitosamente")
 
     def modificar_proyecto(self,proyecto:Proyecto):
         while True:
@@ -157,11 +158,11 @@ class ProyectoController:
         proyectos = self.proyecto_dao.obtener_proyectos()
 
         if proyectos is False:
-            print("Ocurrió un error al consultar los proyectos.")
+            mostrar_mensaje("Ocurrió un error al consultar los proyectos.")
             return
 
         if not proyectos:
-            print("No hay proyectos registrados.")
+            mostrar_mensaje("No hay proyectos registrados.")
             return
 
         while True:

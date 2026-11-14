@@ -4,24 +4,36 @@ from models.proyecto import Proyecto
 
 class ProyectoDAO:
     @staticmethod
+    def crear_proyecto(fila) -> Proyecto:
+        return Proyecto(
+            id_proyecto=fila["id_proyecto"],
+            nombre=fila["nombre"],
+            descripcion=fila["descripcion"],
+            fecha_inicio=fila["fecha_inicio"],
+            fecha_fin=fila["fecha_fin"],
+            estado=fila["estado"],
+        )
+    
+    @staticmethod
     def agregar_proyecto(proyecto: Proyecto):
         conn = Database().get_connection()
         try: 
             cursor : Cursor = conn.cursor()
             cursor.execute(
                 """
-                INSERT INTO proyecto (
-                    id_proyecto, 
+                INSERT INTO proyecto ( 
                     nombre, 
                     descripcion, 
                     fecha_inicio, 
-                    fecha_fin)
+                    fecha_fin,
+                    estado)
                 VALUES(?,?,?,?,?)
-                """,(proyecto.id_proyecto, 
-                    proyecto.nombre,
+                """,(proyecto.nombre,
                     proyecto.descripcion,
                     proyecto.fecha_inicio,
-                    proyecto.fecha_fin)
+                    proyecto.fecha_fin,
+                    proyecto.estado
+                    )
             )
             proyecto.id_proyecto = cursor.lastrowid
             conn.commit()
@@ -33,13 +45,15 @@ class ProyectoDAO:
             conn.close()
     
     @staticmethod
-    def obtener_proyectos():
+    def obtener_proyectos()->list[Proyecto]:
+        """
+        Obtiene todos los proyectos de la base de datos
+        """
         conn = Database().get_connection()
         try:
             cursor : Cursor = conn.cursor()
             cursor.execute("""SELECT * from proyecto""")
-            ob_proyectos = cursor.fetchall()
-            return ob_proyectos
+            return [ProyectoDAO.crear_proyecto(fila) for fila in cursor.fetchall()]
         except Exception as e:
             print(f"Error al obtener proyecto en BD: {e}")
             return False
@@ -51,9 +65,13 @@ class ProyectoDAO:
         conn = Database().get_connection()
         try:
             cursor : Cursor = conn.cursor()
-            cursor.execute("""SELECT * from proyecto WHERE id_proyecto = ?""",(id_proyecto,))
-            proyecto_data = cursor.fetchone()
-            return proyecto_data
+            cursor.execute("""
+                SELECT * FROM proyecto 
+                WHERE id_proyecto = ?
+                """,(id_proyecto,)
+            )
+            fila = cursor.fetchone()
+            return ProyectoDAO.crear_proyecto(fila) if fila else None
         except Exception as e:
             print(f"Error al obtener proyecto en BD: {e}")
             return False
@@ -106,7 +124,7 @@ class ProyectoDAO:
                 (nombre.strip(),),
             )
             fila = cursor.fetchone()
-            return fila["id_proyecto"] if fila else None
+            return ProyectoDAO.crear_proyecto(fila) if fila else None
         except Exception as error:
             print(f"Error al buscar el proyecto por nombre: {error}")
             return None
