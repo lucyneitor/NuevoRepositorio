@@ -161,7 +161,7 @@ class EmpleadoDAO:
             conn.close()
 
     @staticmethod # revisar
-    def eliminar_empleado(empleado:Empleado) -> bool:
+    def despedir_empleado(empleado:Empleado) -> bool:
         """
         Elimina un empleado de la base de datos por su RUT.
         """
@@ -172,7 +172,7 @@ class EmpleadoDAO:
                 UPDATE empleado
                 SET estado = 'inactivo'
                 WHERE rut = ? AND estado = 'activo'
-            """, (empleado.rut,empleado.estado))
+            """, (empleado.rut,))
             conn.commit()
             return cursor.rowcount > 0
         except Exception as e:
@@ -208,3 +208,16 @@ class EmpleadoDAO:
             return False
         finally:
             conn.close()
+
+    def eliminar_sistema(rut: str) -> bool:
+            conn = Database().get_connection()
+            try:
+                cursor: Cursor = conn.cursor()
+                cursor.execute("DELETE FROM empleado WHERE rut_empleado = ?", (rut,))
+                conn.commit()
+                return cursor.rowcount > 0
+            except sqlite3.Error as e:
+                print(f"Error al eliminar empleado en base de datos: {e}")
+                return False
+            finally:
+                conn.close()

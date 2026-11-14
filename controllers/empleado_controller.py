@@ -75,7 +75,7 @@ class EmpleadoController:
         if UsuarioDAO.crear(crear_usuario):
             mostrar_mensaje("Empleado y usuario creados exitosamente.")
         else:
-            EmpleadoDAO.eliminar_empleado(nuevo["rut"])  # eliminar del sistema por completo, no solo modificar
+            EmpleadoDAO.eliminar_sistema(nuevo["rut"])  # eliminar del sistema por completo, no solo modificar
             mostrar_mensaje("No se pudo crear el usuario; se canceló el registro del empleado.")
     
     def editar_empleado(self, empleado:Empleado): #usar actualizar aqui 
@@ -164,9 +164,12 @@ class EmpleadoController:
                 return None
 
     def eliminar_empleado(self, empleado:Empleado): #cambia solo el estado para dejar registro
-        persona =EmpleadoDAO.obtener_empleado_por_rut(empleado.rut)
-        if EmpleadoDAO.eliminar_empleado(persona):
+        user =UsuarioDAO.obtener_por_rut_empleado(empleado.rut)
+
+        if EmpleadoDAO.despedir_empleado(empleado):
             mostrar_mensaje("Empleado eliminado de contrato")
+            if UsuarioDAO.eliminar(user.id_usuario):
+                mostrar_mensaje(f"Se quito la credencial de {empleado.nombre}")
     
     def imprimir_empleado(self,rut):
         existe=EmpleadoDAO.obtener_empleado_por_rut(rut)
