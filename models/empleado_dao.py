@@ -1,4 +1,5 @@
 from sqlite3 import Cursor
+import sqlite3
 from datetime import date
 from typing import Optional
 
@@ -78,30 +79,31 @@ class EmpleadoDAO:
 
     @staticmethod
     def obtener_todos_empleado_estado(estado: str) -> list[Empleado]:
-        """
-        Obtiene todos los empleados de la base de datos por su estado.
-        """
         conn = Database().get_connection()
-        empleados = []
         try:
-            cursor: Cursor = conn.cursor()
+            cursor = conn.cursor()
             cursor.execute(
                 """
-                SELECT rut, e.nombre, correo, d.nombre, sueldo, inicio_contrato, estado 
-                FROM empleado e, departamento d 
-                WHERE e.id_departamento = d.id_departamento 
-                AND estado = ?
+                SELECT e.sueldo, e.inicio_contrato, e.estado,
+                    e.rut, e.nombre, e.direccion,
+                    e.telefono, e.correo, e.id_departamento
+                FROM empleado AS e
+                WHERE e.estado = ?
+                ORDER BY e.nombre
                 """,
-                (estado,)
+                (estado,),
             )
-            filas = cursor.fetchall()
-            for fila in filas:
-                empleados.append(Empleado(fila['rut'], fila['nombre'], fila['correo'], fila['nombre_departamento'], fila['sueldo'], fila['inicio_contrato'])) 
-        except Exception as e:
-            print(f"Error al obtener empleados por estado de BD: {e}")
+
+            return [
+                EmpleadoDAO.crear_empleado(fila)
+                for fila in cursor.fetchall()
+            ]
+
+        except sqlite3.Error as e:
+            print(f"Error al obtener empleados: {e}")
+            return []
         finally:
             conn.close()
-        return empleados
     
     @staticmethod
     def obtener_empleado_por_rut(rut: str) -> Optional[Empleado]:

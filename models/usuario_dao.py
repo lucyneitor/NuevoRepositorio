@@ -58,7 +58,8 @@ class UsuarioDAO:
                 """,
                 (username.strip().lower(),)
             )
-            return [UsuarioDAO.crear_usuario(fila) for fila in cursor.fetchall()]
+            fila=cursor.fetchone()
+            return UsuarioDAO.crear_usuario(fila) if fila else None
         except sqlite3.Error as e:
             print(f"Error al consultar usuario: {e}")
         finally:

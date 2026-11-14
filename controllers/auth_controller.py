@@ -3,7 +3,7 @@ from models.usuario import Usuario
 from models.usuario_dao import UsuarioDAO
 from views.auth_view import AuthView
 from models.empleado_dao import EmpleadoDAO
-from views.utils import pedir
+from views.utils import pedir, mostrar_mensaje
 class AuthController:
     """
     Controlador de Autenticación y Gestión de Usuarios.
@@ -61,7 +61,7 @@ class AuthController:
             elif opcion == 3:
                 self.eliminar_usuario(usuario_actual)
             elif opcion == 0:
-                self.view.mostrar_mensaje("Saliendo de la gestión de usuarios.")
+                mostrar_mensaje("Saliendo de la gestión de usuarios.")
                 break
             else:
                 self.view.mostrar_error("Opción no válida.")
@@ -99,7 +99,7 @@ class AuthController:
                 rut_empleado=datos["rut_empleado"],
             )
             if UsuarioDAO.crear(nuevo_usuario):
-                self.view.mostrar_mensaje(
+                mostrar_mensaje(
                     f"Usuario '{nuevo_usuario.username}' registrado exitosamente con credencial encriptada."
                 )
                 return nuevo_usuario
@@ -125,11 +125,11 @@ class AuthController:
 
         if self.view.confirmar_eliminacion(usuario.username):
             if UsuarioDAO.eliminar(id_usuario):
-                self.view.mostrar_mensaje(f"Usuario '{usuario.username}' eliminado exitosamente.")
+                mostrar_mensaje(f"Usuario '{usuario.username}' eliminado exitosamente.")
             else:
                 self.view.mostrar_error("Error al eliminar el usuario en la base de datos.")
         else:
-            self.view.mostrar_mensaje("Operación cancelada.")
+            mostrar_mensaje("Operación cancelada.")
 
     @staticmethod
     def completar_datos(rut: str, nom:str) -> bool:

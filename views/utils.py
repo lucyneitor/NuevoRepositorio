@@ -63,7 +63,8 @@ def confirmar(mensaje: str, usuario:Usuario) -> bool:
         resp = input(f"{mensaje} (si/no): ").strip().lower()
         if resp in ("si", "no"):
             if resp=="si":
-                validar = pwinput.pwinput("Confirmar: ")
+                mostrar_mensaje("Confirmar con autorización")
+                validar = pwinput.pwinput("Ingreso de llave de acceso: ")
                 if validar == Settings.ADMIN_INITIAL_CLAVE:
                     return True
             return False
@@ -94,3 +95,7 @@ def obtener_validador_depa(departamentos: list) -> TypeAdapter:
     regla_op_depa = Annotated[int, Field(ge=1, le=max_id)]
     validador_depa = TypeAdapter(regla_op_depa)
     return validador_depa
+
+@staticmethod
+def mostrar_mensaje(mensaje: str) -> None:
+    print(f"\n[SISTEMA] {mensaje}")

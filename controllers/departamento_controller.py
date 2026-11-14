@@ -3,7 +3,7 @@ from views.departamento_view import DepartamentoView
 from models.departamento import Departamento
 from models.departamento_dao import DepartamentoDAO
 from models.empleado_dao import EmpleadoDAO
-from views.utils import validador_op_sup, ValidationError, eleccion, pedir, validador_time, obtener_validador_depa
+from views.utils import validador_op_sup, ValidationError, eleccion, pedir, validador_time, obtener_validador_depa, mostrar_mensaje
 
 class DepartamentoController:
     def __init__(self):
@@ -23,7 +23,7 @@ class DepartamentoController:
                 continue
             else:            
                 if opcion == 0:
-                    self.main_view.mostrar_mensaje("Saliendo de la gestión de empleados.")
+                    mostrar_mensaje("Saliendo de la gestión de empleados.")
                     return
                 elif opcion == 1:
                     self.agregar_departamento()
@@ -100,7 +100,7 @@ class DepartamentoController:
                             print("Encontrado!!!")
                             self.departamento_view.resultados(list_dict,gerente)
                 else: #agregar opcion eliminar departamento
-                    self.main_view.mostrar_mensaje("Opción no válida.")
+                    mostrar_mensaje("Opción no válida.")
 
     def agregar_departamento(self): #falta formulario en view
         nuevo= self.departamento_view.formulario_departamento() #departamento view formulario falta

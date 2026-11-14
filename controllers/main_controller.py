@@ -5,7 +5,7 @@ from models.empleado_dao import EmpleadoDAO
 from controllers.informe_controller import InformeController
 from controllers.tiempo_controller import TiempoController
 from controllers.proyecto_controller import ProyectoController
-from views.utils import eleccion, pedir, validador_op_sup, ValidationError, validador_grande
+from views.utils import eleccion, pedir, validador_op_sup, ValidationError, validador_grande,mostrar_mensaje
 from controllers.auth_controller import AuthController
 from models.usuario_dao import UsuarioDAO
 
@@ -25,7 +25,7 @@ class MainController:
     def ejecutar(self):
         self.usuario = self.auth_controller.iniciar_sesion() 
         if self.usuario is None: #login fallido
-            self.view.mostrar_mensaje("El programa ha finalizado debido a credenciales invalidadas")
+            mostrar_mensaje("El programa ha finalizado debido a credenciales invalidadas")
             return
         self.empleado_controller = EmpleadoController(self.usuario)
 
@@ -54,7 +54,7 @@ class MainController:
                 elif opcion == 4:
                     self.proyecto_controller.ejecutar() 
                 elif opcion == 5:
-                    self.view.mostrar_mensaje(f"Cerrando sesión de '{self.usuario.username}'...")
+                    mostrar_mensaje(f"Cerrando sesión de '{self.usuario.username}'...")
                     self.usuario = None
                     self.ejecutar()
                 elif opcion == 6:

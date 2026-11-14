@@ -39,8 +39,6 @@ class MainView:
                 print("Opción no válida. Por favor, seleccione una opción del menú.")
         print(">"*40)
 
-    @staticmethod
-    def mostrar_mensaje(mensaje: str) -> None:
-        print(f"\n[SISTEMA] {mensaje}")
+    
     
 
