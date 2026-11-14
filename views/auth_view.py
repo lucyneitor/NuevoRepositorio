@@ -43,21 +43,20 @@ class AuthView:
         return leer_numero("Seleccione una opción: ")
 
     @staticmethod
-    def formulario_nuevo_usuario() -> dict:
+    def formulario_nuevo_usuario(rut:str|None, nom:str|None, rol:str|None) -> dict:
         print("\n--- Registrar Nuevo Usuario ---")
         username = input("Ingrese nombre de usuario (mín. 3 caracteres, sin espacios): ").strip()
-        nombre_completo = input("Ingrese nombre completo del funcionario: ").strip()
+        if nom is None:
+            nombre_completo = input("Ingrese nombre completo del funcionario: ").strip()
         clave = pwinput.pwinput("Ingrese contraseña (mín. 4 caracteres, se encriptará con SHA-256): ",mask="*").strip()
         confirmacion = pwinput.pwinput("Confirme la contraseña: ").strip()
-
-        print("Roles disponibles: 1.- Administrador, 2.- Empleado")
-        opcion_rol = leer_numero("Seleccione un rol (1-2): ")
-        mapa_roles = {1: "Administrador", 2: "Empleado"}
-        rol = mapa_roles.get(opcion_rol, "")
-
-        rut_empleado = None
-        if rol == "Empleado":
-            rut_empleado = input("Ingrese el RUT del empleado registrado: ").strip()
+        if rol is None:
+            print("Roles disponibles: 1.- Administrador, 2.- Empleado")
+            opcion_rol = leer_numero("Seleccione un rol (1-2): ")
+            mapa_roles = {1: "Administrador", 2: "Empleado"}
+            rol = mapa_roles.get(opcion_rol, "")
+        if rut is None:
+            rut = input("Ingrese el RUT del empleado registrado: ").strip()
 
         return {
             "username": username,
@@ -65,7 +64,7 @@ class AuthView:
             "clave": clave,
             "confirmacion": confirmacion,
             "rol": rol,
-            "rut_empleado": rut_empleado,
+            "rut_empleado": rut,
         }
 
     @staticmethod

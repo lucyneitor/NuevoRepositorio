@@ -221,3 +221,29 @@ class EmpleadoDAO:
                 return False
             finally:
                 conn.close()
+
+    @staticmethod
+    def recontratar_empleado(empleado: Empleado) -> bool:
+        conn = Database().get_connection()
+
+        try:
+            cursor = conn.cursor()
+            cursor.execute(
+                """
+                UPDATE empleado
+                SET estado = 'activo'
+                WHERE rut = ? AND estado = 'inactivo'
+                """,
+                (empleado.rut,),
+            )
+
+            conn.commit()
+            return cursor.rowcount > 0
+
+        except sqlite3.Error as e:
+            conn.rollback()
+            print(f"Error al recontratar empleado: {e}")
+            return False
+
+        finally:
+            conn.close()

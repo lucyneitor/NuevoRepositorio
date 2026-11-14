@@ -17,8 +17,6 @@ class EmpleadoView():
 
     @staticmethod
     def formulario_empleado()->dict: #Hacer funcion validador en cada entrada
-        rut = pedir("rut")
-        print("-"*50)
         nombre = pedir("nombre")
         print("-"*50)
         direccion = pedir("dirreción")
@@ -35,7 +33,7 @@ class EmpleadoView():
         print("-"*50)
         contrato = pedir("fecha de contrato 'DD-MM-YYYY'")
         return { #retorno un diccionario
-            "rut": rut, "nombre": nombre, "dirección":direccion, "telefono":telefono,
+            "nombre": nombre, "dirección":direccion, "telefono":telefono,
             "correo":correo, "usuario":usuario, "contraseña":password, "sueldo": sueldo,
             "contrato":contrato
         }

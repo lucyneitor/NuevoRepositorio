@@ -6,6 +6,7 @@ from views.utils import validador_op, eleccion, pedir, validador_op_sup,Validati
 from config.settings import Settings
 from models.usuario import Usuario
 from models.usuario_dao import UsuarioDAO
+from views.auth_view import AuthView
 from models.departamento_dao import DepartamentoDAO
 from views.departamento_view import DepartamentoView
 from controllers.departamento_controller import DepartamentoController
@@ -19,6 +20,7 @@ class EmpleadoController:
         self.departamento_dao = DepartamentoDAO()
         self.departamento_view = DepartamentoView()
         self.usuario = usuario
+        self.auth_view = AuthView()
         self.departamento_controller = DepartamentoController()
 
     def ejecutar(self): #editar
@@ -55,21 +57,27 @@ class EmpleadoController:
                     mostrar_mensaje("Opción no válida.")
 
     def agregar_empleado(self, valor): #crea usuario que no es el
-        nuevo= self.empleado_view.formulario_empleado() #empleado view formulario
-        nuevo["contraseña"]=self.usuario.encriptar_credencial(nuevo["contraseña"])
-        depa = self.escoger_depa()
-        crear_empleado= Empleado( #creo el departamento
-            sueldo=nuevo["sueldo"], inicio_contrato=nuevo["contrato"], estado="activo", 
-            rut=nuevo["rut"], nombre=nuevo['nombre'], direccion=nuevo['dirección'],
-            telefono=nuevo['telefono'], correo=nuevo['correo'], id_departamento=depa
-        )
-        if not EmpleadoDAO.agregar_empleado(crear_empleado): # consultar linea (modificar)
-            mostrar_mensaje("No se pudo guardar el empleado.")
-            return
+        rut = pedir("rut")
+        era_empleado = EmpleadoDAO.obtener_empleado_por_rut(rut)
+        if era_empleado is None:
+            nuevo= self.empleado_view.formulario_empleado() #empleado view formulario
+            nuevo["contraseña"]=self.usuario.encriptar_credencial(nuevo["contraseña"])
+            depa = self.escoger_depa()
+            crear_empleado= Empleado( #creo el departamento
+                sueldo=nuevo["sueldo"], inicio_contrato=nuevo["contrato"], estado="activo", 
+                rut=rut, nombre=nuevo['nombre'], direccion=nuevo['dirección'],
+                telefono=nuevo['telefono'], correo=nuevo['correo'], id_departamento=depa
+            )
+            if not EmpleadoDAO.agregar_empleado(crear_empleado): # consultar linea (modificar)
+                mostrar_mensaje("No se pudo guardar el empleado.")
+                return
+        else:
+            mostrar_mensaje(f"Bienvenido {era_empleado.nombre} > ingresaras nuevas credenciales>")
+            self.auth_view.formulario_nuevo_usuario(rut,era_empleado.nombre)
         
         crear_usuario = Usuario(
             username=nuevo['usuario'], password_hash=nuevo['contraseña'], 
-            nombre_completo=nuevo['nombre'], rol=valor, rut_empleado=nuevo["rut"]
+            nombre_completo=nuevo['nombre'], rol=valor, rut_empleado=rut
         )
 
         if UsuarioDAO.crear(crear_usuario):
