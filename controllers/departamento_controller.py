@@ -50,7 +50,7 @@ class DepartamentoController:
                             mostrar_mensaje("Se elimino departamento exitosamente")
                             continue
                 elif opcion == 4:
-                    gerente = pedir("nuevo gerente")
+                    gerente = pedir("nombre del gerente")
                     resultado=self.departamento_dao.obtener_gerente(gerente)
                     self.departamento_view.resultados(resultado,gerente)
                 elif opcion == 5:
