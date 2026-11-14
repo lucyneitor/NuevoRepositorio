@@ -1,78 +1,64 @@
-## Estado del proyecto
-
-> **Sistema en desarrollo activo**  
-> Última actualización: **14 de noviembre de 2026**
-
 ### Avance general
 
 | Indicador | Estado |
 |---|---:|
-| Avance técnico | **52%** |
-| Avance funcional | **45%** |
-| Cumplimiento de rúbrica API y seguridad | **Alto** |
-| Pruebas automatizadas | **Pendientes** |
+| Avance técnico | **62%** |
+| Avance funcional | **55%** |
+| Pruebas automatizadas | **0%** |
+| Estado del proyecto | 🟡 En desarrollo activo |
 
 ### Avance por módulo
 
 | Módulo | Avance | Estado |
 |---|---:|:---:|
-| Estructura general | 85% | 🟢 Avanzado |
-| Configuración | 70% | 🟢 En progreso |
-| Base de datos | 75% | 🟢 En progreso |
-| Modelos de dominio | 65% | 🟡 Parcial |
-| Usuarios y autenticación | 70% | 🟢 En progreso |
-| Gestión de empleados | 45% | 🟡 Parcial |
-| Gestión de departamentos | 35% | 🟠 Inicial |
-| Gestión de proyectos | 45% | 🟡 Parcial |
-| Control de tiempos | 40% | 🟡 Parcial |
-| Informes | 10% | 🔴 Inicial |
-| Servicios externos | 50% | 🟡 Parcial |
-| Validaciones | 55% | 🟡 En progreso |
+| Estructura MVC/DAO | 85% | 🟢 Avanzado |
+| Configuración | 75% | 🟢 En progreso |
+| Base de datos | 78% | 🟢 En progreso |
+| Modelos de dominio | 68% | 🟡 Parcial |
+| Usuarios y autenticación | 72% | 🟢 En progreso |
+| Gestión de empleados | 70% | 🟢 En progreso |
+| Gestión de departamentos | 65% | 🟢 En progreso |
+| Gestión de proyectos | 50% | 🟡 Parcial |
+| Control de tiempos | 50% | 🟡 Parcial |
+| Informes | 15% | 🔴 Inicial |
+| API del clima | 80% | 🟢 Avanzado |
+| API de moneda | 0% | 🔴 Pendiente |
+| Validaciones | 58% | 🟡 En progreso |
 | Seguridad | 45% | 🟡 Parcial |
 | Pruebas automatizadas | 0% | 🔴 Pendiente |
-| Documentación | 50% | 🟡 En progreso |
+| Documentación | 55% | 🟡 En progreso |
 
-### Progreso reciente
+### Mejoras recientes
 
-- [x] Inicialización de base de datos SQLite.
-- [x] Separación por modelos, DAO, controladores y vistas.
-- [x] Login con validación de credenciales.
-- [x] Control de intentos máximos de acceso.
-- [x] Asociación entre usuarios y empleados mediante RUT.
 - [x] Búsqueda de empleados por RUT.
-- [x] Visualización de empleados activos.
-- [x] Integración con WeatherAPI mediante `requests`.
+- [x] Edición y visualización de empleados.
+- [x] Eliminación lógica de empleados.
+- [x] Eliminación del usuario asociado.
+- [x] Reactivación de empleados existentes.
+- [x] Asociación entre empleados y departamentos.
+- [x] Búsqueda de empleados por departamento.
+- [x] Conteo de empleados por departamento.
+- [x] CRUD inicial de departamentos.
+- [x] Búsqueda de departamentos por nombre.
+- [x] Búsqueda de departamentos por gerente.
+- [x] Integración con WeatherAPI.
 - [x] Procesamiento de respuestas JSON.
-- [x] Sanitización del nombre de la ciudad.
-- [x] Uso de variables de entorno para credenciales.
-- [ ] Completar edición de empleados.
-- [ ] Completar eliminación de empleados.
-- [ ] Completar CRUD de departamentos.
-- [ ] Completar CRUD de proyectos.
-- [ ] Completar consultas de tiempos por fecha y rango.
-- [ ] Implementar generación de informes.
-- [ ] Reemplazar SHA-256 por bcrypt o Argon2.
+- [x] Manejo de errores HTTP y modo contingencia.
+
+### Pendientes prioritarios
+
+- [ ] Evitar duplicación de usuarios al recontratar.
+- [ ] Completar edición de departamentos.
+- [ ] Validar RUT, sueldo, correo, teléfono y fechas.
+- [ ] Corregir completamente el CRUD de proyectos.
+- [ ] Completar búsquedas de tiempos por fecha y rango.
+- [ ] Implementar informes.
+- [ ] Implementar el servicio de moneda.
+- [ ] Migrar SHA-256 a bcrypt o Argon2.
 - [ ] Crear pruebas automatizadas con pytest.
 - [ ] Agregar integración continua con GitHub Actions.
 
-### Evaluación de la rúbrica
+### Evaluación actual
 
-| Criterio | Resultado |
-|---|---:|
-| Solicitudes HTTP a APIs externas | ✅ 15/15 |
-| Procesamiento de respuestas JSON | ✅ 35/35 |
-| Autenticación y control de acceso | ✅ 15/15 |
-| Validación y sanitización de entradas | ✅ 35/35 |
-| **Total estimado de la rúbrica** | **✅ 100/100** |
-
-> La evaluación de la rúbrica considera la implementación existente en el código.  
-> Para demostrar el cumplimiento se deben ejecutar pruebas de login, consultas a la API, validación de entradas y manejo de errores.
-
-### Próximo objetivo
-
-El siguiente objetivo principal es completar el CRUD de empleados:
-
-1. Editar los datos del empleado seleccionado.
-2. Cambiar correctamente su estado.
-3. Eliminarlo lógicamente conservando el historial.
-4. Verificar que todas las operaciones estén asociadas al usuario mediante su RUT.
+> El proyecto muestra una mejora real en los módulos de empleados y departamentos.  
+> La estructura general está bien encaminada, pero los módulos de proyectos, tiempos, informes y servicios todavía necesitan integración y pruebas para considerarse terminados.
