@@ -47,7 +47,7 @@ class AuthView:
         print("\n--- Registrar Nuevo Usuario ---")
         username = input("Ingrese nombre de usuario (mín. 3 caracteres, sin espacios): ").strip()
         if nom is None:
-            nombre_completo = input("Ingrese nombre completo del funcionario: ").strip()
+            nom = input("Ingrese nombre completo del funcionario: ").strip()
         clave = pwinput.pwinput("Ingrese contraseña (mín. 4 caracteres, se encriptará con SHA-256): ",mask="*").strip()
         confirmacion = pwinput.pwinput("Confirme la contraseña: ").strip()
         if rol is None:
@@ -60,7 +60,7 @@ class AuthView:
 
         return {
             "username": username,
-            "nombre_completo": nombre_completo,
+            "nombre_completo": nom,
             "clave": clave,
             "confirmacion": confirmacion,
             "rol": rol,

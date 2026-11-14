@@ -71,14 +71,18 @@ class EmpleadoController:
             if not EmpleadoDAO.agregar_empleado(crear_empleado): # consultar linea (modificar)
                 mostrar_mensaje("No se pudo guardar el empleado.")
                 return
+            crear_usuario = Usuario(
+                username=nuevo['usuario'], password_hash=nuevo['contraseña'], 
+                nombre_completo=nuevo['nombre'], rol=valor, rut_empleado=rut
+            )
         else:
             mostrar_mensaje(f"Bienvenido {era_empleado.nombre} > ingresaras nuevas credenciales>")
-            self.auth_view.formulario_nuevo_usuario(rut,era_empleado.nombre)
-        
-        crear_usuario = Usuario(
-            username=nuevo['usuario'], password_hash=nuevo['contraseña'], 
-            nombre_completo=nuevo['nombre'], rol=valor, rut_empleado=rut
-        )
+            user = self.auth_view.formulario_nuevo_usuario(rut,era_empleado.nombre,valor)
+            user["contraseña"]=self.usuario.encriptar_credencial(user["contraseña"])
+            crear_usuario = Usuario(
+                username=user['usuario'], password_hash=user['contraseña'], 
+                nombre_completo=era_empleado.nombre, rol=valor, rut_empleado=rut
+            )
 
         if UsuarioDAO.crear(crear_usuario):
             mostrar_mensaje("Empleado y usuario creados exitosamente.")
