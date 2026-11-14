@@ -37,6 +37,7 @@ class EmpleadoController:
                     es_admin = confirmar("¿Tendrá rol de administrador?", self.usuario)
                     rol = "Administrador" if es_admin else "Empleado"
                     self.agregar_empleado(rol)
+
                 elif opcion in (2,3,4):
                     rut = input("Ingrese su rut: ") #antes de distribuirse se debe verificar existencia 
                     
@@ -48,11 +49,16 @@ class EmpleadoController:
                             self.eliminar_empleado(existe)
                         elif opcion == 4:
                             self.imprimir_empleado(existe)
+                    else:
+                        mostrar_mensaje("Rut no existe en nuestra base de datos")
+
                 elif opcion == 5:
                     self.mostrar_empleados()
+
                 elif opcion == 0:
                     mostrar_mensaje("Saliendo de la gestión de empleados.")
                     return
+                
                 else:
                     mostrar_mensaje("Opción no válida.")
 
@@ -187,7 +193,8 @@ class EmpleadoController:
                 if UsuarioDAO.eliminar(user.id_usuario):
                     mostrar_mensaje(f"Se quito la credencial de {empleado.nombre}")
                     return
-            EmpleadoDAO.recontratar_empleado(empleado)
+            empleado.estado = "activo"
+            EmpleadoDAO.actualizar_empleado(empleado)
             return
         mostrar_mensaje("No se encontro el usuario en sistema")
     
