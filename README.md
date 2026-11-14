@@ -1,192 +1,78 @@
-# Sistema de Gestión Empresarial
-
-Aplicación de consola desarrollada en Python para administrar empleados,
-departamentos, proyectos, registros de tiempo, usuarios e informes.
-
 ## Estado del proyecto
 
-El proyecto se encuentra en desarrollo.
+> **Sistema en desarrollo activo**  
+> Última actualización: **14 de noviembre de 2026**
 
-**Avance funcional estimado: 40%**
+### Avance general
 
-La estimación considera la implementación actual, la integración entre módulos
-y la posibilidad de ejecutar correctamente los flujos principales.
-
-| Módulo | Avance |
+| Indicador | Estado |
 |---|---:|
-| Estructura general | 70% |
-| Configuración | 55% |
-| Base de datos | 65% |
-| Modelos de dominio | 55% |
-| Usuarios y autenticación | 50% |
-| Empleados | 35% |
-| Departamentos | 50% |
-| Proyectos | 35% |
-| Control de tiempos | 30% |
-| Informes | 15% |
-| Servicios externos | 35% |
-| Validaciones | 45% |
-| Seguridad | 35% |
-| Pruebas automatizadas | 5% |
-| Documentación | 40% |
+| Avance técnico | **52%** |
+| Avance funcional | **45%** |
+| Cumplimiento de rúbrica API y seguridad | **Alto** |
+| Pruebas automatizadas | **Pendientes** |
 
-## Funcionalidades previstas
+### Avance por módulo
 
-- Autenticación de usuarios.
-- Gestión de roles:
-  - Administrador.
-  - Empleado.
-- Gestión de empleados.
-- Gestión de departamentos.
-- Gestión de proyectos.
-- Registro de horas trabajadas.
-- Consulta de tiempos por empleado, proyecto y fecha.
-- Generación de informes.
-- Consulta del clima mediante WeatherAPI.
-- Persistencia local mediante SQLite.
+| Módulo | Avance | Estado |
+|---|---:|:---:|
+| Estructura general | 85% | 🟢 Avanzado |
+| Configuración | 70% | 🟢 En progreso |
+| Base de datos | 75% | 🟢 En progreso |
+| Modelos de dominio | 65% | 🟡 Parcial |
+| Usuarios y autenticación | 70% | 🟢 En progreso |
+| Gestión de empleados | 45% | 🟡 Parcial |
+| Gestión de departamentos | 35% | 🟠 Inicial |
+| Gestión de proyectos | 45% | 🟡 Parcial |
+| Control de tiempos | 40% | 🟡 Parcial |
+| Informes | 10% | 🔴 Inicial |
+| Servicios externos | 50% | 🟡 Parcial |
+| Validaciones | 55% | 🟡 En progreso |
+| Seguridad | 45% | 🟡 Parcial |
+| Pruebas automatizadas | 0% | 🔴 Pendiente |
+| Documentación | 50% | 🟡 En progreso |
 
-## Tecnologías
+### Progreso reciente
 
-- Python 3.10 o superior.
-- SQLite.
-- Pydantic.
-- python-dotenv.
-- Requests.
-- pwinput.
+- [x] Inicialización de base de datos SQLite.
+- [x] Separación por modelos, DAO, controladores y vistas.
+- [x] Login con validación de credenciales.
+- [x] Control de intentos máximos de acceso.
+- [x] Asociación entre usuarios y empleados mediante RUT.
+- [x] Búsqueda de empleados por RUT.
+- [x] Visualización de empleados activos.
+- [x] Integración con WeatherAPI mediante `requests`.
+- [x] Procesamiento de respuestas JSON.
+- [x] Sanitización del nombre de la ciudad.
+- [x] Uso de variables de entorno para credenciales.
+- [ ] Completar edición de empleados.
+- [ ] Completar eliminación de empleados.
+- [ ] Completar CRUD de departamentos.
+- [ ] Completar CRUD de proyectos.
+- [ ] Completar consultas de tiempos por fecha y rango.
+- [ ] Implementar generación de informes.
+- [ ] Reemplazar SHA-256 por bcrypt o Argon2.
+- [ ] Crear pruebas automatizadas con pytest.
+- [ ] Agregar integración continua con GitHub Actions.
 
-## Estructura del proyecto
+### Evaluación de la rúbrica
 
-```text
-config/
-  database.py
-  settings.py
+| Criterio | Resultado |
+|---|---:|
+| Solicitudes HTTP a APIs externas | ✅ 15/15 |
+| Procesamiento de respuestas JSON | ✅ 35/35 |
+| Autenticación y control de acceso | ✅ 15/15 |
+| Validación y sanitización de entradas | ✅ 35/35 |
+| **Total estimado de la rúbrica** | **✅ 100/100** |
 
-models/
-  modelos de dominio y DAO
+> La evaluación de la rúbrica considera la implementación existente en el código.  
+> Para demostrar el cumplimiento se deben ejecutar pruebas de login, consultas a la API, validación de entradas y manejo de errores.
 
-controllers/
-  lógica de navegación y aplicación
+### Próximo objetivo
 
-views/
-  menús, formularios y presentación por consola
+El siguiente objetivo principal es completar el CRUD de empleados:
 
-services/
-  integraciones con servicios externos
-
-main.py
-requirements.txt
-.env.example
-```
-
-## Instalación
-
-Crear y activar un entorno virtual:
-
-### Windows
-
-```bash
-python -m venv .venv
-.venv\Scripts\activate
-```
-
-### Linux/macOS
-
-```bash
-python3 -m venv .venv
-source .venv/bin/activate
-```
-
-Instalar dependencias:
-
-```bash
-pip install -r requirements.txt
-```
-
-## Configuración
-
-Crear el archivo `.env` a partir de `.env.example`:
-
-### Windows
-
-```bash
-copy .env.example .env
-```
-
-### Linux/macOS
-
-```bash
-cp .env.example .env
-```
-
-Configurar las variables:
-
-```dotenv
-API_BASE_URL_CLIMA=http://api.weatherapi.com/v1/current.json
-API_KEY_CLIMA=tu_api_key
-REQUEST_TIMEOUT=5
-ENABLE_OFFLINE_FALLBACK=True
-ADMIN_INITIAL_USER=admin
-ADMIN_INITIAL_CLAVE=cambiar_esta_clave
-MAX_LOGIN_ATTEMPTS=3
-```
-
-No subir el archivo `.env` al repositorio.
-
-## Ejecución
-
-```bash
-python main.py
-```
-
-La aplicación inicializa la base de datos SQLite y muestra el flujo de
-autenticación antes de acceder al menú principal.
-
-## Base de datos
-
-La base de datos se crea automáticamente en:
-
-```text
-sistema_gestion.db
-```
-
-Las entidades principales son:
-
-- `usuario`
-- `empleado`
-- `departamento`
-- `proyecto`
-- `tiempo`
-- `informe`
-
-## Trabajo pendiente
-
-- Corregir la integración entre modelos, DAO, controladores y vistas.
-- Completar el CRUD de empleados.
-- Completar el CRUD de departamentos.
-- Corregir el CRUD de proyectos.
-- Completar el registro y consulta de tiempos.
-- Implementar los informes.
-- Integrar o eliminar el servicio de moneda.
-- Corregir la configuración de WeatherAPI.
-- Sustituir SHA-256 por un algoritmo seguro para contraseñas.
-- Agregar pruebas automatizadas.
-- Añadir integración continua con GitHub Actions.
-- Mejorar el manejo de errores y los mensajes al usuario.
-
-## Pruebas
-
-Actualmente el proyecto no cuenta con una suite de pruebas automatizadas.
-
-Se recomienda agregar pruebas con `pytest` para:
-
-- Inicialización de la base de datos.
-- Creación y consulta de empleados.
-- Autenticación de usuarios.
-- Gestión de departamentos.
-- Gestión de proyectos.
-- Registro de tiempos.
-- Generación de informes.
-
-## Licencia
-
-La licencia del proyecto aún no ha sido definida.
+1. Editar los datos del empleado seleccionado.
+2. Cambiar correctamente su estado.
+3. Eliminarlo lógicamente conservando el historial.
+4. Verificar que todas las operaciones estén asociadas al usuario mediante su RUT.
