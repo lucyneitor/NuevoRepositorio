@@ -127,7 +127,7 @@ class EmpleadoController:
                 nuevo = pedir(f"{pal} nuevo")
                 if op == 1:
                     empleado.nombre = nuevo
-                    user.nombre_completo
+                    user.nombre_completo = empleado.nombre
                 elif op == 2:
                     empleado.direccion = nuevo
                 elif op == 3:
@@ -135,7 +135,7 @@ class EmpleadoController:
                 elif op == 4:
                     empleado.correo = nuevo
                 elif op == 5:
-                    empleado.sueldo = nuevo
+                    empleado.sueldo = int(nuevo) #falta validar para que no caiga
                 else:
                     user.rol="Administrador" if user.rol == "Empleado" else "Administrador"
                 if EmpleadoDAO.actualizar_empleado(empleado):
@@ -181,11 +181,15 @@ class EmpleadoController:
 
     def eliminar_empleado(self, empleado:Empleado): #cambia solo el estado para dejar registro
         user =UsuarioDAO.obtener_por_rut_empleado(empleado.rut)
-
-        if EmpleadoDAO.despedir_empleado(empleado):
-            mostrar_mensaje("Empleado eliminado de contrato")
-            if UsuarioDAO.eliminar(user.id_usuario):
-                mostrar_mensaje(f"Se quito la credencial de {empleado.nombre}")
+        if user is None:
+            if EmpleadoDAO.despedir_empleado(empleado):
+                mostrar_mensaje("Empleado eliminado de contrato")
+                if UsuarioDAO.eliminar(user.id_usuario):
+                    mostrar_mensaje(f"Se quito la credencial de {empleado.nombre}")
+                    return
+            EmpleadoDAO.recontratar_empleado(empleado)
+            return
+        mostrar_mensaje("No se encontro el usuario en sistema")
     
     def imprimir_empleado(self,empleado:Empleado):
         self.empleado_view.mostrar_empleado(empleado)
