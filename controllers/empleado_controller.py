@@ -78,16 +78,20 @@ class EmpleadoController:
         else:
             mostrar_mensaje(f"Bienvenido {era_empleado.nombre} > ingresaras nuevas credenciales>")
             user = self.auth_view.formulario_nuevo_usuario(rut,era_empleado.nombre,valor)
-            user["contraseña"]=self.usuario.encriptar_credencial(user["contraseña"])
+            user["clave"]=self.usuario.encriptar_credencial(user["clave"])
             crear_usuario = Usuario(
-                username=user['usuario'], password_hash=user['contraseña'], 
+                username=user['username'], password_hash=user['clave'], 
                 nombre_completo=era_empleado.nombre, rol=valor, rut_empleado=rut
             )
+            era_empleado.estado="activo"
+            if EmpleadoDAO.actualizar_empleado(era_empleado):
+                mostrar_mensaje("Contratado > Procesando creación usuario... >")
+
 
         if UsuarioDAO.crear(crear_usuario):
             mostrar_mensaje("Empleado y usuario creados exitosamente.")
         else:
-            EmpleadoDAO.eliminar_sistema(nuevo["rut"])  # eliminar del sistema por completo, no solo modificar
+            EmpleadoDAO.eliminar_sistema(rut)  # eliminar del sistema por completo, no solo modificar
             mostrar_mensaje("No se pudo crear el usuario; se canceló el registro del empleado.")
     
     def editar_empleado(self, empleado:Empleado): #usar actualizar aqui 
