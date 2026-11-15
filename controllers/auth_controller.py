@@ -4,6 +4,8 @@ from models.usuario_dao import UsuarioDAO
 from views.auth_view import AuthView
 from models.empleado_dao import EmpleadoDAO
 from views.utils import pedir, mostrar_mensaje
+from models.empleado import Empleado
+
 class AuthController:
     """
     Controlador de Autenticación y Gestión de Usuarios.
@@ -86,9 +88,10 @@ class AuthController:
             self.view.mostrar_error(f"Ya existe un usuario registrado con el login '{datos['username']}'.")
             return None
 
-        if not(self.empleado_dao.esta_empleado(datos["rut_empleado"])):
-            if self.completar_datos(datos["rut_empleado"],datos["nombre_completo"]):
-                mostrar_mensaje("Empleado ingresado a sistema")
+        if not self.empleado_dao.esta_empleado(datos["rut_empleado"]):
+            if not self.completar_datos(datos["rut_empleado"], datos["nombre_completo"]):
+                return None
+            mostrar_mensaje("Empleado ingresado a sistema")
 
         try:
             password_encriptada = Usuario.encriptar_credencial(datos["clave"])
@@ -152,15 +155,17 @@ class AuthController:
                     print("Error: El sueldo debe ser un número entero mayor a 0.")
             contrato = pedir("fecha de contrato 'DD-MM-YYYY'").strip()
         
-            empleado = {
-                "rut": rut,
-                "nombre": nom,
-                "direccion": direccion,
-                "telefono": telefono,
-                "correo": correo,
-                "sueldo": sueldo,
-                "contrato": contrato,
-            }
+            empleado = Empleado(
+                sueldo = sueldo,
+                inicio_contrato= contrato,
+                estado = "activo",
+                rut = rut,
+                nombre = nom,
+                direccion = direccion,
+                telefono = telefono,
+                correo = correo
+            )
+
             if self.empleado_dao.agregar_empleado(empleado):
                 return True
             mostrar_mensaje("No quedo bien registrado")

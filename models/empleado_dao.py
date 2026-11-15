@@ -201,8 +201,7 @@ class EmpleadoDAO:
                 FROM empleado
                 WHERE rut = ?
             """, (rut,))
-            conn.commit()
-            return cursor.rowcount > 0
+            return cursor.fetchone() is not None
         except Exception as e:
             print(f"Error al encontrar empleado de BD: {e}")
             return False
