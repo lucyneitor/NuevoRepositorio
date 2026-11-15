@@ -1,7 +1,7 @@
 from views.tiempo_view import TiempoView
 from models.tiempo_dao import TiempoDAO
 from models.tiempo import Tiempo #ocupar al agregar un tiempo
-from views.utils import validador_time, pedir, eleccion, ValidationError, validador_op_sup, mostrar_mensaje
+from views.utils import validador_time, pedir, eleccion, ValidationError, validador_op_sup, mostrar_mensaje, convertir, validacion_fechas
 from models.empleado_dao import EmpleadoDAO
 from models.proyecto_dao import ProyectoDAO
 from datetime import date
@@ -190,14 +190,27 @@ class TiempoController:
                         )
                     elif op in (4,5):
                         fecha = pedir("Fecha (DD-MM-AAAA)") if op==4 else pedir("Fecha inicial (DD-MM-AAAA)")
+                        fecha_fin = fecha if op==4 else pedir("Fecha final (DD-MM-AAAA)")
 
-                        if op == 5:
-                            fecha_fin = pedir("Fecha final (DD-MM-AAAA)")
-                
+                        try:
+                            fecha_inicio, fecha_fin = validacion_fechas(
+                                fecha_inicio,
+                                fecha_fin,
+                                "La fecha final no puede ser anterior a la fecha inicial.",
+                            )
+                        except ValueError as error:
+                            print(error)
+                            continue
+                        
                         #Atrae una lista de registros objetos
-                        registros = (self.tiempo_dao.obtener_tiempos_por_fecha(fecha) 
-                                     if op == 4 else
-                                    self.tiempo_dao.obtener_tiempos_por_intervalo(fecha, fecha_fin))
+                        registros = (
+                            self.tiempo_dao.obtener_tiempos_por_fecha(fecha_inicio)
+                            if op == 4
+                            else self.tiempo_dao.obtener_tiempos_por_intervalo(
+                                fecha_inicio, fecha_fin
+                            )
+                        )
+                        
                     else:
                         registros = self.tiempo_dao.obtener_todos_tiempos_rut_proyect(
                             rut,
