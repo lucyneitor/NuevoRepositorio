@@ -67,7 +67,7 @@ class AuthController:
                 self.view.mostrar_error("Opción no válida.")
 
     def registrar_usuario(self) -> Usuario | None:
-        datos = self.view.formulario_nuevo_usuario()
+        datos = self.view.formulario_nuevo_usuario(None,None,None)
         es_valido, msg = Usuario.validar_credenciales_ingreso(datos["username"], datos["clave"])
         
         if not es_valido:
