@@ -123,9 +123,12 @@ class AuthController:
             self.view.mostrar_error("No puede eliminar su propio usuario con la sesión activa.")
             return
 
+        empleado=EmpleadoDAO.obtener_empleado_por_rut(usuario.rut_empleado)
         if self.view.confirmar_eliminacion(usuario.username):
+            empleado.estado="suspendido"
+            EmpleadoDAO.actualizar_empleado(empleado) #cuando eliminan un usuario queda suspendido empleado al sistema
             if UsuarioDAO.eliminar(id_usuario):
-                mostrar_mensaje(f"Usuario '{usuario.username}' eliminado exitosamente.")
+                mostrar_mensaje(f"Usuario '{usuario.username}' eliminado exitosamente.> Empleado suspendido")
             else:
                 self.view.mostrar_error("Error al eliminar el usuario en la base de datos.")
         else:
@@ -146,7 +149,7 @@ class AuthController:
                     break
                 except ValueError:
                     print("Error: El sueldo debe ser un número entero mayor a 0.")
-                contrato = pedir("fecha de contrato 'DD-MM-YYYY'").strip()
+            contrato = pedir("fecha de contrato 'DD-MM-YYYY'").strip()
         
             empleado = {
                 "rut": rut,
@@ -158,5 +161,6 @@ class AuthController:
                 "contrato": contrato,
             }
             if EmpleadoDAO.agregar_empleado(empleado):
-                return 
-            print("No quedo bien registrado")
+                return True
+            mostrar_mensaje("No quedo bien registrado")
+            return False
