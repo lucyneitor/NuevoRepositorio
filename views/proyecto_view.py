@@ -71,7 +71,7 @@ class ProyectoView():
             "estado": estado,
         }
 
-    def mostrar_proyecto(proyecto:Proyecto):
+    def mostrar_proyecto(self, proyecto:Proyecto):
         print("\n--- Datos del proyecto ---")
         print(f"ID: {proyecto.id_proyecto}")
         print(f"Nombre: {proyecto.nombre}")
@@ -87,18 +87,6 @@ class ProyectoView():
         print("2. Solo datos especificos")
         print("0. Volver")
 
-    def menu_op1(self, proyectos: list[Proyecto]) -> None:
-        print("| ID | Nombre | Descripción | Fecha inicio | Fecha término | Estado |")
-
-        for proyecto in proyectos:
-            print(
-                f"| {proyecto.id_proyecto} "
-                f"| {proyecto.nombre} "
-                f"| {proyecto.descripcion} "
-                f"| {proyecto.fecha_inicio} "
-                f"| {proyecto.fecha_fin} "
-                f"| {proyecto.estado} |"
-            )
 
     def menu_op2(self):
         print("\n¿Qué datos quieres mostrar?")
@@ -159,12 +147,12 @@ class ProyectoView():
                 + "|"
             )
 
-            print(borde)
-            imprimir_fila(encabezados)
-            print(borde)
+        print(borde)
+        imprimir_fila(encabezados)
+        print(borde)
 
-            for fila in filas:
-                imprimir_fila(fila)
+        for fila in filas:
+            imprimir_fila(fila)
 
-            print(borde)
+        print(borde)
 

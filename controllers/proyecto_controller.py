@@ -94,12 +94,12 @@ class ProyectoController:
                     fecha_fin = proyecto.fecha_fin
 
                     if op == 3:
-                        inicio = pedir(
+                        fecha_inicio = pedir(
                             "Nueva fecha de inicio (DD-MM-AAAA)"
                         ).strip()
 
                     if op == 4:
-                        fin = pedir(
+                        fecha_fin = pedir(
                             "Nueva fecha de término (DD-MM-AAAA)"
                         ).strip()
                         
@@ -189,6 +189,7 @@ class ProyectoController:
                     ]
 
                     self.proyecto_view.mostrar_detalle(opciones, proyectos)
+                    mostrar_mensaje("Tabla impresa exitosamente")
                     return
 
                 opciones = []
