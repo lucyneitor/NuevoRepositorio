@@ -460,6 +460,37 @@ class TiempoDAO:
             conn.close()
 
     @staticmethod
+    def contar_empleados_por_proyecto(id_proyecto) -> int:
+        """
+        Cuenta los proyectos distintos que aparecen en la tabla tiempo.
+        """
+        conn = Database().get_connection()
+        
+        try:
+            cursor: Cursor = conn.cursor()
+            cursor.execute(
+                """
+                SELECT COUNT(DISTINCT rut_empleado) FROM tiempo
+                WHERE id_proyecto = ?
+                """, (id_proyecto,)
+            )
+            return cursor.fetchone()[0]
+        finally:
+            conn.close()
+
+    @staticmethod
+    def sumar_tiempo_por_trabajador() -> dict[str, float]:
+        registros = TiempoDAO.obtener_todos_tiempos()
+
+        acumulado: dict[str, float] = {}
+
+        for registro in registros:
+            rut = registro.rut_empleado
+            acumulado[rut] = acumulado.get(rut, 0) + registro.tiempo_trabajado
+
+        return acumulado
+    
+    @staticmethod
     def contar_empleados_en_tiempos() -> int:
         """Cuenta los empleados distintos que registraron tiempos."""
         conn = Database().get_connection()
@@ -474,6 +505,7 @@ class TiempoDAO:
             return cursor.fetchone()[0]
         finally:
             conn.close()
+    
     @staticmethod
     def contar_pausa_minutos(rut) -> int:
         """

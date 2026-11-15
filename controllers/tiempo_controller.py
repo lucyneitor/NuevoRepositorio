@@ -106,10 +106,11 @@ class TiempoController:
         nom = self.proyecto_dao.obtener_proyecto_id(id)
         estado = self.proyecto_dao.obtener_estado(id) # pendiente
         registros = self.tiempo_dao.obtener_tiempos_proyect(id)
-        cant_empleado = self.tiempo_dao.contar_empleados_proyecto(id)
-        cant_tiempo = self.tiempo_dao.sumar_tiempo(id)
+        cant_empleado = self.tiempo_dao.contar_empleados_por_proyecto(id)
+        cant_tiempo = len(registros) #registros de tiempos en el proyecto
+        time_trabajado = self.tiempo_dao.sumar_tiempo_por_trabajador()
         self.tiempo_view.mostrar_registros_proyecto(
-            registros, cant_tiempo, cant_empleado, nom, estado)
+            registros, cant_tiempo, cant_empleado, nom, estado,time_trabajado)
 
     
     def listar_registros_pro_perso(self, rut:str, id:int):
@@ -132,6 +133,7 @@ class TiempoController:
 
     def listar_registros_rango_fecha(self, fecha1:str, fecha2:str): #pendiente
         registros = self.tiempo_dao.contar_tiempos_por_intervalo(fecha1,fecha2)
+        cant_registros = len(registros)
 
     
     def agregar_tiempos(self, rut:str, proyect=str):
@@ -151,8 +153,8 @@ class TiempoController:
             return 
         
         crear_tiempo= Tiempo(
-            id_tiempo = None, fecha = nuevo["fecha"], hora_salida=nuevo["hora_salida"], 
-            pausa_minutos = nuevo["pausa_minutos"], rut_empleado=rut, id_proyecto=proyecto,
+            id_tiempo = None, fecha = nuevo["fecha"], hora_entrada=nuevo["hora_entrada"], hora_salida=nuevo["hora_salida"], 
+            pausa_minutos = int(nuevo["pausa_minutos"]), rut_empleado=rut, id_proyecto=proyecto,
         )
         if self.tiempo_dao.agregar_tiempo(crear_tiempo): # consultar linea (modificar)
             mostrar_mensaje("Tiempo agregado exitosamente")
@@ -230,7 +232,7 @@ class TiempoController:
         tiempo_actualizado = Tiempo(
             id_tiempo=id_tiempo,  # Asegúrate de que tu modelo Tiempo acepte el ID si es necesario para la actualización
             fecha=nuevo.get("fecha", registro_existente.fecha),
-            hora_entrada= nuevo.get("hora_entradae", registro_existente.hora_entrada),
+            hora_entrada= nuevo.get("hora_entrada", registro_existente.hora_entrada),
             hora_salida=nuevo.get("hora_salida", registro_existente.hora_salida),
             pausa_minutos=nuevo.get("pausa_minutos", registro_existente.pausa_minutos),
             rut_empleado=registro_existente.rut_empleado,
@@ -242,3 +244,5 @@ class TiempoController:
             print("¡Registro de tiempo actualizado exitosamente!")
         else:
             print("Ocurrió un error al intentar actualizar el registro en la base de datos.")
+
+    

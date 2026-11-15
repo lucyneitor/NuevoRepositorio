@@ -65,7 +65,7 @@ def confirmar(mensaje: str) -> bool:
         if resp in ("si", "no"):
             if resp=="si":
                 mostrar_mensaje("Confirmar con autorización")
-                validar = pwinput.pwinput("Ingreso de llave de acceso: ")
+                validar = pwinput.pwinput("<<Ingreso de llave de acceso>> ")
                 if validar == Settings.ADMIN_INITIAL_CLAVE:
                     return True
             return False
