@@ -87,7 +87,8 @@ class AuthController:
             return None
 
         if not(self.empleado_dao.esta_empleado(datos["rut_empleado"])):
-            self.completar_datos(datos["rut_empleado"],datos["nombre_completo"])
+            if self.completar_datos(datos["rut_empleado"],datos["nombre_completo"]):
+                mostrar_mensaje("Empleado ingresado a sistema")
 
         try:
             password_encriptada = Usuario.encriptar_credencial(datos["clave"])
@@ -134,8 +135,8 @@ class AuthController:
         else:
             mostrar_mensaje("Operación cancelada.")
 
-    @staticmethod
-    def completar_datos(rut: str, nom:str) -> bool:
+    
+    def completar_datos(self, rut: str, nom:str) -> bool:
         while True:
             print(f"\n--- Completar Ficha de Empleado ({nom} | RUT: {rut}) ---")
             direccion = pedir("dirección").strip()
@@ -160,7 +161,7 @@ class AuthController:
                 "sueldo": sueldo,
                 "contrato": contrato,
             }
-            if EmpleadoDAO.agregar_empleado(empleado):
+            if self.empleado_dao.agregar_empleado(empleado):
                 return True
             mostrar_mensaje("No quedo bien registrado")
             return False

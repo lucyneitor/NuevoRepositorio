@@ -51,7 +51,7 @@ def conversor(num)->str:
     if num==1:
         return "activo"
     if num==2:
-        return "inacativo"
+        return "inactivo"
     if num==3:
         return "vacaciones"
     if num==4:

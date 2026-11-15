@@ -209,6 +209,7 @@ class EmpleadoDAO:
         finally:
             conn.close()
 
+    @staticmethod
     def eliminar_sistema(rut: str) -> bool:
             conn = Database().get_connection()
             try:

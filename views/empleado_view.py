@@ -63,7 +63,7 @@ class EmpleadoView():
         print("="*50)
 
     @staticmethod
-    def mostrar_por_estado(self):
+    def mostrar_por_estado():
         print("="*50)
         print("Mostrar registros Empleados")
         print("="*50)

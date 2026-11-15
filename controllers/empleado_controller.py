@@ -34,7 +34,7 @@ class EmpleadoController:
                 print(e)
             else:
                 if opcion == 1:
-                    es_admin = confirmar("¿Tendrá rol de administrador?", self.usuario)
+                    es_admin = confirmar("¿Tendrá rol de administrador?")
                     rol = "Administrador" if es_admin else "Empleado"
                     self.agregar_empleado(rol)
 
@@ -128,7 +128,7 @@ class EmpleadoController:
                 6: "Administrador" if user.rol=="Empleado" else "Empleado" 
             }
             pal = campos.get(op)
-            autorizado = confirmar("¿Está seguro de editar esto?", self.usuario) #cuestionar si se autorizo o no
+            autorizado = confirmar("¿Está seguro de editar esto?") #cuestionar si se autorizo o no
             if autorizado:
                 nuevo = pedir(f"{pal} nuevo")
                 if op == 1:
@@ -179,7 +179,7 @@ class EmpleadoController:
                 print(e)
                 continue
             else:
-                if confirmar("¿Está seguro de pertenecer a este departamento?", self.usuario):
+                if confirmar("¿Está seguro de pertenecer a este departamento?"):
                     mostrar_mensaje("Operación exitosa: Empleado asignado en departamento")
                     return op
                 mostrar_mensaje("Operación fallida: No estas autorizado")
