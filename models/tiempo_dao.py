@@ -39,7 +39,7 @@ class TiempoDAO:
         )
 
     @staticmethod
-    def _consultar_filas(
+    def consultar_filas(
         condicion: str = "",
         parametros: tuple = (),
     ) -> list[Any]:
@@ -130,7 +130,7 @@ class TiempoDAO:
     def obtener_todos_tiempos() -> list[Tiempo]:
         """Obtiene todos los registros como objetos Tiempo."""
         try:
-            filas = TiempoDAO._consultar_filas()
+            filas = TiempoDAO.consultar_filas()
             return [TiempoDAO.crear_tiempo(fila) for fila in filas]
         except (sqlite3.Error, KeyError, TypeError, ValueError) as error:
             print(f"Error al consultar tiempos: {error}")
@@ -143,7 +143,7 @@ class TiempoDAO:
         El nombre no se guarda en la tabla tiempo: se consulta mediante JOIN.
         """
         try:
-            filas = TiempoDAO._consultar_filas()
+            filas = TiempoDAO.consultar_filas()
             return [
                 {
                     "tiempo": TiempoDAO.crear_tiempo(fila),
@@ -159,7 +159,7 @@ class TiempoDAO:
     def obtener_todos_tiempos_rut(rut: str) -> list[Tiempo]:
         """Obtiene los registros de tiempo de un empleado identificado por RUT."""
         try:
-            filas = TiempoDAO._consultar_filas(
+            filas = TiempoDAO.consultar_filas(
                 "e.rut = ?",
                 (rut,),
             )
@@ -173,7 +173,7 @@ class TiempoDAO:
         """
         Obtiene los registros de tiempo de un proyecto especifico."""
         try:
-            filas = TiempoDAO._consultar_filas(
+            filas = TiempoDAO.consultar_filas(
                 "t.id_proyecto = ?",
                 (id,),
             )
@@ -186,7 +186,7 @@ class TiempoDAO:
     def obtener_todos_tiempos_rut_proyect(rut: str, id:int) -> list[Tiempo]:
             """Obtiene los registros de tiempo de un empleado identificado por RUT."""
             try:
-                filas = TiempoDAO._consultar_filas(
+                filas = TiempoDAO.consultar_filas(
                     "e.rut = ? AND t.id_proyecto = ?",
                     (rut,id),
                 )
@@ -265,7 +265,7 @@ class TiempoDAO:
     def obtener_tiempo_por_id(id_tiempo: int) -> Tiempo | None:
         """Obtiene un registro por su ID; devuelve None si no existe."""
         try:
-            filas = TiempoDAO._consultar_filas(
+            filas = TiempoDAO.consultar_filas(
                 "t.id_tiempo = ?",
                 (id_tiempo,),
             )
