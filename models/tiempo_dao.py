@@ -51,7 +51,7 @@ class TiempoDAO:
             cursor: Cursor = conn.cursor()
             consulta = """
                 SELECT t.id_tiempo, t.fecha, t.hora_entrada, t.hora_salida,
-                       t.pausa_minutos, t.id_proyecto, e.rut, p.nombre AS nombre_proyecto,    
+                       t.pausa_minutos, t.id_proyecto, e.rut, p.nombre AS nombre_proyecto    
                 FROM tiempo AS t
                 JOIN empleado AS e ON e.rut = t.rut_empleado
                 JOIN proyecto AS p ON p.id_proyecto = t.id_proyecto
@@ -67,8 +67,8 @@ class TiempoDAO:
         finally:
             conn.close()
 
-    
-    def agregar_tiempo(self,tiempo: Tiempo) -> bool:
+    @staticmethod
+    def agregar_tiempo(tiempo: Tiempo) -> bool:
         """Registra un nuevo tiempo trabajado en la base de datos."""
 
         conn = None
@@ -96,13 +96,13 @@ class TiempoDAO:
                     hora_salida,
                     pausa_minutos,
                     rut_empleado,
-                    id_proyecto,
+                    id_proyecto
                 )
                 VALUES (?, ?, ?, ?, ?, ?)
             """, (
-                self._texto_fecha(tiempo.fecha),
-                self._texto_hora(tiempo.hora_entrada),
-                self._texto_hora(tiempo.hora_salida),
+                TiempoDAO._texto_fecha(tiempo.fecha),
+                TiempoDAO._texto_hora(tiempo.hora_entrada),
+                TiempoDAO._texto_hora(tiempo.hora_salida),
                 tiempo.rut_empleado,
                 tiempo.id_proyecto,
                 tiempo.pausa_minutos
@@ -247,7 +247,7 @@ class TiempoDAO:
             cursor.execute(
                 """
                 SELECT t.id_tiempo, t.fecha, t.hora_entrada, t.hora_salida,
-                    t.id_proyecto, e.rut, t.pausa_minutos
+                    t.pausa_minutos, t.id_proyecto, e.rut
                 FROM tiempo AS t
                 JOIN empleado AS e ON e.rut = t.rut_empleado
                 WHERE t.fecha BETWEEN ? AND ?
@@ -286,9 +286,9 @@ class TiempoDAO:
                 SET fecha = ?,
                     hora_entrada = ?,
                     hora_salida = ?,
+                    pausa_minutos = ?,
                     rut_empleado = ?,
-                    id_proyecto = ?,
-                    pausa_minutos = ?
+                    id_proyecto = ?
                 WHERE id_tiempo = ?
                 """,
                 (

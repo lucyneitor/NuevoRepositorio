@@ -151,10 +151,10 @@ class TiempoController:
             return 
         
         crear_tiempo= Tiempo(
-            fecha = nuevo["fecha"], hora_salida=nuevo["hora_salida"], 
+            id_tiempo = None, fecha = nuevo["fecha"], hora_salida=nuevo["hora_salida"], 
             pausa_minutos = nuevo["pausa_minutos"], rut_empleado=rut, id_proyecto=proyecto,
         )
-        if self.tiempo_dao.crear_tiempo(crear_tiempo): # consultar linea (modificar)
+        if self.tiempo_dao.agregar_tiempo(crear_tiempo): # consultar linea (modificar)
             mostrar_mensaje("Tiempo agregado exitosamente")
 
     def buscar_tiempos(self):
@@ -228,12 +228,12 @@ class TiempoController:
 
         # Creamos la instancia actualizada (puedes conservar los valores anteriores si alguno viene vacío)
         tiempo_actualizado = Tiempo(
-            id=id_tiempo,  # Asegúrate de que tu modelo Tiempo acepte el ID si es necesario para la actualización
+            id_tiempo=id_tiempo,  # Asegúrate de que tu modelo Tiempo acepte el ID si es necesario para la actualización
             fecha=nuevo.get("fecha", registro_existente.fecha),
             hora_salida=nuevo.get("hora_salida", registro_existente.hora_salida),
-            id_empleado=registro_existente.id_empleado,
-            id_proyecto=registro_existente.id_proyecto,
-            pausa_minutos=nuevo.get("pausa_minutos", registro_existente.pausa_minutos)
+            pausa_minutos=nuevo.get("pausa_minutos", registro_existente.pausa_minutos),
+            rut_empleado=registro_existente.rut_empleado,
+            id_proyecto=registro_existente.id_proyecto
         )
 
         # Llamada al DAO para actualizar (asumiendo que tu DAO tiene un método actualizar_tiempo)
