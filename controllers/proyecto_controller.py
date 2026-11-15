@@ -102,7 +102,12 @@ class ProyectoController:
                         fecha_fin = pedir(
                             "Nueva fecha de término (DD-MM-AAAA)"
                         ).strip()
-                        
+
+                    estado = self.calcular_estado(
+                        fecha_inicio.isoformat(),
+                        fecha_fin.isoformat()
+                    )
+                    
                     try:
                         fecha_inicio, fecha_fin = validacion_fechas(
                             fecha_inicio,
@@ -113,7 +118,6 @@ class ProyectoController:
                         print(error)
                         continue  # vuelve al menú de edición
                     else:
-                        estado = self.calcular_estado(fecha_inicio, fecha_fin)
                         fecha_inicio = fecha_inicio.isoformat()
                         fecha_fin = fecha_fin.isoformat()
 

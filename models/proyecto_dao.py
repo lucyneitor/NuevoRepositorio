@@ -90,8 +90,8 @@ class ProyectoDAO:
                                             proyecto_obj.descripcion,
                                             proyecto_obj.fecha_inicio,
                                             proyecto_obj.fecha_fin,
-                                            proyecto_obj.id_proyecto,
-                                            proyecto_obj.estado)
+                                            proyecto_obj.estado,
+                                            proyecto_obj.id_proyecto)
             )
             conn.commit()
             return cursor.rowcount > 0
