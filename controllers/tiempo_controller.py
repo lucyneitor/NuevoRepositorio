@@ -4,7 +4,7 @@ from models.tiempo import Tiempo #ocupar al agregar un tiempo
 from views.utils import validador_time, pedir, eleccion, ValidationError, validador_op_sup, mostrar_mensaje, convertir, validacion_fechas
 from models.empleado_dao import EmpleadoDAO
 from models.proyecto_dao import ProyectoDAO
-from datetime import date
+from datetime import date, datetime
 
 class TiempoController:
     def __init__(self):
@@ -26,13 +26,13 @@ class TiempoController:
                 if op == 0:
                     mostrar_mensaje("Volviendo al menú principal...")
                     break
-                elif op == 1:
-
-                    self.listar_tiempos()
-                elif op == 2:
+                
+                if op == 2:
                     rut = pedir("RUT del empleado")
                     proyecto = pedir("nombre del proyecto")
                     self.agregar_tiempos(rut,proyecto) #creo que listo
+                if op == 1:
+                    self.listar_tiempos()
                 elif op == 3:
                     self.buscar_tiempos()
                 elif op == 4: #editar
@@ -43,7 +43,7 @@ class TiempoController:
     def listar_tiempos(self):
         registros = self.tiempo_dao.obtener_todos_tiempos()
         if not registros:
-            mostrar_mensaje("No hay registros de tiempo.")
+            mostrar_mensaje("No hay registros en sistema")
             return
         while True:
             self.tiempo_view.menu_listar()
@@ -136,26 +136,27 @@ class TiempoController:
         cant_registros = len(registros)
 
     
-    def agregar_tiempos(self, rut:str, proyect=str):
+    def agregar_tiempos(self, rut:str, proyect:str):
         """
         Crea registro de tiempo, en base a lo que se registre en formulario y la los datos parametros validarlos
         """
-        nuevo= self.tiempo_view.formulario_tiempo() #empleado view formulario
-
-        empleado = self.empleado_dao.obtener_empleado_por_rut(rut) #verifica su existencia
+        empleado = self.empleado_dao.obtener_empleado_por_rut(rut)#verifica su existencia
         if empleado is None:
             mostrar_mensaje("No existe este empleado en la empresa")
             return
-        
+
         proyecto = self.proyecto_dao.obtener_id_por_nombre(proyect) #retorna id
         if proyecto is None:
             mostrar_mensaje("No existe este proyecto en la empresa")
             return 
         
+        nuevo= self.tiempo_view.formulario_tiempo() #empleado view formulario
+        
         crear_tiempo= Tiempo(
             id_tiempo = None, fecha = nuevo["fecha"], hora_entrada=nuevo["hora_entrada"], hora_salida=nuevo["hora_salida"], 
             pausa_minutos = int(nuevo["pausa_minutos"]), rut_empleado=rut, id_proyecto=proyecto,
         )
+
         if self.tiempo_dao.agregar_tiempo(crear_tiempo): # consultar linea (modificar)
             mostrar_mensaje("Tiempo agregado exitosamente")
 

@@ -29,7 +29,8 @@ validador_texto = TypeAdapter(TextoNoVacio)
 def leer_numero(mensaje: str) -> int: #falta un leer texto, leer fecha
     while True:
         try:
-            return int(input(mensaje))
+            num = int(input(mensaje))
+            return num
         except ValueError:
             print("Error: Debe ingresar un número entero válido.")
 def pedir(msg :str):
@@ -89,6 +90,32 @@ def validacion_fechas(fecha_inicio: str | date, fecha_fin: str | date, msg: str)
         raise ValueError(msg)
 
     return inicio.isoformat(), fin.isoformat()
+
+def valida_fecha(msg:str):
+    while True:
+        fecha = pedir(msg)
+        try:
+            fecha = datetime.strptime(fecha, "%d-%m-%Y")
+            return fecha.strftime("%Y-%m-%d")
+        except ValueError:
+            mostrar_mensaje("Formato de fecha inválido. Use DD-MM-YYYY (ej. 26-11-2026)")
+
+def valida_hora(msg):
+    while True:
+        hora = pedir(msg)
+        try:
+            hora = datetime.strptime(hora, "%H:%M")
+        except ValueError:
+            mostrar_mensaje("Formato de hora inválido. Use HH:MM en formato 24 hrs (ej. 08:30)")
+            return
+
+def inter_horas(entrada, salida)-> tuple[str,str]:
+    while True:
+        if salida > entrada:
+            return entrada, salida
+        mostrar_mensaje("La hora de salida debe ser posterior a la hora de entrada")
+        entrada = valida_hora(pedir("hora de entrada"))
+        salida = valida_hora(pedir("hora de salida"))
 
 def obtener_validador_depa(departamentos: list) -> TypeAdapter:
     max_id = max(d.id_departamento for d in departamentos)

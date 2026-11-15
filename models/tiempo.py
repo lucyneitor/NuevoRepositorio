@@ -27,13 +27,16 @@ class Tiempo:
         return self.__fecha
 
     @fecha.setter
-    def fecha(self, valor: date | str) -> None:
-        if isinstance(valor,date):
-            self.__fecha = valor
+    def fecha(self, fecha: date | str) -> None:
+        if isinstance(fecha, datetime):
+            self.__fecha = fecha.date()
+
+        if isinstance(fecha,date):
+            self.__fecha = fecha
             return
 
-        if isinstance(valor, str):
-            valor_limpio = valor.strip()
+        if isinstance(fecha, str):
+            valor_limpio = fecha.strip()
             for formato in ("%d-%m-%Y", "%Y-%m-%d"):
                 try:
                     self._fecha = datetime.strptime(valor_limpio, formato).date()
@@ -42,7 +45,12 @@ class Tiempo:
                     continue
 
         raise ValueError("La fecha debe tener formato DD-MM-AAAA (ej: 04-05-2026).")
-
+    
+    @property
+    def tiempo_trabajado(self) -> float:
+        """Devuelve el tiempo efectivo trabajado en horas (float)."""
+        return round(self.duracion_trabajada.total_seconds() / 3600, 2)
+    
     @property
     def hora_entrada(self) -> time:
         return self.__hora_entrada

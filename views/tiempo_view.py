@@ -1,4 +1,4 @@
-from views.utils import pedir, mostrar_mensaje
+from views.utils import valida_hora, inter_horas, pedir, mostrar_mensaje, valida_fecha, leer_numero
 from datetime import date
 
 class TiempoView():
@@ -96,7 +96,7 @@ class TiempoView():
         print(f"Cantidad de empleados involucrados en proyectos: {empleado}")
         print("-"*60)
 
-    def mostrar_registros_empleado(registros:list, tiempos:int, realizado:int, negativo:int, proyecto:int, rut:str):
+    def mostrar_registros_empleado(self,registros:list, tiempos:int, realizado:int, negativo:int, proyecto:int, rut:str):
         print("-"*60)
         print(f"Registros del empleado {rut}")
         print("-"*60)
@@ -129,7 +129,7 @@ class TiempoView():
         print(f"Cantidad de proyectos involucrados: {proyecto}")
 
 
-    def mostrar_registros_proyecto(registros, cant_tiempo, cant_empleado, nom, estado):
+    def mostrar_registros_proyecto(self,registros, cant_tiempo, cant_empleado, nom, estado):
         print("-"*60)
         print(f"Registros del Proyecto {nom}")
         print("-"*60)
@@ -206,15 +206,17 @@ class TiempoView():
         print(f"Tiempo trabajado: {tiempo}")
         print(f"Tiempo en pausa: {pausa}")
 
-
     def formulario_tiempo(self)->dict: #falta validar cada dato
-        fecha = pedir("fecha")
+        fecha = valida_fecha("fecha")
         print("-"*50)
-        hora_entrada = pedir("hora de entrada")
+        hora_entrada = valida_hora("hora de entrada")
         print("-"*50)
-        hora_salida = pedir("hora de salida")
+        hora_salida = valida_hora("hora de salida")
         print("-"*50)
-        minutos = pedir("pausa de minutos")
+
+        hora_entrada,hora_salida = inter_horas(hora_entrada, hora_salida)
+
+        minutos = leer_numero("pausa de minutos")
         print("-"*50)
         return {
             'fecha': fecha, 'hora_entrada': hora_entrada, 
