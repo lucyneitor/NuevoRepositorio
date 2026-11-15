@@ -102,17 +102,18 @@ class ProyectoController:
                         fecha_fin = pedir(
                             "Nueva fecha de término (DD-MM-AAAA)"
                         ).strip()
-
-                    estado = self.calcular_estado(
-                        fecha_inicio.isoformat(),
-                        fecha_fin.isoformat()
-                    )
                     
                     try:
-                        fecha_inicio, fecha_fin = validacion_fechas(
+                        fecha_inicio, fecha_fin = validacion_fechas( #validar DD-MM-YYYY
                             fecha_inicio,
                             fecha_fin,
                             "La fecha de término no puede ser anterior a la fecha de inicio.",
+                        )
+                        fecha_inicio = fecha_inicio.isoformat() #convertir a date
+                        fecha_fin = fecha_fin.isoformat() #YYYY-MM-DD
+                        estado = self.calcular_estado( #calcular estado
+                            fecha_inicio.isoformat(),
+                            fecha_fin.isoformat()
                         )
                     except ValueError as error:
                         print(error)
@@ -129,11 +130,9 @@ class ProyectoController:
                     proyecto.fecha_fin = fecha_fin
                     proyecto.estado = estado
                     if self.proyecto_dao.actualizar_proyecto(proyecto):
-                        mostrar_mensaje("Proyecto actualizado exitosamente.")
-                        
+                        mostrar_mensaje("Proyecto actualizado exitosamente.")  
                     else:
                         mostrar_mensaje("No se pudo actualizar el proyecto.")
-                    
                 else:
                     mostrar_mensaje("Cambio cancelado.")
                     
