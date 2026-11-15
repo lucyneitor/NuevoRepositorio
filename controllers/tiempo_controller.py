@@ -35,7 +35,7 @@ class TiempoController:
                     self.agregar_tiempos(rut,proyecto) #creo que listo
                 elif op == 3:
                     self.buscar_tiempos()
-                elif op == 4:
+                elif op == 4: #editar
                     self.actualizar_tiempo()
                 else:
                     mostrar_mensaje("Opción no válida. Ingrese un número del 0 al 4.")
@@ -94,7 +94,7 @@ class TiempoController:
         """
         registros = self.tiempo_dao.obtener_todos_tiempos_rut(rut)
         cant_tiempo_registrados = len(registros)# pendiente
-        cant_trabajo = sum(registro.tiempo_trabajado for registro in registros)
+        cant_trabajo = sum(registro.tiempo_trabajado.total_seconds() / 3600 for registro in registros)
         cant_basura_tiempo = sum(t.pausa_minutos for t in registros)
         cant_proyect = self.tiempo_dao.contar_proyectos_por_rut(rut)
         self.tiempo_view.mostrar_registros_empleado(
@@ -117,7 +117,7 @@ class TiempoController:
         nom_em = self.empleado_dao.obtener_empleado_por_rut(rut)
         registros = self.tiempo_dao.obtener_todos_tiempos_rut_proyect(rut,id)
         cant_tiempo_registrados = len(registros)
-        cant_trabajo = sum(registro.tiempo_trabajado for registro in registros)
+        cant_trabajo = sum(registro.tiempo_trabajado.total_seconds() / 3600 for registro in registros)
         cant_basura_tiempo = self.tiempo_dao.contar_pausa_minutos(rut)
         self.tiempo_view.mostrar_registros_esp_pro_em(nom_pro, nom_em, registros, 
                                                       cant_tiempo_registrados,cant_trabajo, cant_basura_tiempo)
@@ -126,7 +126,7 @@ class TiempoController:
     def listar_registros_fecha(self, fecha:date): 
         registros = self.tiempo_dao.obtener_tiempos_por_fecha(fecha)
         cant_tiempo_registrados = len(registros)
-        cant_trabajo = sum(registro.tiempo_trabajado for registro in registros)
+        cant_trabajo = sum(registro.tiempo_trabajado.total_seconds() / 3600 for registro in registros)
         cant_proyectos = self.tiempo_dao.contar_proyectos_en_tiempos()
         self.tiempo_view.mostrar_registros_por_fecha(registros, fecha)
 
@@ -230,6 +230,7 @@ class TiempoController:
         tiempo_actualizado = Tiempo(
             id_tiempo=id_tiempo,  # Asegúrate de que tu modelo Tiempo acepte el ID si es necesario para la actualización
             fecha=nuevo.get("fecha", registro_existente.fecha),
+            hora_entrada= nuevo.get("hora_entradae", registro_existente.hora_entrada),
             hora_salida=nuevo.get("hora_salida", registro_existente.hora_salida),
             pausa_minutos=nuevo.get("pausa_minutos", registro_existente.pausa_minutos),
             rut_empleado=registro_existente.rut_empleado,

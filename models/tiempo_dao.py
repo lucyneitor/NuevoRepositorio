@@ -103,9 +103,9 @@ class TiempoDAO:
                 TiempoDAO._texto_fecha(tiempo.fecha),
                 TiempoDAO._texto_hora(tiempo.hora_entrada),
                 TiempoDAO._texto_hora(tiempo.hora_salida),
+                tiempo.pausa_minutos,
                 tiempo.rut_empleado,
                 tiempo.id_proyecto,
-                tiempo.pausa_minutos
             ))
 
             conn.commit()
@@ -295,10 +295,10 @@ class TiempoDAO:
                     TiempoDAO._texto_fecha(tiempo.fecha),
                     TiempoDAO._texto_hora(tiempo.hora_entrada),
                     TiempoDAO._texto_hora(tiempo.hora_salida),
+                    tiempo.pausa_minutos,
                     tiempo.rut_empleado,
                     tiempo.id_proyecto,
-                    tiempo.pausa_minutos,
-                    tiempo.id_tiempo,
+                    tiempo.id_tiempo
                 ),
             )
             conn.commit()

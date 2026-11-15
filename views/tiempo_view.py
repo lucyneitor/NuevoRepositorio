@@ -60,7 +60,7 @@ class TiempoView():
                 f"Fecha: {tiempo.fecha} | "
                 f"Entrada: {tiempo.hora_entrada} | "
                 f"Salida: {tiempo.hora_salida} | "
-                f"RUT: {tiempo.id_empleado} | "
+                f"RUT: {tiempo.rut_empleado} | "
                 f"Proyecto: {tiempo.id_proyecto} | "
                 f"Pausa: {tiempo.pausa_minutos} min"
             )
@@ -80,7 +80,7 @@ class TiempoView():
 
             print(
                 f"Registro N.º {tiempo.id_tiempo} | "
-                f"Empleado (RUT): {tiempo.id_empleado} | "
+                f"Empleado (RUT): {tiempo.rut_empleado} | "
                 f"Proyecto: {nombre_proyecto} | "
                 f"Fecha: {tiempo.fecha} | "
                 f"Entrada: {tiempo.hora_entrada} | "
@@ -169,7 +169,7 @@ class TiempoView():
         else:
             for tiempo in registros:
                 print(
-                    f"RUT: {tiempo.id_empleado} | "
+                    f"RUT: {tiempo.rut_empleado} | "
                     f"Proyecto: {tiempo.id_proyecto} | "
                     f"Entrada: {tiempo.hora_entrada.strftime('%H:%M')} | "
                     f"Salida: {tiempo.hora_salida.strftime('%H:%M')} | "
