@@ -112,6 +112,7 @@ class ProyectoView():
 
     def mostrar_detalle(self, opciones: list[str], proyectos: list[Proyecto]):
         campos_disponibles = {
+            "id": ("ID Proyecto", "id_proyecto"),
             "nombre": ("Nombre", "nombre"),
             "descripción": ("Descripción", "descripcion"),
             "fecha inicio": ("Inicio", "fecha_inicio"),
@@ -158,22 +159,6 @@ class ProyectoView():
                 + "|"
             )
 
-        print(borde)
-        imprimir_fila(encabezados)
-        print(borde)
-
-        for fila in filas:
-            imprimir_fila(fila)
-
-        print(borde)
-
-        def imprimir_fila(valores):
-            celdas = [
-                f" {valor.ljust(anchos[i])} "
-                for i, valor in enumerate(valores)
-            ]
-            print("|" + "|".join(celdas) + "|")
-
             print(borde)
             imprimir_fila(encabezados)
             print(borde)
@@ -182,3 +167,4 @@ class ProyectoView():
                 imprimir_fila(fila)
 
             print(borde)
+

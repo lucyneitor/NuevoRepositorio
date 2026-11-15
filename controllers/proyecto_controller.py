@@ -1,5 +1,5 @@
 from views.proyecto_view import ProyectoView
-from views.utils import pedir,eleccion, convertir_fecha, validador_op_sup, validador_inicial, validador_time, validador_op, mostrar_mensaje, ValidationError, confirmar, pedir_texto_valido, validacion_fechas
+from views.utils import pedir,eleccion, validador_op_sup, validador_inicial, validador_time, validador_op, mostrar_mensaje, ValidationError, confirmar, pedir_texto_valido, validacion_fechas
 from models.proyecto import Proyecto
 from models.proyecto_dao import ProyectoDAO
 from datetime import date
@@ -57,7 +57,7 @@ class ProyectoController:
     def agregar_proyecto(self):
         nuevo=self.proyecto_view.formulario()
         crear_proyecto= Proyecto(
-            nombre = nuevo["nombre"], descripcion=nuevo["descripcion"], 
+            id_proyecto=None, nombre = nuevo["nombre"], descripcion=nuevo["descripcion"], 
             fecha_inicio = nuevo["fecha_inicio"], fecha_fin=nuevo["fecha_fin"],
             estado=nuevo["estado"]
         )
@@ -97,16 +97,12 @@ class ProyectoController:
                         inicio = pedir(
                             "Nueva fecha de inicio (DD-MM-AAAA)"
                         ).strip()
-                        #YYYY-MM-DD -> DD-MM-YYYY
-                        fecha_inicio = convertir_fecha(inicio)
 
                     if op == 4:
                         fin = pedir(
                             "Nueva fecha de término (DD-MM-AAAA)"
                         ).strip()
-                        #YYYY-MM-DD -> DD-MM-YYYY
-                        fecha_fin = convertir_fecha(fin)
-
+                        
                     try:
                         fecha_inicio, fecha_fin = validacion_fechas(
                             fecha_inicio,
@@ -183,7 +179,16 @@ class ProyectoController:
                     return
 
                 if opcion == 1:
-                    self.proyecto_view.menu_op1(proyectos)
+                    opciones = [
+                        "id departamento",
+                        "nombre",
+                        "descripción",
+                        "fecha inicio",
+                        "fecha fin",
+                        "estado",
+                    ]
+
+                    self.proyecto_view.mostrar_detalle(opciones, proyectos)
                     return
 
                 opciones = []

@@ -71,6 +71,7 @@ def confirmar(mensaje: str) -> bool:
             return False
         print("Respuesta no válida. Por favor, ingrese 'si' o 'no'.")
 
+@staticmethod
 def pedir_texto_valido(mensaje: str) -> str:
     while True:
         try:
@@ -79,23 +80,15 @@ def pedir_texto_valido(mensaje: str) -> str:
         except ValidationError:
             print("El texto no puede estar vacío.")
 
-def validacion_fechas(fecha_inicio: str, fecha_fin: str, msg: str) -> tuple[str, str]:
-    try:
-        inicio = datetime.strptime(
-            fecha_inicio.strip(),
-            "%d-%m-%Y"
-        ).date()
-        fin = datetime.strptime(
-            fecha_fin.strip(),
-            "%d-%m-%Y"    
-        ).date()
-    except (TypeError, ValueError) as error:
-        raise ValueError("Usa el formato de fecha DD-MM-YYYY.") from error
+@staticmethod
+def validacion_fechas(fecha_inicio: str | date, fecha_fin: str | date, msg: str) -> tuple[str, str]:
+    inicio = convertir(fecha_inicio)
+    fin = convertir(fecha_fin)
 
     if inicio > fin:
         raise ValueError(msg)
 
-    return inicio, fin
+    return inicio.isoformat(), fin.isoformat()
 
 def obtener_validador_depa(departamentos: list) -> TypeAdapter:
     max_id = max(d.id_departamento for d in departamentos)
@@ -107,13 +100,22 @@ def obtener_validador_depa(departamentos: list) -> TypeAdapter:
 def mostrar_mensaje(mensaje: str) -> None:
     print(f"\n[SISTEMA] {mensaje}")
 
-def convertir_fecha(fecha_texto: str) -> date:
-    try:
-        return datetime.strptime(
-            fecha_texto.strip(),
-            "%d-%m-%Y"
-        ).date()
-    except ValueError as error:
+@staticmethod
+def convertir(valor: str | date) -> date:
+        if isinstance(valor, datetime):
+            return valor.date()
+
+        if isinstance(valor, date):
+            return valor
+
+        valor = valor.strip()
+
+        for formato in ("%d-%m-%Y", "%Y-%m-%d"):
+            try:
+                return datetime.strptime(valor, formato).date()
+            except ValueError:
+                continue
+
         raise ValueError(
-            "La fecha debe tener el formato DD-MM-YYYY."
-        ) from error
+            "Usa el formato DD-MM-YYYY."
+        )
