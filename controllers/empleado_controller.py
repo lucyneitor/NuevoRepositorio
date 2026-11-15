@@ -37,6 +37,7 @@ class EmpleadoController:
                 if opcion == 1:
                     es_admin = confirmar("¿Tendrá rol de administrador?")
                     rol = "Administrador" if es_admin else "Empleado"
+                    mostrar_mensaje("Acceso concedido rol") if rol == "Administrador" else mostrar_mensaje("Acceso denegado rol")
                     self.agregar_empleado(rol)
 
                 elif opcion in (2,3,4):
