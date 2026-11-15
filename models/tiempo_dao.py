@@ -1,5 +1,5 @@
 import sqlite3
-from datetime import date, time
+from datetime import date, time, datetime
 from sqlite3 import Cursor
 from typing import Any
 
@@ -15,8 +15,19 @@ class TiempoDAO:
     """
 
     @staticmethod
-    def _texto_fecha(valor: date | str) -> str:
-        return valor.isoformat() if isinstance(valor, date) else str(valor).strip()
+    def _texto_fecha(fecha: date | str) -> str:
+        if isinstance(fecha, datetime):
+            return fecha.date().isoformat()
+        if isinstance(fecha, date):
+            return fecha.isoformat()  # Devuelve '2026-05-04'
+        if isinstance(fecha, str):
+            valor = fecha.strip()
+            for fmt in ("%Y-%m-%d", "%d-%m-%Y"):
+                try:
+                    return datetime.strptime(valor, fmt).date().isoformat()
+                except ValueError:
+                    continue
+        raise ValueError(f"Fecha inválida para guardar en BD: {fecha}")
 
     @staticmethod
     def _texto_hora(valor: time | str) -> str:

@@ -113,12 +113,103 @@ class Database:
                 )
             """)
 
-            cursor.execute(
+            # 1. Departamentos (Ventas + 2 nuevos)
+            departamentos_seed = [ #datos de prueba (lista de tuplas que esperan para traducir datos de Python a filas de una tabla SQL.)
+                ("Ventas", "Alejandro Guzmán"),
+                ("Tecnología", "Camila Rojas"),
+                ("Operaciones", "Matías Valenzuela"),
+            ]
+
+            cursor.executemany(
                 """
                 INSERT OR IGNORE INTO departamento (nombre, gerente)
                 VALUES (?, ?)
                 """,
-                ("Ventas", "Alejandro Guzmán")
+                departamentos_seed,
+            )
+
+            # 2. Empleados (3 registros con RUT en mayúscula y fecha ISO YYYY-MM-DD)
+            empleados_seed = [
+                (
+                    "18456321-9",
+                    "Sofía Contreras",
+                    "Av. O'Higgins 450, Concepción",
+                    "+56981234567",
+                    "sofia.contreras@ecotech.cl",
+                    "activo",
+                    "2025-03-01",
+                    1450000,
+                    "Tecnología",
+                ),
+                (
+                    "19876543-2",
+                    "Diego Morales",
+                    "Calle Barros Arana 1020, Concepción",
+                    "+56987654321",
+                    "diego.morales@ecotech.cl",
+                    "activo",
+                    "2025-06-15",
+                    1250000,
+                    "Tecnología",
+                ),
+                (
+                    "20123456-K",
+                    "Valentina Muñoz",
+                    "Los Carrera 780, Chillán",
+                    "+56976543210",
+                    "valentina.munoz@ecotech.cl",
+                    "activo",
+                    "2026-01-10",
+                    1100000,
+                    "Operaciones",
+                ),
+            ]
+            cursor.executemany(
+                """
+                INSERT OR IGNORE INTO empleado (
+                    rut, nombre, direccion, telefono, correo,
+                    estado, inicio_contrato, sueldo, id_departamento
+                )
+                VALUES (
+                    ?, ?, ?, ?, ?, ?, ?, ?,
+                    (SELECT id_departamento FROM departamento WHERE nombre = ?)
+                )
+                """,
+                empleados_seed,
+            )
+
+            # 3. Proyectos (3 registros con estados válidos del CHECK)
+            proyectos_seed = [
+                (
+                    "Portal Web EcoTech",
+                    "Desarrollo de plataforma interna de gestión y reportes",
+                    "2026-01-15",
+                    "2026-12-20",
+                    "En proceso",
+                ),
+                (
+                    "App Móvil Terreno",
+                    "Aplicación para registro de asistencia y horas en obra",
+                    "2026-03-01",
+                    "2026-11-30",
+                    "En proceso",
+                ),
+                (
+                    "Auditoría Energética 2026",
+                    "Levantamiento de indicadores ambientales en sucursales",
+                    "2026-12-01",
+                    "2027-03-31",
+                    "Pendiente",
+                ),
+            ]
+            cursor.executemany(
+                """
+                INSERT OR IGNORE INTO proyecto (
+                    nombre, descripcion, fecha_inicio, fecha_fin, estado
+                )
+                VALUES (?, ?, ?, ?, ?)
+                """,
+                proyectos_seed,
             )
 
             conn.commit()

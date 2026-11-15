@@ -1,3 +1,5 @@
+from datetime import datetime, date
+
 ESTADO = ["Pendiente", "En proceso", "Finalizado"]
 
 class Proyecto:
@@ -21,51 +23,77 @@ class Proyecto:
     
     @property
     def nombre(self):
-        return self._nombre
+        return self.__nombre
 
     @nombre.setter
     def nombre(self, nombre: str) -> None:
         if not isinstance(nombre, str) or not nombre.strip():
             raise ValueError("El nombre del proyecto no puede estar vacío")
         self._nombre = nombre.strip()
-        return self._nombre
+        return self.__nombre
 
     """Descripcion: Representamos la descripcion del proyecto"""
 
     @property
     def descripcion(self):
-        return self._descripcion
+        return self.__descripcion
 
     @descripcion.setter
     def descripcion(self, descripcion: str) -> None:
         if not isinstance(descripcion, str) or not descripcion.strip():
             raise ValueError("La descripción del proyecto no puede estar vacía")
         self._descripcion = descripcion.strip()
-        return self._descripcion
+        return self.__descripcion
 
     """Fecha de inicio: Representamos la fecha de inicio del proyecto"""
     
     @property
     def fecha_inicio(self):
-        return self._fecha_inicio
+        return self.__fecha_inicio.strftime("%d-%m-%Y")
 
     @fecha_inicio.setter
     def fecha_inicio(self, fecha_inicio: str) -> None:
-        if not isinstance(fecha_inicio, str) or not fecha_inicio.strip():
-            raise ValueError("La fecha de inicio del proyecto no puede estar vacía")
-        self._fecha_inicio = fecha_inicio.strip()
-        return self._fecha_inicio
+        if isinstance(fecha_inicio, datetime):
+            self.__fecha_inicio = fecha_inicio.date()
+            return
+
+        if isinstance(fecha_inicio, date):
+            self.__fecha_inicio = fecha_inicio
+            return
+        if isinstance(fecha_inicio, str):
+            valor_limpio = fecha_inicio.strip()
+            for formato in ("%d-%m-%Y", "%Y-%m-%d"):
+                try:
+                    self.__fecha_inicio = datetime.strptime(valor_limpio, formato).date()
+                    return
+                except ValueError:
+                    continue
+
+        raise ValueError("La fecha debe tener formato DD-MM-AAAA (ej: 04-05-2026).")
     
     @property
     def fecha_fin(self):
-        return self._fecha_fin
+        return self.__fecha_fin.strftime("%d-%m-%Y")
     
     @fecha_fin.setter
     def fecha_fin(self, fecha_fin: str) -> None:
-        if not isinstance(fecha_fin, str) or not fecha_fin.strip():
-            raise ValueError("La fecha de inicio del proyecto no puede estar vacía")
-        self._fecha_fin = fecha_fin.strip()
-        return self._fecha_fin
+        if isinstance(fecha_fin, datetime):
+            self.__fecha_fin = fecha_fin.date()
+            return
+
+        if isinstance(fecha_fin, date):
+            self.__fecha_fin = fecha_fin
+            return
+        if isinstance(fecha_fin, str):
+            valor_limpio = fecha_fin.strip()
+            for formato in ("%d-%m-%Y", "%Y-%m-%d"):
+                try:
+                    self.__fecha_fin = datetime.strptime(valor_limpio, formato).date()
+                    return
+                except ValueError:
+                    continue
+
+        raise ValueError("La fecha debe tener formato DD-MM-AAAA (ej: 04-05-2026).")
 
     @property
     def estado(self):

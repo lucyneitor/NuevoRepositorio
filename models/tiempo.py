@@ -28,16 +28,20 @@ class Tiempo:
 
     @fecha.setter
     def fecha(self, valor: date | str) -> None:
+        if isinstance(valor,date):
+            self.__fecha = valor
+            return
+
         if isinstance(valor, str):
-            try:
-                valor = date.fromisoformat(valor.strip())
-            except ValueError as error:
-                raise ValueError("La fecha debe tener formato AAAA-MM-DD.") from error
+            valor_limpio = valor.strip()
+            for formato in ("%d-%m-%Y", "%Y-%m-%d"):
+                try:
+                    self._fecha = datetime.strptime(valor_limpio, formato).date()
+                    return
+                except ValueError:
+                    continue
 
-        if not isinstance(valor, date):
-            raise TypeError("La fecha debe ser un objeto date o un texto AAAA-MM-DD.")
-
-        self.__fecha = valor
+        raise ValueError("La fecha debe tener formato DD-MM-AAAA (ej: 04-05-2026).")
 
     @property
     def hora_entrada(self) -> time:

@@ -82,7 +82,7 @@ class TiempoView():
                 f"Registro N.º {tiempo.id_tiempo} | "
                 f"Empleado (RUT): {tiempo.rut_empleado} | "
                 f"Proyecto: {nombre_proyecto} | "
-                f"Fecha: {tiempo.fecha} | "
+                f"Fecha: {tiempo.fecha.isoformat()} | "
                 f"Entrada: {tiempo.hora_entrada} | "
                 f"Salida: {tiempo.hora_salida} | "
                 f"Pausa: {tiempo.pausa_minutos} min | "
@@ -194,7 +194,7 @@ class TiempoView():
         print("-"*60)
         for tiempo in registros:
             print(
-                f"{tiempo.fecha.isoformat():<12} "
+                f"{tiempo.fecha.strftime("%d-%m-%Y"):<12} "
                 f"{tiempo.hora_entrada.strftime('%H:%M'):<10} "
                 f"{tiempo.hora_salida.strftime('%H:%M'):<10} "
                 f"{tiempo.pausa_minutos:>5} min   "

@@ -34,7 +34,7 @@ class DepartamentoController:
 
                     if depa is None:
                         mostrar_mensaje("No existe departamento")
-                        return
+                        continue
 
                     if opcion == 2:
                         self.editar_departamento(depa)
