@@ -2,7 +2,8 @@ from views.main_view import MainView
 from views.empleado_view import EmpleadoView
 from models.empleado import Empleado
 from models.empleado_dao import EmpleadoDAO
-from views.utils import validador_op, eleccion, pedir, validador_op_sup,ValidationError,confirmar
+from views.utils import (validador_op, eleccion, pedir, 
+                         validador_op_sup,ValidationError,confirmar)
 from config.settings import Settings
 from models.usuario import Usuario
 from models.usuario_dao import UsuarioDAO
@@ -171,7 +172,6 @@ class EmpleadoController:
         while True:
             self.departamento_controller.mostrar_depa()
             op = pedir("ID del departamento")
-            eleccion(validador_depa,op)
             try:
                 op = int(op)
                 eleccion(validador_depa,op)

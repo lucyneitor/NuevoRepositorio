@@ -188,16 +188,16 @@ class TiempoController:
                          registros = self.tiempo_dao.obtener_tiempos_proyect(
                             int(id_proyecto)
                         )
-                    elif op == 4:
-                        fecha = pedir("Fecha (AAAA-MM-DD)")
-                        registros = self.tiempo_dao.obtener_tiempos_por_fecha(fecha)
-                    elif op == 5:
-                        fecha_inicio = pedir("Fecha inicial (AAAA-MM-DD)")
-                        fecha_fin = pedir("Fecha final (AAAA-MM-DD)")
-                        registros = self.tiempo_dao.obtener_tiempos_por_intervalo(
-                            fecha_inicio,
-                            fecha_fin,
-                        )
+                    elif op in (4,5):
+                        fecha = pedir("Fecha (DD-MM-AAAA)") if op==4 else pedir("Fecha inicial (DD-MM-AAAA)")
+
+                        if op == 5:
+                            fecha_fin = pedir("Fecha final (DD-MM-AAAA)")
+                
+                        #Atrae una lista de registros objetos
+                        registros = (self.tiempo_dao.obtener_tiempos_por_fecha(fecha) 
+                                     if op == 4 else
+                                    self.tiempo_dao.obtener_tiempos_por_intervalo(fecha, fecha_fin))
                     else:
                         registros = self.tiempo_dao.obtener_todos_tiempos_rut_proyect(
                             rut,
