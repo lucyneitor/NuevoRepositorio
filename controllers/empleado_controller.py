@@ -37,7 +37,7 @@ class EmpleadoController:
                 if opcion == 1:
                     es_admin = confirmar("¿Tendrá rol de administrador?")
                     rol = "Administrador" if es_admin else "Empleado"
-                    mostrar_mensaje("Acceso concedido rol") if rol == "Administrador" else mostrar_mensaje("Acceso denegado rol")
+                    mostrar_mensaje("Asignación final: Administrador") if es_admin else mostrar_mensaje("Asignación final: Empleado")
                     self.agregar_empleado(rol)
 
                 elif opcion in (2,3,4):
@@ -72,7 +72,7 @@ class EmpleadoController:
             nuevo["contraseña"]=self.usuario.encriptar_credencial(nuevo["contraseña"])
             depa = self.escoger_depa()
             crear_empleado= Empleado( #creo el departamento
-                sueldo=nuevo["sueldo"], inicio_contrato=nuevo["contrato"], estado="activo", 
+                sueldo=int(nuevo["sueldo"]), inicio_contrato=nuevo["contrato"], estado="activo", 
                 rut=rut, nombre=nuevo['nombre'], direccion=nuevo['dirección'],
                 telefono=nuevo['telefono'], correo=nuevo['correo'], id_departamento=depa
             )

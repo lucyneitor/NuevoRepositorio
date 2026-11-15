@@ -23,44 +23,45 @@ class MainController:
         self.usuario = None
 
     def ejecutar(self):
-        self.usuario = self.auth_controller.iniciar_sesion() 
-        if self.usuario is None: #login fallido
-            mostrar_mensaje("El programa ha finalizado debido a credenciales invalidadas")
-            return
-        self.empleado_controller = EmpleadoController(self.usuario)
-
         while True:
-            self.view.mostrar_menu(self.usuario.rol == "Administrador") # agregar opcion gestionar usuarios
-            opcion = pedir("opción")
-            try:
-                opcion = int(opcion)
-                if self.usuario.rol == "Administrador": #usar el usuario actual para ver si tiene rol a
-                    eleccion(validador_grande, opcion) #cambiar validador
+            self.usuario = self.auth_controller.iniciar_sesion() 
+            if self.usuario is None: #login fallido
+                mostrar_mensaje("El programa ha finalizado debido a credenciales invalidadas")
+                return
+            self.empleado_controller = EmpleadoController(self.usuario)
+
+            while True: #bucle interior
+                self.view.mostrar_menu(self.usuario.rol == "Administrador") # agregar opcion gestionar usuarios
+                opcion = pedir("opción")
+                try:
+                    opcion = int(opcion)
+                    if self.usuario.rol == "Administrador": #usar el usuario actual para ver si tiene rol a
+                        eleccion(validador_grande, opcion) #cambiar validador
+                    else:
+                        eleccion(validador_op_sup, opcion)
+                except (TypeError, ValueError, ValidationError) as e:
+                    print(e)
+                    continue
                 else:
-                    eleccion(validador_op_sup, opcion)
-            except (TypeError, ValueError, ValidationError) as e:
-                print(e)
-                continue
-            else:
-                if opcion == 0: 
-                    mostrar_mensaje("Hasta luego. Cerrando programa")
-                    break
-                elif opcion == 1:
-                    self.empleado_controller.ejecutar()
-                elif opcion == 2:
-                    self.departamento_controller.ejecutar()
-                elif opcion == 3: 
-                    self.tiempo_controller.ejecutar() 
-                elif opcion == 4:
-                    self.proyecto_controller.ejecutar() 
-                elif opcion == 5:
-                    mostrar_mensaje(f"Cerrando sesión de '{self.usuario.username}'...")
-                    self.usuario = None
-                    self.ejecutar()
-                elif opcion == 6:
-                    self.auth_controller.ejecutar()
-                elif opcion == 7:
-                    self.informe_controller.ejecutar() 
+                    if opcion == 0: 
+                        mostrar_mensaje("Hasta luego. Cerrando programa")
+                        break
+                    elif opcion == 1:
+                        self.empleado_controller.ejecutar()
+                    elif opcion == 2:
+                        self.departamento_controller.ejecutar()
+                    elif opcion == 3: 
+                        self.tiempo_controller.ejecutar() 
+                    elif opcion == 4:
+                        self.proyecto_controller.ejecutar() 
+                    elif opcion == 5:
+                        mostrar_mensaje(f"Cerrando sesión de '{self.usuario.username}'...")
+                        self.usuario = None
+                        break #no se usa self.ejecutar() para no caer a la recursividad
+                    elif opcion == 6:
+                        self.auth_controller.ejecutar(self.usuario)
+                    elif opcion == 7:
+                        self.informe_controller.ejecutar() 
         
 
 

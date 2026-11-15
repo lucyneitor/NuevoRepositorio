@@ -42,8 +42,8 @@ class DepartamentoController:
                         empleados = EmpleadoDAO.obtener_por_departamento(depa.id_departamento)
                         roles=[]
                         for empleado in empleados:
-                            users=UsuarioDAO.obtener_por_rut_empleado(empleado.rut)
-                            roles.append(users.rol)
+                            user=UsuarioDAO.obtener_por_rut_empleado(empleado.rut)
+                            roles.append(user.rol if user is not None else "Sin usuario")
                         self.departamento_view.mostrar_departamento(depa,empleados,roles)
                     else: #eliminar el departamento
                         if self.departamento_dao.eliminar(depa.id_departamento):

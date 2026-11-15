@@ -61,7 +61,7 @@ class AuthController:
             elif opcion == 2:
                 self.listar_usuarios()
             elif opcion == 3:
-                self.eliminar_usuario(usuario_actual)
+                self.eliminar_usuario(usuario_actual) #para que funcione que uno mismo no puede eliminar su cuenta
             elif opcion == 0:
                 mostrar_mensaje("Saliendo de la gestión de usuarios.")
                 break
@@ -127,17 +127,22 @@ class AuthController:
             self.view.mostrar_error("No puede eliminar su propio usuario con la sesión activa.")
             return
 
-        empleado=EmpleadoDAO.obtener_empleado_por_rut(usuario.rut_empleado)
+        empleado = (
+            EmpleadoDAO.obtener_empleado_por_rut(usuario.rut_empleado)
+            if usuario.rut_empleado is not None else None #suspende a usuario solo si tiene una ficha de empleado asociada
+        )
         if self.view.confirmar_eliminacion(usuario.username):
-            empleado.estado="suspendido"
-            EmpleadoDAO.actualizar_empleado(empleado) #cuando eliminan un usuario queda suspendido empleado al sistema
             if UsuarioDAO.eliminar(id_usuario):
-                mostrar_mensaje(f"Usuario '{usuario.username}' eliminado exitosamente.> Empleado suspendido")
+                if empleado is not None:
+                    empleado.estado="suspendido"
+                    EmpleadoDAO.actualizar_empleado(empleado) #cuando eliminan un usuario queda suspendido empleado al sistema
+                    mostrar_mensaje(f"Usuario '{usuario.username}' eliminado exitosamente.> Empleado suspendido")
+                else:
+                    mostrar_mensaje(f"Usuario '{usuario.username}' eliminado exitosamente.")
             else:
                 self.view.mostrar_error("Error al eliminar el usuario en la base de datos.")
         else:
-            mostrar_mensaje("Operación cancelada.")
-
+            mostrar_mensaje("Operación cancelada.") 
     
     def completar_datos(self, rut: str, nom:str) -> bool:
         while True:
