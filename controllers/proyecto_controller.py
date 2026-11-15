@@ -119,10 +119,7 @@ class ProyectoController:
                     except ValueError as error:
                         print(error)
                         continue  # vuelve al menú de edición
-                    else:
-                        fecha_inicio = fecha_inicio.isoformat()
-                        fecha_fin = fecha_fin.isoformat()
-
+                    
                     
                 if confirmar("¿Seguro en editar esto?"):
                     proyecto.nombre = nombre
