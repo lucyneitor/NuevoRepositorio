@@ -112,6 +112,11 @@ class ProyectoController:
                     except ValueError as error:
                         print(error)
                         continue  # vuelve al menú de edición
+                    else:
+                        estado = self.calcular_estado(fecha_inicio, fecha_fin)
+                        fecha_inicio = fecha_inicio.isoformat()
+                        fecha_fin = fecha_fin.isoformat()
+
                     
                 if confirmar("¿Seguro en editar esto?"):
                     proyecto.nombre = nombre
@@ -180,7 +185,7 @@ class ProyectoController:
 
                 if opcion == 1:
                     opciones = [
-                        "id departamento",
+                        "id",
                         "nombre",
                         "descripción",
                         "fecha inicio",

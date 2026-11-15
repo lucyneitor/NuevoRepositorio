@@ -83,14 +83,16 @@ class ProyectoDAO:
         conn = Database().get_connection()
         try:
             cursor : Cursor = conn.cursor()
-            cursor.execute("""UPDATE proyecto
-                           SET nombre = ?, descripcion = ?, fecha_inicio = ?, fecha_fin = ?
-                           WHERE id_proyecto = ?""", 
-                           (proyecto_obj.nombre,
-                            proyecto_obj.descripcion,
-                            proyecto_obj.fecha_inicio,
-                            proyecto_obj.fecha_fin,
-                            proyecto_obj.id_proyecto))
+            cursor.execute("""
+                UPDATE proyecto
+                SET nombre = ?, descripcion = ?, fecha_inicio = ?, fecha_fin = ?, estado = ?
+                WHERE id_proyecto = ?""", (proyecto_obj.nombre,
+                                            proyecto_obj.descripcion,
+                                            proyecto_obj.fecha_inicio,
+                                            proyecto_obj.fecha_fin,
+                                            proyecto_obj.id_proyecto,
+                                            proyecto_obj.estado)
+            )
             conn.commit()
             return cursor.rowcount > 0
         except Exception as e:
