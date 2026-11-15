@@ -5,6 +5,8 @@ from typing import Any
 
 from config.database import Database
 from models.tiempo import Tiempo
+from models.empleado_dao import EmpleadoDAO
+from models.proyecto_dao import ProyectoDAO
 
 
 class TiempoDAO:
@@ -30,9 +32,10 @@ class TiempoDAO:
             fecha=fila["fecha"],
             hora_entrada=fila["hora_entrada"],
             hora_salida=fila["hora_salida"],
+            pausa_minutos=fila["pausa_minutos"],
             rut_empleado=fila["rut"],
             id_proyecto=fila["id_proyecto"],
-            pausa_minutos=fila["pausa_minutos"],
+            
         )
 
     @staticmethod
@@ -48,8 +51,7 @@ class TiempoDAO:
             cursor: Cursor = conn.cursor()
             consulta = """
                 SELECT t.id_tiempo, t.fecha, t.hora_entrada, t.hora_salida,
-                       t.id_proyecto, e.rut, p.nombre AS nombre_proyecto,
-                       t.pausa_minutos
+                       t.pausa_minutos, t.id_proyecto, e.rut, p.nombre AS nombre_proyecto,    
                 FROM tiempo AS t
                 JOIN empleado AS e ON e.rut = t.rut_empleado
                 JOIN proyecto AS p ON p.id_proyecto = t.id_proyecto
@@ -65,19 +67,22 @@ class TiempoDAO:
         finally:
             conn.close()
 
-    @staticmethod
-    def agregar_tiempo(self, tiempo: Tiempo) -> bool:
+    
+    def agregar_tiempo(self,tiempo: Tiempo) -> bool:
         """Registra un nuevo tiempo trabajado en la base de datos."""
 
         conn = None
 
         try:
             # 1. Comprobar que el empleado exista.
-            if not self.existe_empleado(tiempo.rut_empleado):
+            if not EmpleadoDAO.esta_empleado(tiempo.rut_empleado):
                 raise ValueError(
                     f"No existe un empleado registrado con el RUT "
                     f"{tiempo.rut_empleado}."
                 )
+
+            if not ProyectoDAO.existe_proyecto(tiempo.id_proyecto):
+                raise ValueError(f"El proyecto {tiempo.id_proyecto} no existe.")
 
             # 2. Obtener conexión.
             conn = Database().get_connection()
@@ -89,9 +94,9 @@ class TiempoDAO:
                     fecha,
                     hora_entrada,
                     hora_salida,
+                    pausa_minutos,
                     rut_empleado,
                     id_proyecto,
-                    pausa_minutos
                 )
                 VALUES (?, ?, ?, ?, ?, ?)
             """, (

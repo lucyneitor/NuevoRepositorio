@@ -204,7 +204,7 @@ class EmpleadoDAO:
             conn.commit()
             return cursor.rowcount > 0
         except Exception as e:
-            print(f"Error al eliminar empleado de BD: {e}")
+            print(f"Error al encontrar empleado de BD: {e}")
             return False
         finally:
             conn.close()

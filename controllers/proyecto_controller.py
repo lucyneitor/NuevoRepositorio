@@ -114,12 +114,13 @@ class ProyectoController:
                             fecha_inicio.isoformat(),
                             fecha_fin.isoformat()
                         )
+                        
                         fecha_inicio = fecha_inicio.isoformat()
                         fecha_fin = fecha_fin.isoformat()
                     except ValueError as error:
                         print(error)
                         continue  # vuelve al menú de edición
-                    
+                    mostrar_mensaje("Estado actual del proyecto asignado")
                     
                 if confirmar("¿Seguro en editar esto?"):
                     proyecto.nombre = nombre
@@ -143,6 +144,8 @@ class ProyectoController:
             raise ValueError("La fecha de término no puede ser anterior a la de inicio.")
 
         hoy = date.today()
+
+        mostrar_mensaje("Procesando estado actual del proyecto")
 
         if hoy < inicio:
             return "Pendiente"

@@ -24,22 +24,27 @@ class TiempoController:
                 print(e)
             else:
                 if op == 0:
-                    print("Volviendo al menú principal...")
+                    mostrar_mensaje("Volviendo al menú principal...")
                     break
                 elif op == 1:
+
                     self.listar_tiempos()
                 elif op == 2:
                     rut = pedir("RUT del empleado")
                     proyecto = pedir("nombre del proyecto")
                     self.agregar_tiempos(rut,proyecto) #creo que listo
                 elif op == 3:
-                    self.buscar_tiempo()
+                    self.buscar_tiempos()
                 elif op == 4:
                     self.actualizar_tiempo()
                 else:
-                    print("Opción no válida. Ingrese un número del 0 al 4.")
+                    mostrar_mensaje("Opción no válida. Ingrese un número del 0 al 4.")
 
     def listar_tiempos(self):
+        registros = self.tiempo_dao.obtener_todos_tiempos()
+        if not registros:
+            mostrar_mensaje("No hay registros de tiempo.")
+            return
         while True:
             self.tiempo_view.menu_listar()
             op = pedir("opción")
@@ -50,7 +55,7 @@ class TiempoController:
                 print(e)
             else:
                 if op == 0:
-                    print("Volviendo al menú principal...")
+                    mostrar_mensaje("Volviendo al menú principal...")
                     break
                 elif op == 1:
                     self.listar_registros()
@@ -71,7 +76,7 @@ class TiempoController:
                         fecha_fin = pedir("fecha límite")
                         self.listar_registros_rango_fecha(fecha_inicio, fecha_fin)
                 else:
-                    print("Opción no válida. Ingrese un número del 0 al 4.")
+                    mostrar_mensaje("Opción no válida. Ingrese un número del 0 al 4.")
 
     def listar_registros(self): 
         """
@@ -101,10 +106,10 @@ class TiempoController:
         nom = self.proyecto_dao.obtener_proyecto_id(id)
         estado = self.proyecto_dao.obtener_estado(id) # pendiente
         registros = self.tiempo_dao.obtener_tiempos_proyect(id)
-        cant_empleado = self.tiempo_dao.contar_empleados_por_proyecto(id)
+        cant_empleado = self.tiempo_dao.contar_empleados_proyecto(id)
         cant_tiempo = self.tiempo_dao.sumar_tiempo(id)
         self.tiempo_view.mostrar_registros_proyecto(
-            registros, cant_tiempo, cant_empleado, nom)
+            registros, cant_tiempo, cant_empleado, nom, estado)
 
     
     def listar_registros_pro_perso(self, rut:str, id:int):
@@ -119,7 +124,6 @@ class TiempoController:
 
     
     def listar_registros_fecha(self, fecha:date): 
-        pass
         registros = self.tiempo_dao.obtener_tiempos_por_fecha(fecha)
         cant_tiempo_registrados = len(registros)
         cant_trabajo = sum(registro.tiempo_trabajado for registro in registros)
@@ -127,7 +131,6 @@ class TiempoController:
         self.tiempo_view.mostrar_registros_por_fecha(registros, fecha)
 
     def listar_registros_rango_fecha(self, fecha1:str, fecha2:str): #pendiente
-        pass
         registros = self.tiempo_dao.contar_tiempos_por_intervalo(fecha1,fecha2)
 
     
@@ -136,19 +139,30 @@ class TiempoController:
         Crea registro de tiempo, en base a lo que se registre en formulario y la los datos parametros validarlos
         """
         nuevo= self.tiempo_view.formulario_tiempo() #empleado view formulario
-        empleado = self.empleado_dao.obtener_empleado_por_rut(rut) #pendiente
+
+        empleado = self.empleado_dao.obtener_empleado_por_rut(rut) #verifica su existencia
+        if empleado is None:
+            mostrar_mensaje("No existe este empleado en la empresa")
+            return
+        
         proyecto = self.proyecto_dao.obtener_id_por_nombre(proyect) #retorna id
+        if proyecto is None:
+            mostrar_mensaje("No existe este proyecto en la empresa")
+            return 
+        
         crear_tiempo= Tiempo(
             fecha = nuevo["fecha"], hora_salida=nuevo["hora_salida"], 
-            id_empleado=empleado, id_proyecto=proyecto,
-            pausa_minutos = nuevo["pausa_minutos"]
+            pausa_minutos = nuevo["pausa_minutos"], rut_empleado=rut, id_proyecto=proyecto,
         )
         if self.tiempo_dao.crear_tiempo(crear_tiempo): # consultar linea (modificar)
             mostrar_mensaje("Tiempo agregado exitosamente")
 
     def buscar_tiempos(self):
+        """
+        Busca por distintos fultos
+        """
         while True:
-            self.tiempo_view.menu_buscar()
+            self.tiempo_view.menu_buscar() # 6 opciones clave
             op = pedir("opción")
             try:
                 op = int(op)
@@ -157,7 +171,7 @@ class TiempoController:
                 print(e)
             else:
                 if op == 0:
-                    print("Volviendo al menú principal...")
+                    mostrar_mensaje("Volviendo al menú principal...")
                     break
                 elif op in (1,2,3,4,5,6):
                     rut = pedir("RUT del empleado") if op in (2, 6) else None
@@ -200,16 +214,16 @@ class TiempoController:
         try:
             id_tiempo = int(pedir("ID del registro de tiempo a actualizar"))
         except (TypeError, ValueError):
-            print("El ID ingresado debe ser un número entero.")
+            mostrar_mensaje("El ID ingresado debe ser un número entero.")
             return
 
         # Verificar si el registro existe en la base de datos
         registro_existente = self.tiempo_dao.obtener_tiempo_por_id(id_tiempo)
         if registro_existente is None:
-            print(f"No se encontró ningún registro de tiempo con el ID {id_tiempo}.")
+            mostrar_mensaje(f"No se encontró ningún registro de tiempo con el ID {id_tiempo}.")
             return
 
-        print(f"Registro encontrado (ID: {id_tiempo}). Ingrese los nuevos datos:")
+        mostrar_mensaje(f"Registro encontrado (ID: {id_tiempo}). Ingrese los nuevos datos:")
         nuevo = self.tiempo_view.formulario_tiempo()
 
         # Creamos la instancia actualizada (puedes conservar los valores anteriores si alguno viene vacío)

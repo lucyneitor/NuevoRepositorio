@@ -135,6 +135,9 @@ class ProyectoDAO:
 
     @staticmethod
     def existe_proyecto(id_proyecto: int) -> bool:
+        """
+        Analiza la existencia del proyecto en sistema
+        """
         conn = Database().get_connection()
         try:
             cursor = conn.cursor()
@@ -146,5 +149,25 @@ class ProyectoDAO:
         except Exception as error:
             print(f"Error al verificar el proyecto: {error}")
             return False
+        finally:
+            conn.close()
+
+    @staticmethod
+    def obtener_estado(id_proyecto: int) -> str | None:
+        """
+        Obtiene el estado de un proyecto por su ID.
+        """
+        conn = Database().get_connection()
+        try:
+            cursor = conn.cursor()
+            cursor.execute(
+                "SELECT estado FROM proyecto WHERE id_proyecto = ?",
+                (id_proyecto,),
+            )
+            fila = cursor.fetchone()
+            return fila["estado"] if fila else None
+        except Exception as error:
+            print(f"Error al obtener el estado del proyecto: {error}")
+            return None
         finally:
             conn.close()

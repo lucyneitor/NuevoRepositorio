@@ -1,4 +1,4 @@
-from views.utils import pedir
+from views.utils import pedir, mostrar_mensaje
 from datetime import date
 
 class TiempoView():
@@ -90,7 +90,7 @@ class TiempoView():
             )
 
         print("-"*60)
-        print("RESUMEN GENERAL")
+        mostrar_mensaje("RESUMEN GENERAL")
         print(f"Cantidad de registros: {tiempos}")
         print(f"Cantidad de proyectos trabajados: {proyecto}")
         print(f"Cantidad de empleados involucrados en proyectos: {empleado}")
@@ -122,18 +122,19 @@ class TiempoView():
             )
 
         print("-"*60)
-        print("RESUMEN GENERAL")
+        mostrar_mensaje("RESUMEN GENERAL")
         print(f"Tiempos registrados: {tiempos}")
         print(f"Tiempo trabajado: {realizado}")
         print(f"Tiempo en pausa: {negativo}")
         print(f"Cantidad de proyectos involucrados: {proyecto}")
 
 
-    def mostrar_registros_proyecto(registros, cant_tiempo, cant_empleado, nom):
+    def mostrar_registros_proyecto(registros, cant_tiempo, cant_empleado, nom, estado):
         print("-"*60)
         print(f"Registros del Proyecto {nom}")
         print("-"*60)
 
+        mostrar_mensaje(f"Actualmente el proyecto esta {estado}")
         for tiempo in registros:
             print(
                 f"{tiempo.fecha.isoformat():<12} "
@@ -143,7 +144,7 @@ class TiempoView():
                 f"{tiempo.tiempo_trabajado:>7.2f} h"
             )
         print("-"*60)
-        print("RESUMEN GENERAL")
+        mostrar_mensaje("RESUMEN GENERAL")
         print(f"Cantidad de empleados: {cant_empleado}")
         print(f"Tiempo trabajado: {cant_tiempo}")
         print(f"Tiempo en pausa: {negativo}")
@@ -177,7 +178,7 @@ class TiempoView():
                 )
 
         print("-" * 60)
-        print("RESUMEN GENERAL")
+        mostrar_mensaje("RESUMEN GENERAL")
         print(f"Cantidad de registros: {cant_registros}")
         print(f"Cantidad de empleados: {cant_empleados}")
         print(f"Cantidad de proyectos: {cant_proyectos}")
@@ -200,7 +201,7 @@ class TiempoView():
                 f"{tiempo.tiempo_trabajado:>7.2f} h"
             )
         print("-"*60)
-        print("RESUMEN GENERAL")
+        mostrar_mensaje("RESUMEN GENERAL")
         print(f"Cantidad de registros: {cant_re}")
         print(f"Tiempo trabajado: {tiempo}")
         print(f"Tiempo en pausa: {pausa}")

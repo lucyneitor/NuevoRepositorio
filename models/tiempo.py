@@ -9,17 +9,18 @@ class Tiempo:
         fecha: date | str,
         hora_entrada: time | str,
         hora_salida: time | str,
+        pausa_minutos: int,
         rut_empleado: str,
         id_proyecto: int,
-        pausa_minutos: int = 0,
+        
     ) -> None:
         self.id_tiempo = id_tiempo
         self.fecha = fecha
         self.hora_entrada = hora_entrada
         self.hora_salida = hora_salida
+        self.pausa_minutos = pausa_minutos
         self.rut_empleado = rut_empleado
         self.id_proyecto = id_proyecto
-        self.pausa_minutos = pausa_minutos
 
     @property
     def fecha(self) -> date:
