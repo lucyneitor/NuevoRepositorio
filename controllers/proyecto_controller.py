@@ -109,12 +109,13 @@ class ProyectoController:
                             fecha_fin,
                             "La fecha de término no puede ser anterior a la fecha de inicio.",
                         )
-                        fecha_inicio = fecha_inicio.isoformat() #convertir a date
-                        fecha_fin = fecha_fin.isoformat() #YYYY-MM-DD
+                        
                         estado = self.calcular_estado( #calcular estado
                             fecha_inicio.isoformat(),
                             fecha_fin.isoformat()
                         )
+                        fecha_inicio = fecha_inicio.isoformat()
+                        fecha_fin = fecha_fin.isoformat()
                     except ValueError as error:
                         print(error)
                         continue  # vuelve al menú de edición
