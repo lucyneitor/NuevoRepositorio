@@ -11,6 +11,7 @@ class ProyectoView():
         print("3. Buscar Proyecto")
         print("4. Eliminar Proyecto")
         print("5. Mostrar proyectos")
+        print("6. Planificar proyecto")
         print("0. Volver al menú principal")
         print(">"*40)
 
@@ -156,6 +157,16 @@ class ProyectoView():
 
         print(borde)
 
+    def menu_planificacion():
+        print("="*60)
+        print("   MÓDULO DE GESTIÓN Y PLANIFICACIÓN CLIMÁTICA")
+        print("="*60)
+        print("1. Evaluar Clima Actual y Viabilidad Operativa (Hoy)")
+        print("2. Consultar Pronóstico a Futuro (Anticipación de Retrasos)")
+        print("3. Probar Conectividad con la API externa")
+        print("4. Volver al Menú Principal")
+        print("="*60)
+            
     def resultado_clima(msg, datos_clima, analisis): # crear una funcion en proyecto_controller de clima para mostrar estos resultados
         print(f"\n✅ {msg}")
         print("----------------------------------------------------")
