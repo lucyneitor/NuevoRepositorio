@@ -109,8 +109,10 @@ class TiempoController:
         cant_empleado = self.tiempo_dao.contar_empleados_por_proyecto(id)
         cant_tiempo = len(registros) #registros de tiempos en el proyecto
         time_trabajado = self.tiempo_dao.sumar_tiempo_por_trabajador()
+        for re in registros:
+            acum += re.pausa_minutos
         self.tiempo_view.mostrar_registros_proyecto(
-            registros, cant_tiempo, cant_empleado, nom, estado,time_trabajado)
+            registros, cant_tiempo, cant_empleado, nom, estado,time_trabajado,acum)
 
     
     def listar_registros_pro_perso(self, rut:str, id:int):

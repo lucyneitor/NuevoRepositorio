@@ -39,7 +39,7 @@ class Tiempo:
             valor_limpio = fecha.strip()
             for formato in ("%d-%m-%Y", "%Y-%m-%d"):
                 try:
-                    self._fecha = datetime.strptime(valor_limpio, formato).date()
+                    self.__fecha = datetime.strptime(valor_limpio, formato).date()
                     return
                 except ValueError:
                     continue

@@ -1,5 +1,4 @@
 from pydantic import (TypeAdapter, Field, StringConstraints,ValidationError)
-from models.usuario import Usuario
 from typing import Annotated
 from datetime import date, datetime
 import pwinput
@@ -105,6 +104,7 @@ def valida_hora(msg):
         hora = pedir(msg)
         try:
             hora = datetime.strptime(hora, "%H:%M")
+            return hora.strftime("%H:%M")
         except ValueError:
             mostrar_mensaje("Formato de hora inválido. Use HH:MM en formato 24 hrs (ej. 08:30)")
             return

@@ -29,8 +29,8 @@ class Proyecto:
     def nombre(self, nombre: str) -> None:
         if not isinstance(nombre, str) or not nombre.strip():
             raise ValueError("El nombre del proyecto no puede estar vacío")
-        self._nombre = nombre.strip()
-        return self.__nombre
+        self.__nombre = nombre.strip()
+        self.__nombre = nombre
 
     """Descripcion: Representamos la descripcion del proyecto"""
 
@@ -42,8 +42,7 @@ class Proyecto:
     def descripcion(self, descripcion: str) -> None:
         if not isinstance(descripcion, str) or not descripcion.strip():
             raise ValueError("La descripción del proyecto no puede estar vacía")
-        self._descripcion = descripcion.strip()
-        return self.__descripcion
+        self.__descripcion = descripcion
 
     """Fecha de inicio: Representamos la fecha de inicio del proyecto"""
     
