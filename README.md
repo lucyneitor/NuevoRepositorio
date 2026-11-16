@@ -64,6 +64,8 @@ Utiliza arquitectura MVC + DAO y persistencia mediante SQLite.
 - [ ] Mejorar el hashing de contraseñas con bcrypt o Argon2.
 - [ ] Completar documentación de instalación y uso.
 
+## Aplicación de IA en el repositorio
+explicacion pendiente
 ## Tecnologías
 
 - Python

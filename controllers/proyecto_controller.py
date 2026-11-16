@@ -1,8 +1,9 @@
 from views.proyecto_view import ProyectoView
-from views.utils import pedir,eleccion, validador_op_sup, validador_inicial, validador_time, validador_op, mostrar_mensaje, ValidationError, confirmar, pedir_texto_valido, validacion_fechas
+from views.utils import pedir,eleccion, validador_op1, validador_dia, validador_op_sup, validador_inicial, validador_time, mostrar_mensaje, ValidationError, confirmar, pedir_texto_valido, validacion_fechas
 from models.proyecto import Proyecto
 from models.proyecto_dao import ProyectoDAO
 from datetime import date
+from services.clima_service import ClimaService
 
 class ProyectoController:
     def __init__(self):
@@ -15,7 +16,7 @@ class ProyectoController:
             op = pedir("opción")
             try:
                 op = int(op)
-                eleccion(validador_op,op)
+                eleccion(validador_op_sup,op)
             except (TypeError, ValueError, ValidationError) as e:
                 print(e)
             else:
@@ -53,6 +54,9 @@ class ProyectoController:
                                 break
                 elif op == 5: #Exitoso
                     self.mostrar_proyecto() #todos
+                elif op == 6:
+                    self.servicio_clima()
+                    
 
     def agregar_proyecto(self):
         nuevo=self.proyecto_view.formulario()
@@ -248,3 +252,38 @@ class ProyectoController:
 
                             return
 
+    def servicio_clima(self):
+        while True:
+            self.proyecto_view.menu_planificacion()
+            op = pedir("opción")
+            try:
+                op = int(op)
+                eleccion(validador_op1, op)
+            except (TypeError, ValueError, ValidationError) as e:
+                print(e)
+                continue
+            else:
+                if op == 0:
+                    mostrar_mensaje("Volver a la gestion de Proyecto")
+                    return
+
+                if op == 1 or op == 2:
+                    ciudad = pedir("ciudad de operación terreno")
+                    if op == 1:
+                        resultado, msg = ClimaService.obtener_clima_actual(ciudad)
+                        analisis = ClimaService.evaluar_viabilidad_operativa(resultado)
+                        self.proyecto_view.resultado_clima(msg,resultado,analisis)
+                    else: 
+                        while True:
+                            dias = pedir("días deseados a proyectar (max. 3 días): ")
+                            try:
+                                dias = int(dias)
+                                eleccion(validador_dia, op)
+                            except (TypeError, ValueError, ValidationError) as e:
+                                print(e)
+                                continue
+                            else: 
+                                break
+                        analisis = ClimaService.obtener_pronostico(ciudad, dias)
+                    self.proyecto_view.resultado_clima(msg,resultado,analisis)
+                        

@@ -7,6 +7,9 @@ from config.settings import Settings
 regla_op_inicial = Annotated[int, Field(ge=0,le=2)]
 validador_inicial = TypeAdapter(regla_op_inicial)
 
+regla_dia = Annotated[int, Field(ge=1, le=2)]
+validador_dia = TypeAdapter(regla_dia)
+
 regla_op = Annotated[int, Field(ge=0, le=5)] #sin rol administrador
 validador_op = TypeAdapter(regla_op)
 
