@@ -72,6 +72,8 @@ class ClimaService:
                 "Librería 'requests' no instalada en el entorno."
             )
 
+        url = f"{Settings.API_BASE_URL_CLIMA}/current.json"
+        
         # Parámetros obligatorios que exige WeatherAPI (key y q)
         params = {
             "key": Settings.API_KEY_CLIMA,
@@ -83,7 +85,7 @@ class ClimaService:
             # Petición HTTP usando la URL base y el timeout centralizado en Settings
             session = cls._get_seccion()
             response = session.get(
-                Settings.API_BASE_URL_CLIMA,
+                url,
                 params=params,
                 timeout=Settings.REQUEST_TIMEOUT
             )
@@ -175,55 +177,56 @@ class ClimaService:
 
     @classmethod
     def probar_conectividad(cls) -> Tuple[bool, str]:
-      """
-      Verifica si la API externa de clima está accesible y la key es válida.
-      """
-      if not REQUESTS_AVAILABLE:
-        return (
-            False,
-            "Librería 'requests' no instalada. Ejecute 'pip install requests'.",
-        )
-
-      try:
-        # WeatherAPI exige la 'key' y una ubicación 'q' obligatorias
-        session = cls._get_seccion()
-        params = {
-            "key": Settings.API_KEY_CLIMA, 
-            "q": "Chillan"
-        }
-
-        resp = session.get(
-            Settings.API_BASE_URL_CLIMA,
-            params=params,
-            timeout=Settings.REQUEST_TIMEOUT,
-        )
-
-        # Si responde 200 (OK), la conexión y la API Key son correctas
-        if resp.status_code == 200:
-            return (
-                True,
-                f"Conexión exitosa con WeatherAPI (Código HTTP: {resp.status_code})",
-            )
-        elif resp.status_code in (401,403):
+        """
+        Verifica si la API externa de clima está accesible y la key es válida.
+        """
+        if not REQUESTS_AVAILABLE:
             return (
                 False,
-                f"Error de autentificación: La API Key de Clima es inválida o no está autorizada.",
+                "Librería 'requests' no instalada. Ejecute 'pip install requests'.",
             )
 
-        return (
-            False,
-            f"El servidor respondió con código HTTP: {resp.status_code}",
-        )
+        try:
+            # WeatherAPI exige la 'key' y una ubicación 'q' obligatorias
+            session = cls._get_seccion()
+            url=f"{Settings.API_KEY_CLIMA}/current.json"
+            params = {
+                "key": Settings.API_KEY_CLIMA, 
+                "q": "Chillan"
+            }
 
-      except requests.exceptions.Timeout:
-        return (False, "Timeout al contactar el servicio de clima.")
-      except requests.exceptions.ConnectionError:
-        return (False, "Sin conexión de red hacia el servidor de WeatherAPI.")
-      except requests.exceptions.RequestException as e:
-        #detalle técnico y sensible se queda seguro en el archivo de registro (log)
-        logger.error("Error de red al conectar con el servicio: %s", str(e))
-        #Al usuario se le entrega un mensaje amigable que no revela datos internos
-        return (False, "Ocurrió un problema de comunicación con el servicio externo. Intente más tarde.")
+            resp = session.get(
+                url,
+                params=params,
+                timeout=Settings.REQUEST_TIMEOUT,
+            )
+
+            # Si responde 200 (OK), la conexión y la API Key son correctas
+            if resp.status_code == 200:
+                return (
+                    True,
+                    f"Conexión exitosa con WeatherAPI (Código HTTP: {resp.status_code})",
+                )
+            elif resp.status_code in (401,403):
+                return (
+                    False,
+                    f"Error de autentificación: La API Key de Clima es inválida o no está autorizada.",
+                )
+
+            return (
+                False,
+                f"El servidor respondió con código HTTP: {resp.status_code}",
+            )
+
+        except requests.exceptions.Timeout:
+            return (False, "Timeout al contactar el servicio de clima.")
+        except requests.exceptions.ConnectionError:
+            return (False, "Sin conexión de red hacia el servidor de WeatherAPI.")
+        except requests.exceptions.RequestException as e:
+            #detalle técnico y sensible se queda seguro en el archivo de registro (log)
+            logger.error("Error de red al conectar con el servicio: %s", str(e))
+            #Al usuario se le entrega un mensaje amigable que no revela datos internos
+            return (False, "Ocurrió un problema de comunicación con el servicio externo. Intente más tarde.")
     
     @staticmethod
     def evaluar_viabilidad_operativa(
@@ -307,3 +310,74 @@ class ClimaService:
             "recomendacion": recomendacion,
             "alertas": alertas,
         }
+
+    @classmethod
+    def obtener_pronostico(
+      cls, ciudad: str, dias: int = 3
+    ) -> Tuple[Dict[str, Any] | None, str]:
+        """Consulta el pronóstico a futuro (forecast.json)"""
+        try:
+            ciudad_segura = cls.sanitizar_ciudad(ciudad)
+        except ValueError as e:
+            return (None, str(e))
+
+        if not REQUESTS_AVAILABLE:
+            return cls._manejar_contingencia(
+                ciudad_segura, "Librería 'requests' no instalada."
+            )
+
+        # 2. CONCATENAMOS la ruta /forecast.json a la variable base del .env
+        url = f"{Settings.API_BASE_URL_CLIMA}/forecast.json"
+
+        params = {
+            "key": Settings.API_KEY_CLIMA,
+            "q": ciudad_segura,
+            "days": dias,  # Límite de 3 días para cuentas gratuitas
+            "lang": "es",
+        }
+
+        try:
+            session = cls._get_seccion()
+            response = session.get(
+                url, params=params, timeout=Settings.REQUEST_TIMEOUT
+            )
+
+            if response.status_code == 400:
+                return (None, f"Ciudad '{ciudad_segura}' no encontrada.")
+            elif response.status_code in (401, 403):
+                return (None, "Error 401: API Key inválida o no autorizada.")
+
+            response.raise_for_status()
+            data = response.json()
+
+            location = data.get("location", {})
+            forecast_days = data.get("forecast", {}).get("forecastday", [])
+
+            resultado_pronostico = {
+                "ciudad": location.get("name", ciudad_segura),
+                "pais": location.get("country", ""),
+                "dias": [],
+            }
+
+            for dia in forecast_days:
+                day_info = dia.get("day", {})
+                condition = day_info.get("condition", {})
+
+                resultado_pronostico["dias"].append({
+                    "fecha": dia.get("date"),
+                    "temp_max": day_info.get("maxtemp_c"),
+                    "temp_min": day_info.get("mintemp_c"),
+                    "condicion": condition.get("text"),
+                    "prob_lluvia": day_info.get("daily_chance_of_rain", 0),
+                    "viento_max_kph": day_info.get("maxwind_kph"),
+                })
+
+            return (
+                resultado_pronostico,
+                f"Pronóstico obtenido con éxito para {resultado_pronostico['ciudad']}.",
+            )
+
+        except requests.exceptions.RequestException:
+            return cls._manejar_contingencia(
+                ciudad_segura, "Falla de red al consultar el pronóstico."
+            )
