@@ -189,7 +189,7 @@ class ClimaService:
         try:
             # WeatherAPI exige la 'key' y una ubicación 'q' obligatorias
             session = cls._get_seccion()
-            url=f"{Settings.API_KEY_CLIMA}/current.json"
+            url=f"{Settings.API_BASE_URL_CLIMA}/current.json"
             params = {
                 "key": Settings.API_KEY_CLIMA, 
                 "q": "Chillan"
