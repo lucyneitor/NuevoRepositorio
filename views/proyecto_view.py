@@ -156,3 +156,20 @@ class ProyectoView():
 
         print(borde)
 
+    def resultado_clima(msg, datos_clima, analisis): # crear una funcion en proyecto_controller de clima para mostrar estos resultados
+        print(f"\n✅ {msg}")
+        print("----------------------------------------------------")
+        print(f"🌍 Ubicación:         {datos_clima['ciudad']}, {datos_clima['pais']}")
+        print(f"🌡️  Temperatura:       {datos_clima['temperatura']}°C")
+        print(f"🤔 Sensación térmica: {datos_clima['sensacion_termica']}°C")
+        print(f"☁️  Estado del tiempo: {datos_clima['condicion']}")
+        print(f"💧 Humedad:           {datos_clima['humedad']}%")
+        print(f"💨 Viento:            {datos_clima['viento_kph']} km/h")
+        print("----------------------------------------------------")
+        print(f"📊 ESTADO OPERATIVO:  [{analisis['estado_operativo']}]")
+        print(f"💡 DECISIÓN SUGERIDA: {analisis['recomendacion']}")
+        if analisis["alertas"]:
+            print("\n⚠️  ALERTAS DE RIESGO DETECTADAS:")
+            for alerta in analisis["alertas"]:
+                print(f"   • {alerta}")
+            print("====================================================\n")
