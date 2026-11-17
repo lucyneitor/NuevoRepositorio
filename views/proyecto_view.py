@@ -184,3 +184,40 @@ class ProyectoView():
             for alerta in analisis["alertas"]:
                 print(f"   • {alerta}")
             print("====================================================\n")
+
+    def resultado_pronostico(self, msg, datos_clima, evaluaciones):
+        """Muestra el pronóstico a futuro junto con la viabilidad operativa precalculada."""
+        print(f"\n📢 {msg}")
+        if not datos_clima or "dias" not in datos_clima:
+            print("❌ No hay datos de pronóstico disponibles para mostrar.")
+            return
+
+        print(f"\n📍 Pronóstico Operativo para: {datos_clima.get('ciudad')}, {datos_clima.get('pais')}")
+        print("=" * 65)
+
+        for idx, d in enumerate(datos_clima["dias"]):
+            # Extraemos la evaluación precalculada para este día específico
+            eval_dia = evaluaciones[idx] if idx < len(evaluaciones) else {}
+            estado = eval_dia.get("estado_operativo", "SIN EVALUAR")
+            recomendacion = eval_dia.get("recomendacion", "")
+            alertas = eval_dia.get("alertas", [])
+
+            # Indicador visual para la consola
+            icono = "🟢" if estado == "ÓPTIMO" else ("🟡" if estado == "PRECAUCIÓN" else "🔴")
+
+            print(f"📅 Fecha: {d.get('fecha')}")
+            print(f"   🌡️  Temp Máx/Mín: {d.get('temp_max')}°C / {d.get('temp_min')}°C")
+            print(f"   ☁️  Condición   : {d.get('condicion')}")
+            print(f"   🌧️  Prob. Lluvia: {d.get('prob_lluvia')}%")
+            print(f"   💨 Viento Máx.  : {d.get('viento_max_kph')} km/h")
+            print(f"   {icono} Viabilidad  : [{estado}]")
+            
+            if recomendacion:
+                print(f"      💡 {recomendacion}")
+            
+            if alertas:
+                print("      ⚠️ Alertas de Planificación:")
+                for alerta in alertas:
+                    print(f"         • {alerta}")
+
+            print("-" * 65)
