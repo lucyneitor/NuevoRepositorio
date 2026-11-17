@@ -221,3 +221,21 @@ class ProyectoView():
                     print(f"         • {alerta}")
 
             print("-" * 65)
+
+    @staticmethod
+    def mostrar_resultado_conectividad(exito: bool, msg: str):
+        """
+        Muestra en consola el resultado de la prueba de conectividad con la API externa.
+        """
+        print("\n" + "=" * 55)
+        print("🔌 PRUEBA DE CONECTIVIDAD - WEATHERAPI")
+        print("=" * 55)
+        
+        if exito:
+            print(f"🟢 ESTADO : [CONECTADO / OK]")
+            print(f"💬 DETALLE: {msg}")
+        else:
+            print(f"🔴 ESTADO : [ERROR DE CONEXIÓN / FALLIDO]")
+            print(f"💬 DETALLE: {msg}")
+            
+        print("=" * 55 + "\n")

@@ -18,6 +18,8 @@ class Settings:
     REQUEST_TIMEOUT: int = int(os.getenv("REQUEST_TIMEOUT", "5")) 
     ENABLE_OFFLINE_FALLBACK: bool = (os.getenv("ENABLE_OFFLINE_FALLBACK", "True").lower() in ("true", "1", "yes"))
 
+    API_BASE_URL_MONEDA = "https://api.frankfurter.dev/v2"
+
     #login del sistema [usuario administrador]
     ADMIN_INITIAL_USER: str = os.getenv("ADMIN_INITIAL_USER","")
     ADMIN_INITIAL_CLAVE: str = os.getenv("ADMIN_INITIAL_CLAVE","")

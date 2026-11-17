@@ -269,10 +269,18 @@ class ProyectoController:
 
                 if op == 1 or op == 2:
                     ciudad = pedir("ciudad de operación terreno")
+                    
                     if op == 1:
-                        resultado, msg = ClimaService.obtener_clima_actual(ciudad)
-                        msg,analisis = ClimaService.evaluar_viabilidad_operativa(resultado)
+                        # Opción 1: Clima Actual -> Retorna (msg, resultado, analisis)
+                        msg, resultado, analisis = ClimaService.obtener_clima_actual(ciudad)
+                        
+                        if resultado and analisis:
+                            self.proyecto_view.resultado_clima(msg, resultado, analisis)
+                        else:
+                            print(f"\n❌ {msg}")
+                            
                     else: 
+                        # Opción 2: Pronóstico a Futuro
                         while True:
                             dias = pedir("días deseados a proyectar (max. 3 días): ")
                             try:
@@ -283,7 +291,18 @@ class ProyectoController:
                                 continue
                             else: 
                                 break
-                        msg,resultado = ClimaService.obtener_pronostico(ciudad, dias)
-                    msg,analisis = ClimaService.evaluar_viabilidad_operativa(resultado)
-                    self.proyecto_view.resultado_clima(msg,resultado,analisis)
+                                
+                        # Retorna los tres valores específicos del pronóstico: (msg, pronostico, evaluaciones)
+                        msg, resultado_pronostico, evaluaciones_pronostico = ClimaService.obtener_pronostico(ciudad, dias)
+                        
+                        if resultado_pronostico and evaluaciones_pronostico:
+                            # Llamamos a su vista exclusiva para pronósticos múltiples
+                            self.proyecto_view.resultado_pronostico(msg, resultado_pronostico, evaluaciones_pronostico)
+                        else:
+                            print(f"\n❌ {msg}")
+
+                else:
+                    conexion, msg = ClimaService.probar_conectividad()
+                    self.proyecto_view.mostrar_resultado_conectividad(conexion,msg)
+                    
                         

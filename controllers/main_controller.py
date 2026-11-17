@@ -45,7 +45,7 @@ class MainController:
                 else:
                     if opcion == 0: 
                         mostrar_mensaje("Hasta luego. Cerrando programa")
-                        break
+                        return
                     elif opcion == 1:
                         self.empleado_controller.ejecutar()
                     elif opcion == 2:

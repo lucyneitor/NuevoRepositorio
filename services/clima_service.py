@@ -57,24 +57,25 @@ class ClimaService:
         return limpio
 
     @classmethod
-    def obtener_clima_actual(cls, ciudad: str) -> Tuple[Dict[str, Any] | None, str]:
+    def obtener_clima_actual(cls, ciudad: str) -> Tuple[str, Dict[str, Any] | None, Dict[str, Any] | None]:
         """
-        Consulta la API externa de clima con la ciudad solicitada.
+        Consulta la API externa de clima y evalúa la viabilidad operativa automáticamente.
+        Retorna: (msg, resultado_clima, analisis_operativo)
         """
         try:
             ciudad_segura = cls.sanitizar_ciudad(ciudad)
         except ValueError as e:
-            return (None, str(e))
+            return (str(e), None, None)
 
         if not REQUESTS_AVAILABLE:
-            return cls._manejar_contingencia(
+            res_local, msg_local = cls._manejar_contingencia(
                 ciudad_segura, 
                 "Librería 'requests' no instalada en el entorno."
             )
+            analisis_local = cls.evaluar_viabilidad_operativa(res_local) if res_local else None
+            return (msg_local, res_local, analisis_local)
 
         url = f"{Settings.API_BASE_URL_CLIMA}/current.json"
-        
-        # Parámetros obligatorios que exige WeatherAPI (key y q)
         params = {
             "key": Settings.API_KEY_CLIMA,
             "q": ciudad_segura,
@@ -82,7 +83,6 @@ class ClimaService:
         }
 
         try:
-            # Petición HTTP usando la URL base y el timeout centralizado en Settings
             session = cls._get_seccion()
             response = session.get(
                 url,
@@ -90,25 +90,25 @@ class ClimaService:
                 timeout=Settings.REQUEST_TIMEOUT
             )
 
-            # Manejo de códigos HTTP comunes de WeatherAPI (Gestión diferenciada por categoría de codigo HTTP
             if response.status_code == 400:
-                return (None, f"Ciudad '{ciudad_segura}' no encontrada o parámetro inválido.")
-            elif response.status_code in (401,403):
+                return (f"Ciudad '{ciudad_segura}' no encontrada o parámetro inválido.", None, None)
+            elif response.status_code in (401, 403):
                 logger.error("Fallo de autenticación con WeatherAPI (HTTP %s).", response.status_code)
-                return (None, "Error 401: API Key de Clima inválida o no autorizada. Verificar configuración")
+                return ("Error 401: API Key de Clima inválida o no autorizada. Verificar configuración", None, None)
             elif response.status_code == 429:
                 logger.warning("Límite de peticiones excedido en WeatherAPI (HTTP 429).")
-                return (None, "Error 429: Límite de consultas a WeatherAPI excedido. Intente más tarde.")
+                return ("Error 429: Límite de consultas a WeatherAPI excedido. Intente más tarde.", None, None)
             elif 500 <= response.status_code < 600:
                 logger.error("Servidor de WeatherAPI con error interno (HTTP %s).", response.status_code)
-                return cls._manejar_contingencia(
+                res_local, msg_local = cls._manejar_contingencia(
                     ciudad_segura,
                     f"El servidor externo de clima no está disponible (HTTP {response.status_code})."
                 )
+                analisis_local = cls.evaluar_viabilidad_operativa(res_local) if res_local else None
+                return (msg_local, res_local, analisis_local)
             
             response.raise_for_status()
             
-            # Deserialización del JSON devuelto por WeatherAPI
             data = response.json()
             location = data.get("location", {})
             current = data.get("current", {})
@@ -124,39 +124,20 @@ class ClimaService:
                 "viento_kph": current.get("wind_kph", 0.0)
             }
 
-            return (resultado_clima, f"Clima obtenido exitosamente para {resultado_clima['ciudad']}.")
+            # 🛠️ Evaluamos la viabilidad operativa de inmediato con los datos obtenidos
+            analisis = cls.evaluar_viabilidad_operativa(resultado_clima)
 
-        except requests.exceptions.Timeout:
-            logger.warning("Timeout al consultar WeatherAPI para '%s'.", ciudad_segura)
-            return cls._manejar_contingencia(
-                ciudad_segura, 
-                f"El servicio de clima tardó más de {Settings.REQUEST_TIMEOUT}s en responder (Timeout)."
-            )
-        except requests.exceptions.ConnectionError:
-            logger.error("Error de conectividad hacia WeatherAPI")
-            return cls._manejar_contingencia(
-                ciudad_segura, 
-                "No hay conexión a internet o el servidor de WeatherAPI está caído."
-            )
-        except requests.exceptions.HTTPError as e:
-            logger.error("Error HTTP inesperado en WeatherAPI: %s", e.response.status_code if e.response else "N/A")
-            return cls._manejar_contingencia(
-                ciudad_segura,
-                "El servicio de clima devolvió una respuesta HTTP inválida"
-            )
-        except (requests.exceptions.JSONDecodeError, ValueError):
-            logger.error("La respuesta de WeatherAPI no contiene un JSON válido")
-            return cls._manejar_contingencia(
-                ciudad_segura,
-                "El servicio externo devolvió datos con un formato inesperado."
-            )
+            msg = f"Clima obtenido exitosamente para {resultado_clima['ciudad']}."
+            return (msg, resultado_clima, analisis)
+
         except requests.exceptions.RequestException:
-            # No exponemos str(e) al usuario para evitar filtrar la URL con la API_KEY
-            logger.exception("Error inesperado de red en ClimaService")
-            return cls._manejar_contingencia(
+            logger.exception("Error de red en ClimaService al obtener clima actual")
+            res_local, msg_local = cls._manejar_contingencia(
                 ciudad_segura, 
                 "Falla en la petición: Ocurrió un problema de comunicación con el servicio de clima."
             )
+            analisis_local = cls.evaluar_viabilidad_operativa(res_local) if res_local else None
+            return (msg_local, res_local, analisis_local)
 
     @classmethod
     def _manejar_contingencia(cls, ciudad: str, causa_error: str) -> Tuple[Dict[str, Any] | None, str]:
@@ -313,26 +294,25 @@ class ClimaService:
 
     @classmethod
     def obtener_pronostico(
-      cls, ciudad: str, dias: int = 3
-    ) -> Tuple[Dict[str, Any] | None, str]:
-        """Consulta el pronóstico a futuro (forecast.json)"""
+        cls, ciudad: str, dias: int = 3
+    ) -> Tuple[str, Dict[str, Any] | None, list[Dict[str, Any]] | None]:
+        """
+        Consulta el pronóstico a futuro y evalúa la viabilidad operativa día por día.
+        Retorna: (msg, resultado_pronostico, lista_de_evaluaciones)
+        """
         try:
             ciudad_segura = cls.sanitizar_ciudad(ciudad)
         except ValueError as e:
-            return (None, str(e))
+            return (str(e), None, None)
 
         if not REQUESTS_AVAILABLE:
-            return cls._manejar_contingencia(
-                ciudad_segura, "Librería 'requests' no instalada."
-            )
+            return ("Librería 'requests' no instalada.", None, None)
 
-        # 2. CONCATENAMOS la ruta /forecast.json a la variable base del .env
         url = f"{Settings.API_BASE_URL_CLIMA}/forecast.json"
-
         params = {
             "key": Settings.API_KEY_CLIMA,
             "q": ciudad_segura,
-            "days": dias,  # Límite de 3 días para cuentas gratuitas
+            "days": dias, 
             "lang": "es",
         }
 
@@ -343,9 +323,9 @@ class ClimaService:
             )
 
             if response.status_code == 400:
-                return (None, f"Ciudad '{ciudad_segura}' no encontrada.")
+                return (f"Ciudad '{ciudad_segura}' no encontrada.", None, None)
             elif response.status_code in (401, 403):
-                return (None, "Error 401: API Key inválida o no autorizada.")
+                return ("Error 401: API Key inválida o no autorizada.", None, None)
 
             response.raise_for_status()
             data = response.json()
@@ -359,25 +339,36 @@ class ClimaService:
                 "dias": [],
             }
 
+            evaluaciones_pronostico = []
+
             for dia in forecast_days:
                 day_info = dia.get("day", {})
                 condition = day_info.get("condition", {})
 
-                resultado_pronostico["dias"].append({
+                # 1. Agregamos los datos del día al diccionario de pronóstico
+                datos_dia_crudo = {
                     "fecha": dia.get("date"),
                     "temp_max": day_info.get("maxtemp_c"),
                     "temp_min": day_info.get("mintemp_c"),
                     "condicion": condition.get("text"),
                     "prob_lluvia": day_info.get("daily_chance_of_rain", 0),
                     "viento_max_kph": day_info.get("maxwind_kph"),
-                })
+                }
+                resultado_pronostico["dias"].append(datos_dia_crudo)
 
-            return (
-                resultado_pronostico,
-                f"Pronóstico obtenido con éxito para {resultado_pronostico['ciudad']}.",
-            )
+                # 2. Evaluamos la viabilidad operativa para este día de forma automática
+                datos_para_evaluar = {
+                    "temperatura": datos_dia_crudo["temp_max"],
+                    "humedad": 86 if datos_dia_crudo["prob_lluvia"] >= 60 else 65, # Inferencia preventiva ante lluvia
+                    "viento_kph": datos_dia_crudo["viento_max_kph"],
+                    "condicion": datos_dia_crudo["condicion"]
+                }
+                analisis_dia = cls.evaluar_viabilidad_operativa(datos_para_evaluar)
+                evaluaciones_pronostico.append(analisis_dia)
+
+            msg = f"Pronóstico obtenido con éxito para {resultado_pronostico['ciudad']}."
+            # Retorna en orden estricto: (mensaje, datos_pronostico, evaluaciones)
+            return (msg, resultado_pronostico, evaluaciones_pronostico)
 
         except requests.exceptions.RequestException:
-            return cls._manejar_contingencia(
-                ciudad_segura, "Falla de red al consultar el pronóstico."
-            )
+            return ("Falla de red al consultar el pronóstico.", None, None)
