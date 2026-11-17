@@ -272,7 +272,6 @@ class ProyectoController:
                     if op == 1:
                         resultado, msg = ClimaService.obtener_clima_actual(ciudad)
                         analisis = ClimaService.evaluar_viabilidad_operativa(resultado)
-                        self.proyecto_view.resultado_clima(msg,resultado,analisis)
                     else: 
                         while True:
                             dias = pedir("días deseados a proyectar (max. 3 días): ")

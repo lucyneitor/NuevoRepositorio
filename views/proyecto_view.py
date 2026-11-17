@@ -167,7 +167,7 @@ class ProyectoView():
         print("0. Volver al Menú Principal")
         print("="*60)
             
-    def resultado_clima(msg, datos_clima, analisis): # crear una funcion en proyecto_controller de clima para mostrar estos resultados
+    def resultado_clima(self, msg, datos_clima, analisis): # crear una funcion en proyecto_controller de clima para mostrar estos resultados
         print(f"\n✅ {msg}")
         print("----------------------------------------------------")
         print(f"🌍 Ubicación:         {datos_clima['ciudad']}, {datos_clima['pais']}")
