@@ -10,246 +10,188 @@ except ImportError:
     REQUESTS_AVAILABLE = False
 
 from config.settings import Settings
-
 logger = logging.getLogger(__name__)
-
 
 class MonedaService:
     """
-    Servicio de EcoTech Solutions para consumir indicadores económicos (Frankfurter API v2)
-    y calcular el pago de trabajadores ajustado a la moneda del país del proyecto.
+    Servicio de EcoTech Solutions que integra dos APIs:
+    1. REST Countries: Para detectar la moneda oficial a partir del país del proyecto.
+    2. Frankfurter API: Para obtener el tipo de cambio actualizado desde CLP.
     """
     _session = None
 
-    # Plan de contingencia: tasas referenciales por si falla la conexión en terreno/laboratorio
+    # Plan de contingencia local por si falla el internet o alguna de las APIs
     TASAS_CONTINGENCIA = {
-        ("USD", "CLP"): {"fecha": "2026-11-17", "tasa": 950.0},
-        ("EUR", "CLP"): {"fecha": "2026-11-17", "tasa": 1030.0},
-        ("USD", "PEN"): {"fecha": "2026-11-17", "tasa": 3.75},
-        ("USD", "COP"): {"fecha": "2026-11-17", "tasa": 4350.0},
-        ("USD", "MXN"): {"fecha": "2026-11-17", "tasa": 20.15},
-        ("USD", "ARS"): {"fecha": "2026-11-17", "tasa": 1005.0},
-        ("USD", "BRL"): {"fecha": "2026-11-17", "tasa": 5.75},
+        ("CLP", "PEN"): 0.00395,
+        ("CLP", "USD"): 0.00105,
+        ("CLP", "EUR"): 0.00098,
+        ("CLP", "BRL"): 0.00610,
+        ("CLP", "ARS"): 1.05000,
+        ("CLP", "COP"): 4.45000,
+        ("CLP", "MXN"): 0.02100,
     }
 
     @classmethod
     def _get_sesion(cls):
-        """
-        Inicializa y reutiliza una sesión HTTP con encabezados estándar.
-        """
+        """Inicializa y reutiliza una sesión HTTP con encabezados estándar."""
         if cls._session is None and REQUESTS_AVAILABLE:
             cls._session = requests.Session()
             cls._session.headers.update({"Accept": "application/json"})
         return cls._session
 
     @staticmethod
-    def _sanitizar_divisa(codigo: str) -> str:
-        """
-        Valida que el código de moneda cumpla con el estándar ISO 4217 (3 letras).
-        """
-        if not codigo or not isinstance(codigo, str):
-            raise ValueError("El código de divisa debe ser un texto válido.")
+    def _sanitizar_texto(texto: str, campo: str) -> str:
+        """Valida que los textos no estén vacíos."""
+        if not texto or not isinstance(texto, str):
+            raise ValueError(f"El campo '{campo}' es inválido o está vacío.")
+        return texto.strip()
 
-        limpio = codigo.strip().upper()
-        if not re.fullmatch(r"[A-Z]{3}", limpio):
-            raise ValueError(
-                f"Código de divisa '{codigo}' inválido. Use el formato ISO de 3 letras (ej: USD, CLP, EUR)."
-            )
-        return limpio
-
-    @staticmethod
-    def _sanitizar_monto(monto: float | int) -> float:
+    @classmethod
+    def obtener_moneda_por_pais(cls, nombre_pais: str) -> Tuple[str, str]:
         """
-        Valida que el sueldo o monto a pagar sea un valor numérico positivo.
+        Consulta la API de REST Countries para obtener el código ISO de la moneda 
+        y el nombre oficial del país ingresado.
         """
-        try:
-            valor = float(monto)
-        except (TypeError, ValueError):
-            raise ValueError("El monto del pago debe ser un número válido.")
+        pais_limpio = cls._sanitizar_texto(nombre_pais, "país")
+        
+        # Endpoint público de REST Countries v3.1 (sin token obligatorio)
+        url = f"https://restcountries.com/v3.1/name/{pais_limpio}"
 
-        if valor <= 0:
-            raise ValueError("El monto del pago debe ser mayor a cero.")
-        return valor
+        session = cls._get_sesion()
+        response = session.get(url, timeout=Settings.REQUEST_TIMEOUT)
+
+        if response.status_code == 404:
+            raise ValueError(f"No se encontró el país '{nombre_pais}' en el registro internacional.")
+        
+        response.raise_for_status()
+        paises_data = response.json()
+
+        if not paises_data:
+            raise ValueError(f"No hay datos disponibles para el país '{nombre_pais}'.")
+
+        # Tomamos el primer resultado de la búsqueda
+        info_pais = paises_data[0]
+        nombre_oficial = info_pais.get("name", {}).get("common", nombre_pais)
+        
+        # Extraemos el diccionario de monedas (ej. {'PEN': {'name': 'Peruvian sol', 'symbol': 'S/.'}})
+        monedas_dict = info_pais.get("currencies", {})
+        if not monedas_dict:
+            raise ValueError(f"El país '{nombre_oficial}' no reporta una moneda oficial válida.")
+
+        # Tomamos la primera moneda disponible en la lista del país
+        codigo_moneda = list(monedas_dict.keys())[0]
+
+        return nombre_oficial, codigo_moneda
 
     @classmethod
     def calcular_pago_internacional(
         cls,
-        monto_base: float,
-        moneda_origen: str,
-        moneda_proyecto: str
+        monto_base_clp: float,
+        pais_proyecto: str
     ) -> Tuple[str, Dict[str, Any] | None]:
         """
-        Consume la API externa de Frankfurter para obtener el tipo de cambio actualizado
-        y calcular el pago ajustado a la moneda local donde se ejecuta el proyecto.
-        Retorna: (mensaje_estado, diccionario_con_calculo_de_pago)
+        Método principal:
+        1. Usa la API 1 para detectar la moneda destino según el país del proyecto.
+        2. Usa la API 2 (Frankfurter) para convertir el sueldo base en CLP a esa moneda.
         """
         try:
-            origen_seguro = cls._sanitizar_divisa(moneda_origen)
-            destino_seguro = cls._sanitizar_divisa(moneda_proyecto)
-            monto_seguro = cls._sanitizar_monto(monto_base)
+            if not isinstance(monto_base_clp, (int, float)) or monto_base_clp <= 0:
+                raise ValueError("El monto base del sueldo debe ser mayor a cero.")
+
+            if not REQUESTS_AVAILABLE:
+                return ( "Librería 'requests' no instalada.", None )
+
+            # PASO 1: Consultar la API de Países para obtener la moneda destino
+            nombre_pais_oficial, moneda_destino = cls.obtener_moneda_por_pais(pais_proyecto)
+
         except ValueError as e:
             return (str(e), None)
+        except requests.exceptions.RequestException:
+            logger.warning("Falla de red al consultar REST Countries. Intentando contingencia local.")
+            # Si falla la API de países, puedes recurrir a un respaldo o retornar error
+            return (f"No se pudo conectar con el servicio de países para '{pais_proyecto}'.", None)
 
-        # Caso donde el pago se realiza en la misma moneda base (sin conversión)
-        if origen_seguro == destino_seguro:
+        # Si el proyecto se ejecuta en Chile (CLP), no requiere conversión externa
+        if moneda_destino == "CLP":
             return (
-                f"Pago calculado sin conversión requerida ({origen_seguro}).",
+                "Proyecto en Chile. Sin conversión requerida.",
                 {
+                    "monto_origen_clp": float(monto_base_clp),
+                    "moneda_destino": "CLP",
+                    "tasa_aplicada": 1.0,
+                    "monto_final_ajustado": float(monto_base_clp),
                     "fecha_indicador": "N/A",
-                    "moneda_origen": origen_seguro,
-                    "moneda_proyecto": destino_seguro,
-                    "tasa_cambio": 1.0,
-                    "monto_base": monto_seguro,
-                    "pago_ajustado": round(monto_seguro, 2),
-                    "fuente": "Directo (Misma divisa)"
+                    "fuente": "Local (Chile)"
                 }
             )
 
-        # Si no está instalada la librería requests, activa el plan de contingencia
-        if not REQUESTS_AVAILABLE:
-            return cls._manejar_contingencia(
-                monto_seguro, origen_seguro, destino_seguro,
-                "Librería 'requests' no instalada en el entorno."
-            )
-
-        # Endpoint de Frankfurter v2 para par específico: /v2/rate/{base}/{quote}
-        url = f"{Settings.API_BASE_URL_MONEDA}/rate/{origen_seguro.lower()}/{destino_seguro.lower()}"
+        # PASO 2: Consultar la API de Divisas (Frankfurter) para el tipo de cambio CLP -> Moneda Destino
+        url_divisas = f"{Settings.API_BASE_URL_MONEDA}/latest?base=CLP&symbols={moneda_destino}"
 
         try:
             session = cls._get_sesion()
-            response = session.get(url, timeout=Settings.REQUEST_TIMEOUT)
+            response = session.get(url_divisas, timeout=Settings.REQUEST_TIMEOUT)
 
-            # Manejo de errores HTTP de cliente (moneda inexistente o no soportada)
             if response.status_code in (400, 404, 422):
-                detalle = response.json().get("message", "Moneda no soportada por el indicador.")
-                return (f"Error ({response.status_code}): {detalle}", None)
+                return cls._manejar_contingencia(float(monto_base_clp), "CLP", moneda_destino, f"Moneda '{moneda_destino}' no soportada en el conversor.")
             elif response.status_code == 429:
-                logger.warning("Límite de consultas excedido en Frankfurter API (HTTP 429).")
-                return cls._manejar_contingencia(
-                    monto_seguro, origen_seguro, destino_seguro,
-                    "Límite de peticiones excedido en la API externa (HTTP 429)."
-                )
+                return cls._manejar_contingencia(float(monto_base_clp), "CLP", moneda_destino, "Límite de peticiones excedido en API de divisas (HTTP 429).")
             elif 500 <= response.status_code < 600:
-                logger.error("Error interno en servidor de Frankfurter (HTTP %s).", response.status_code)
-                return cls._manejar_contingencia(
-                    monto_seguro, origen_seguro, destino_seguro,
-                    f"El servidor de indicadores económicos no está disponible (HTTP {response.status_code})."
-                )
+                return cls._manejar_contingencia(float(monto_base_clp), "CLP", moneda_destino, f"Servidor de divisas no disponible (HTTP {response.status_code}).")
 
             response.raise_for_status()
             data = response.json()
 
-            tasa = float(data.get("rate", 0.0))
-            pago_ajustado = round(monto_seguro * tasa, 2)
+            # Extraemos la tasa de cambio desde el diccionario 'rates' de Frankfurter
+            rates = data.get("rates", {})
+            tasa = float(rates.get(moneda_destino, 0.0))
 
-            resultado_pago = {
+            if tasa == 0.0:
+                return cls._manejar_contingencia(float(monto_base_clp), "CLP", moneda_destino, "La tasa retornada fue cero.")
+
+            monto_ajustado = round(monto_base_clp * tasa, 2)
+
+            resultado = {
+                "monto_origen_clp": float(monto_base_clp),
+                "moneda_destino": moneda_destino,
+                "tasa_aplicada": tasa,
+                "monto_final_ajustado": monto_ajustado,
                 "fecha_indicador": data.get("date", "Desconocida"),
-                "moneda_origen": data.get("base", origen_seguro),
-                "moneda_proyecto": data.get("quote", destino_seguro),
-                "tasa_cambio": tasa,
-                "monto_base": monto_seguro,
-                "pago_ajustado": pago_ajustado,
-                "fuente": "Frankfurter API (En línea)"
+                "fuente": "APIs Externas (REST Countries + Frankfurter)"
             }
 
-            msg = (
-                f"Pago ajustado exitosamente: {monto_seguro} {origen_seguro} = "
-                f"{pago_ajustado} {destino_seguro} (Tasa: {tasa})."
-            )
-            return (msg, resultado_pago)
+            msg = f"Pago calculado con éxito para {nombre_pais_oficial} (Tasa: {tasa} {moneda_destino}/CLP)."
+            return (msg, resultado)
 
         except requests.exceptions.RequestException:
-            logger.exception("Error de red en MonedaService al consultar indicador económico.")
-            return cls._manejar_contingencia(
-                monto_seguro, origen_seguro, destino_seguro,
-                "Falla de comunicación de red con el servicio de indicadores económicos."
-            )
+            logger.warning("Falla de red con la API de divisas. Activando contingencia.")
+            return cls._manejar_contingencia(float(monto_base_clp), "CLP", moneda_destino, "Falla de red con la API de conversión.")
 
     @classmethod
     def _manejar_contingencia(
         cls,
-        monto_base: float,
-        moneda_origen: str,
-        moneda_proyecto: str,
+        monto_base_clp: float,
+        origen: str,
+        destino: str,
         causa_error: str
     ) -> Tuple[str, Dict[str, Any] | None]:
-        """
-        Plan de contingencia: respalda el cálculo de pagos usando tasas referenciales
-        locales si la API externa falla y ENABLE_OFFLINE_FALLBACK está habilitado.
-        """
+        """Plan de contingencia offline usando tasas referenciales locales si fallan las APIs."""
         if not Settings.ENABLE_OFFLINE_FALLBACK:
             return (f"{causa_error} (El modo contingencia offline está deshabilitado).", None)
 
-        respaldo = cls.TASAS_CONTINGENCIA.get((moneda_origen, moneda_proyecto))
+        tasa = cls.TASAS_CONTINGENCIA.get((origen, destino))
+        if not tasa:
+            return (f"[CONTINGENCIA] {causa_error} No existe tasa de respaldo local para CLP -> {destino}.", None)
 
-        # Si no está el par directo, intenta calcular la tasa inversa si existe en el diccionario
-        if not respaldo:
-            inverso = cls.TASAS_CONTINGENCIA.get((moneda_proyecto, moneda_origen))
-            if inverso and inverso["tasa"] > 0:
-                respaldo = {
-                    "fecha": inverso["fecha"],
-                    "tasa": round(1.0 / inverso["tasa"], 6)
-                }
-
-        if not respaldo:
-            return (
-                f"[MODO CONTINGENCIA] {causa_error} No existe tasa de respaldo local "
-                f"para el par {moneda_origen} -> {moneda_proyecto}.",
-                None
-            )
-
-        tasa = respaldo["tasa"]
-        pago_ajustado = round(monto_base * tasa, 2)
-
+        monto_ajustado = round(monto_base_clp * tasa, 2)
         resultado_local = {
-            "fecha_indicador": respaldo["fecha"],
-            "moneda_origen": moneda_origen,
-            "moneda_proyecto": moneda_proyecto,
-            "tasa_cambio": tasa,
-            "monto_base": monto_base,
-            "pago_ajustado": pago_ajustado,
-            "fuente": "Contingencia Local (Offline)"
+            "monto_origen_clp": monto_base_clp,
+            "moneda_destino": destino,
+            "tasa_aplicada": tasa,
+            "monto_final_ajustado": monto_ajustado,
+            "fecha_indicador": "Referencia local almacenada",
+            "fuente": "Modo Contingencia (Offline)"
         }
 
-        msg = (
-            f"[MODO CONTINGENCIA] {causa_error}\n"
-            f"Pago calculado con tasa referencial local ({tasa}): "
-            f"{monto_base} {moneda_origen} = {pago_ajustado} {moneda_proyecto}."
-        )
+        msg = f"[CONTINGENCIA] {causa_error} Usando tasa referencial local: 1 CLP = {tasa} {destino}"
         return (msg, resultado_local)
-
-    @classmethod
-    def probar_conectividad(cls) -> Tuple[bool, str]:
-        """
-        Verifica si la API externa de indicadores económicos (Frankfurter) está operativa.
-        """
-        if not REQUESTS_AVAILABLE:
-            return (
-                False,
-                "Librería 'requests' no instalada. Ejecute 'pip install requests'."
-            )
-
-        try:
-            session = cls._get_sesion()
-            # Consulta un par estándar y ligero (USD a EUR) para validar disponibilidad
-            url = f"{Settings.API_BASE_URL_MONEDA}/rate/usd/eur"
-            resp = session.get(url, timeout=Settings.REQUEST_TIMEOUT)
-
-            if resp.status_code == 200:
-                return (
-                    True,
-                    f"Conexión exitosa con Frankfurter API (Código HTTP: {resp.status_code})."
-                )
-
-            return (
-                False,
-                f"El servidor de indicadores respondió con código HTTP inesperado: {resp.status_code}."
-            )
-
-        except requests.exceptions.Timeout:
-            return (False, "Timeout al intentar contactar el servicio de indicadores económicos.")
-        except requests.exceptions.ConnectionError:
-            return (False, "Sin conexión de red hacia el servidor de Frankfurter API.")
-        except requests.exceptions.RequestException as e:
-            logger.error("Error de red al probar conectividad con Frankfurter: %s", str(e))
-            return (False, "Ocurrió un problema de comunicación con el servicio externo. Intente más tarde.")

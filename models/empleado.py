@@ -6,7 +6,7 @@ ESTADO = ["activo", "inactivo", "vacaciones", "suspendido"]
 class Empleado(Persona):
     def __init__(
         self, 
-        sueldo:int, 
+        sueldo:int, #dato por defecto CLP
         inicio_contrato:date, 
         estado:str, 
         rut:str,

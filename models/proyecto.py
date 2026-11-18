@@ -8,13 +8,14 @@ class Proyecto:
     esto despues estara conectado con la base de datos de tiempo para gestionar estos
     """
     
-    def __init__(self, nombre:str, descripcion:str, fecha_inicio:str,fecha_fin:str,estado:str, id_proyecto:int|None=None):
+    def __init__(self, nombre:str, descripcion:str, pais_ejecut:str, fecha_inicio:str,fecha_fin:str,estado:str, id_proyecto:int|None=None):
         self.id_proyecto = id_proyecto
         self.nombre = nombre
         self.descripcion = descripcion
         self.fecha_inicio = fecha_inicio
         self.fecha_fin = fecha_fin
         self.estado = estado
+        self.pais_ejecut = pais_ejecut
         
     def __str__(self):
         return f"{self.nombre}: {self.descripcion}"
@@ -111,3 +112,11 @@ class Proyecto:
             )
 
         self.__estado = estado
+
+    @property
+    def pais_ejecut(self):
+        return self.__pais_ejecut
+
+    @pais_eject.setter
+    def pais_ejecut(self, pais_ejecut):
+        

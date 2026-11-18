@@ -65,6 +65,22 @@ class Database:
             """)
 
             cursor.execute("""
+                CREATE TABLE IF NOT EXISTS pagos (
+                    id_transaccion INTEGER PRIMARY KEY AUTOINCREMENT,
+                    rut TEXT NOT NULL,
+                    id_proyecto TEXT NOT NULL,
+                    sueldo_base REAL NOT NULL,
+                    moneda_origen TEXT NOT NULL,
+                    sueldo_pagado REAL NOT NULL,
+                    moneda_destino TEXT NOT NULL,
+                    tasa_cambio REAL NOT NULL,
+                    fecha_transaccion TEXT NOT NULL,
+                    FOREIGN KEY (rut) REFERENCES empleados(rut),
+                    FOREIGN KEY (id_proyecto) REFERENCES proyectos(id_proyecto)
+                )
+            """)
+
+            cursor.execute("""
                 CREATE TABLE IF NOT EXISTS tiempo (
                     id_tiempo INTEGER PRIMARY KEY AUTOINCREMENT,
                     fecha TEXT NOT NULL,
