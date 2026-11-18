@@ -353,7 +353,7 @@ class ProyectoController:
                 cod_moneda = MonedaService.obtener_moneda_por_pais(pais_proyecto)
             except ValueError as error:
                 mostrar_mensaje(f"Dato inválido para {pais_proyecto}: {error}")
-            
+                continue
             except (REQUEST_ERROR, RuntimeError) as error:
                 mostrar_mensaje(f"Error de conexión al consultar moneda de '{pais_proyecto}': {error}")
                 continue

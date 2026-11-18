@@ -11,9 +11,11 @@ try:
     from requests.adapters import HTTPAdapter
     from urllib3.util.retry import Retry
     REQUESTS_AVAILABLE = True
+    REQUEST_EXCEPTION = requests.exceptions.RequestException
 except ImportError:
     requests=None
     REQUESTS_AVAILABLE = False
+    REQUEST_EXCEPTION = OSError
 from config.settings import Settings
 
 logger = logging.getLogger(__name__)
@@ -68,7 +70,7 @@ class MonedaService:
     # --------------------------------------------------
 
     @classmethod
-    def _get_sesion(cls) -> requests.Session:
+    def _get_sesion(cls) -> Any:
         """Crea y reutiliza una sesión HTTP con reintentos."""
         if cls._session is None:
             sesion = requests.Session()
@@ -91,7 +93,10 @@ class MonedaService:
 
     @classmethod
     def _consultar_api(cls, url: str, mensaje_no_encontrado: str = "Recurso no encontrado."):
-        """Ejecuta una petición GET diferenciando errores de datos (4xx) de red."""
+        """Ejecuta una petición GET diferenciando categorías de respuesta HTTP y errores de red."""
+        if not REQUESTS_AVAILABLE:
+            raise RuntimeError("La librería 'requests' no está instalada en el entorno.")
+
         response = cls._get_sesion().get(
             url,
             timeout=Settings.REQUEST_TIMEOUT,
@@ -99,6 +104,13 @@ class MonedaService:
 
         if response.status_code in (400, 404, 422):
             raise ValueError(mensaje_no_encontrado)
+        if response.status_code == 429:
+            raise RuntimeError("Límite de peticiones excedido en la API externa (HTTP 429).")
+        if 500 <= response.status_code < 600:
+            raise requests.exceptions.HTTPError(
+                f"Error del servidor externo (HTTP {response.status_code}).",
+                response=response,
+            )
 
         response.raise_for_status()
 
