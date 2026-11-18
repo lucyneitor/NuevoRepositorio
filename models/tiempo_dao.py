@@ -194,6 +194,34 @@ class TiempoDAO:
             return []
 
     @staticmethod
+    def obtener_ruts_por_proyecto(id_proyecto: int) -> list[str]:
+        """
+        Devuelve los RUT únicos de los empleados que tienen registros
+        de tiempo asociados al proyecto indicado.
+        """
+        if isinstance(id_proyecto, bool) or not isinstance(id_proyecto, int):
+            return []
+
+        conn = Database().get_connection()
+        try:
+            cursor: Cursor = conn.cursor()
+            cursor.execute(
+                """
+                SELECT DISTINCT rut_empleado
+                FROM tiempo
+                WHERE id_proyecto = ?
+                ORDER BY rut_empleado
+                """,
+                (id_proyecto,),
+            )
+            return [fila["rut_empleado"] for fila in cursor.fetchall()]
+        except sqlite3.Error as error:
+            print(f"Error al obtener empleados del proyecto: {error}")
+            return []
+        finally:
+            conn.close()
+
+    @staticmethod
     def obtener_todos_tiempos_rut_proyect(rut: str, id:int) -> list[Tiempo]:
             """Obtiene los registros de tiempo de un empleado identificado por RUT."""
             try:
@@ -488,6 +516,7 @@ class TiempoDAO:
             return cursor.fetchone()[0]
         finally:
             conn.close()
+
 
     @staticmethod
     def sumar_tiempo_por_trabajador() -> dict[str, float]:

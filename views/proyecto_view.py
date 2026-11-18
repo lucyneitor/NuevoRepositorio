@@ -12,6 +12,7 @@ class ProyectoView():
         print("4. Eliminar Proyecto")
         print("5. Mostrar proyectos")
         print("6. Planificar proyecto")
+        print("7. Procesar pago de internacional por proyecto")
         print("0. Volver al menú principal")
         print(">"*40)
 

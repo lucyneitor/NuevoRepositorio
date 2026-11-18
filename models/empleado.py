@@ -27,7 +27,12 @@ class Empleado(Persona):
         return self.__sueldo
 
     @sueldo.setter
-    def sueldo(self, sueldo:int)->None:
+    def sueldo(self, sueldo:int|float)->None:
+        if isinstance(sueldo,float):
+            raise ValueError("Debe ingresar numeros enteros")
+
+        if sueldo<=0:
+            raise ("No puede recibir un suelfo negativo")
         self.__sueldo = sueldo # agregar validacion en sueldo
 
     @property

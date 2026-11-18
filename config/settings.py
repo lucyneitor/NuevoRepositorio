@@ -22,6 +22,6 @@ class Settings:
     API_BASE_URL_MONEDA:str = os.getenv("API_BASE_URL_MONEDA""https://api.frankfurter.dev/v2") #conversion clp a codigo monetario correspondiente
 
     #login del sistema [usuario administrador]
-    ADMIN_INITIAL_USER: str = os.getenv("ADMIN_INITIAL_USER","")
-    ADMIN_INITIAL_CLAVE: str = os.getenv("ADMIN_INITIAL_CLAVE","")
+    ADMIN_INITIAL_USER: str = os.getenv("ADMIN_INITIAL_USER", "admin")
+    ADMIN_INITIAL_CLAVE: str = os.getenv("ADMIN_INITIAL_CLAVE", "admin1234")
     MAX_LOGIN_ATTEMPTS: int = int(os.getenv("MAX_LOGIN_ATTEMPTS","3"))

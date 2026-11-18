@@ -4,6 +4,8 @@ from models.proyecto import Proyecto
 from models.proyecto_dao import ProyectoDAO
 from datetime import date
 from services.clima_service import ClimaService
+from services.moneda_service import MonedaService
+from models.tiempo_dao import TiempoDAO
 
 class ProyectoController:
     def __init__(self):
@@ -37,7 +39,7 @@ class ProyectoController:
                             continue
                         except LookupError as error:
                             print(error)
-                            continue
+                            return
                         else:
                             proyecto=self.proyecto_dao.obtener_proyecto_id(id)
                             if proyecto is None:
@@ -56,6 +58,11 @@ class ProyectoController:
                     self.mostrar_proyecto() #todos
                 elif op == 6:
                     self.servicio_clima()
+                else:
+                    nom = pedir("nombre del proyecto a procesar pagos")
+                    list_proyect = ProyectoDAO.obtener_ids_y_pais_por_nombre(nom)
+                    list_empleados = TiempoDAO.obtener_ruts_por_proyecto(id)
+
                     
 
     def agregar_proyecto(self):
@@ -305,4 +312,4 @@ class ProyectoController:
                     conexion, msg = ClimaService.probar_conectividad()
                     self.proyecto_view.mostrar_resultado_conectividad(conexion,msg)
                     
-                        
+    def ejecutar_trans():

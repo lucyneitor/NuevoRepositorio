@@ -2,6 +2,7 @@ from sqlite3 import Cursor
 from config.database import Database
 from models.proyecto import Proyecto
 from typing import Optional
+
 class ProyectoDAO:
     @staticmethod
     def crear_proyecto(fila) -> Proyecto:
@@ -12,6 +13,7 @@ class ProyectoDAO:
             fecha_inicio=fila["fecha_inicio"],
             fecha_fin=fila["fecha_fin"],
             estado=fila["estado"],
+            pais_ejecut=fila["pais"],
         )
     
     @staticmethod
@@ -26,13 +28,15 @@ class ProyectoDAO:
                     descripcion, 
                     fecha_inicio, 
                     fecha_fin,
-                    estado)
-                VALUES(?,?,?,?,?)
+                    estado,
+                    pais)
+                VALUES(?,?,?,?,?,?)
                 """,(proyecto.nombre,
                     proyecto.descripcion,
                     proyecto.fecha_inicio,
                     proyecto.fecha_fin,
-                    proyecto.estado
+                    proyecto.estado,
+                    proyecto.pais,
                     )
             )
             proyecto.id_proyecto = cursor.lastrowid
@@ -85,12 +89,13 @@ class ProyectoDAO:
             cursor : Cursor = conn.cursor()
             cursor.execute("""
                 UPDATE proyecto
-                SET nombre = ?, descripcion = ?, fecha_inicio = ?, fecha_fin = ?, estado = ?
+                SET nombre = ?, descripcion = ?, fecha_inicio = ?, fecha_fin = ?, estado = ?, pais=?
                 WHERE id_proyecto = ?""", (proyecto_obj.nombre,
                                             proyecto_obj.descripcion,
                                             proyecto_obj.fecha_inicio,
                                             proyecto_obj.fecha_fin,
                                             proyecto_obj.estado,
+                                            proyecto_obj.pais,
                                             proyecto_obj.id_proyecto)
             )
             conn.commit()
@@ -130,6 +135,71 @@ class ProyectoDAO:
         except Exception as error:
             print(f"Error al buscar el proyecto por nombre: {error}")
             return None
+        finally:
+            conn.close()
+
+    @staticmethod
+    def obtener_ids_por_nombre(nombre: str) -> list[int]:
+        """
+        Busca proyectos por coincidencia parcial en el nombre y devuelve sus IDs.
+        """
+        if not isinstance(nombre, str) or not nombre.strip():
+            return []
+
+        conn = Database().get_connection()
+        try:
+            cursor = conn.cursor()
+            cursor.execute(
+                """
+                SELECT id_proyecto
+                FROM proyecto
+                WHERE nombre LIKE ? COLLATE NOCASE
+                ORDER BY nombre, id_proyecto
+                """,
+                (f"%{nombre.strip()}%",),
+            )
+            return [fila["id_proyecto"] for fila in cursor.fetchall()]
+        except Exception as error:
+            print(f"Error al buscar proyectos por nombre: {error}")
+            return []
+        finally:
+            conn.close()
+
+    @staticmethod
+    def obtener_ids_y_pais_por_nombre(nombre: str) -> list[dict]:
+        """
+        Busca proyectos cuyo nombre contenga el texto indicado y devuelve 
+        una lista con sus IDs y el país de ejecución.
+        La búsqueda no distingue entre mayúsculas y minúsculas.
+        """
+        if not isinstance(nombre, str) or not nombre.strip():
+            return []
+
+        conn = Database().get_connection()
+        try:
+            cursor = conn.cursor()
+            cursor.execute(
+                """
+                SELECT id_proyecto, pais
+                FROM proyecto
+                WHERE nombre LIKE ? COLLATE NOCASE
+                ORDER BY nombre, id_proyecto
+                """,
+                (f"%{nombre.strip()}%",),
+            )
+            
+            # Retornamos una lista de diccionarios con ambos datos listos para usar
+            return [
+                {
+                    "id_proyecto": fila["id_proyecto"], 
+                    "pais": fila["pais"]
+                } 
+                for fila in cursor.fetchall()
+            ]
+            
+        except Exception as error:
+            print(f"Error al buscar proyectos por nombre: {error}")
+            return []
         finally:
             conn.close()
 

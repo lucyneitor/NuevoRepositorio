@@ -43,9 +43,9 @@ class Database:
                     descripcion TEXT NOT NULL,
                     fecha_inicio DATE NOT NULL,
                     fecha_fin DATE NOT NULL,
-                    pais TEXT NOT NULL,
                     estado TEXT NOT NULL DEFAULT 'Pendiente'
-                        CHECK (estado IN ('Pendiente', 'En proceso', 'Finalizado'))
+                        CHECK (estado IN ('Pendiente', 'En proceso', 'Finalizado')),
+                    pais TEXT NOT NULL
                 )
             """)
 
@@ -59,6 +59,7 @@ class Database:
                     estado TEXT NOT NULL DEFAULT 'activo',
                     inicio_contrato DATE NOT NULL,
                     sueldo INTEGER NOT NULL CHECK (sueldo > 0),
+                    cod_moneda TEXT NOT NULL DEFAULT 'CLP',
                     id_departamento INTEGER,
                     FOREIGN KEY (id_departamento)
                         REFERENCES departamento(id_departamento) ON DELETE SET NULL
@@ -66,18 +67,18 @@ class Database:
             """)
 
             cursor.execute("""
-                CREATE TABLE IF NOT EXISTS pagos (
+                CREATE TABLE IF NOT EXISTS transaccion (
                     id_transaccion INTEGER PRIMARY KEY AUTOINCREMENT,
                     rut TEXT NOT NULL,
                     id_proyecto TEXT NOT NULL,
-                    sueldo_base REAL NOT NULL,
-                    moneda_origen TEXT NOT NULL,
+                    sueldo_emp REAL NOT NULL,
+                    moneda_origen_clp TEXT NOT NULL,
                     sueldo_pagado REAL NOT NULL,
                     moneda_destino TEXT NOT NULL,
                     tasa_cambio REAL NOT NULL,
                     fecha_transaccion TEXT NOT NULL,
-                    FOREIGN KEY (rut) REFERENCES empleados(rut),
-                    FOREIGN KEY (id_proyecto) REFERENCES proyectos(id_proyecto)
+                    FOREIGN KEY (rut) REFERENCES empleado(rut),
+                    FOREIGN KEY (id_proyecto) REFERENCES proyecto(id_proyecto)
                 )
             """)
 
@@ -203,6 +204,7 @@ class Database:
                     "2026-01-15",
                     "2026-12-20",
                     "En proceso",
+                    "Chile",
                 ),
                 (
                     "App Móvil Terreno",
@@ -210,6 +212,7 @@ class Database:
                     "2026-03-01",
                     "2026-11-30",
                     "En proceso",
+                    "Chile",
                 ),
                 (
                     "Auditoría Energética 2026",
@@ -217,14 +220,15 @@ class Database:
                     "2026-12-01",
                     "2027-03-31",
                     "Pendiente",
+                    "Chile",
                 ),
             ]
             cursor.executemany(
                 """
                 INSERT OR IGNORE INTO proyecto (
-                    nombre, descripcion, fecha_inicio, fecha_fin, estado
+                    nombre, descripcion, fecha_inicio, fecha_fin, estado, pais
                 )
-                VALUES (?, ?, ?, ?, ?)
+                VALUES (?, ?, ?, ?, ?, ?)
                 """,
                 proyectos_seed,
             )
