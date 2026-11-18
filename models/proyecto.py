@@ -117,6 +117,6 @@ class Proyecto:
     def pais_ejecut(self):
         return self.__pais_ejecut
 
-    @pais_eject.setter
+    @pais_ejecut.setter
     def pais_ejecut(self, pais_ejecut):
-        
+        self.__pais_ejecut = pais_ejecut

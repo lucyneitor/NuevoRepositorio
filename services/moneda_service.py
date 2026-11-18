@@ -1,197 +1,331 @@
 import logging
-import re
-from typing import Tuple, Dict, Any
+import requests
 
-try:
-    import requests
-    REQUESTS_AVAILABLE = True
-except ImportError:
-    requests = None
-    REQUESTS_AVAILABLE = False
+from decimal import Decimal, InvalidOperation, ROUND_HALF_UP
+from urllib.parse import quote
+from typing import Dict, Any
 
 from config.settings import Settings
+
+
 logger = logging.getLogger(__name__)
+
 
 class MonedaService:
     """
-    Servicio de EcoTech Solutions que integra dos APIs:
-    1. REST Countries: Para detectar la moneda oficial a partir del país del proyecto.
-    2. Frankfurter API: Para obtener el tipo de cambio actualizado desde CLP.
+    Servicio de integración monetaria de EcoTech Solutions.
+
+    APIs:
+    1. REST Countries: detecta la moneda del país.
+    2. Frankfurter: obtiene el tipo de cambio.
+
+    Moneda base del sistema: CLP.
     """
+
     _session = None
 
-    # Plan de contingencia local por si falla el internet o alguna de las APIs
-    TASAS_CONTINGENCIA = {
-        ("CLP", "PEN"): 0.00395,
-        ("CLP", "USD"): 0.00105,
-        ("CLP", "EUR"): 0.00098,
-        ("CLP", "BRL"): 0.00610,
-        ("CLP", "ARS"): 1.05000,
-        ("CLP", "COP"): 4.45000,
-        ("CLP", "MXN"): 0.02100,
-    }
+    # --------------------------------------------------
+    # 1. CONEXIÓN HTTP
+    # --------------------------------------------------
 
     @classmethod
     def _get_sesion(cls):
-        """Inicializa y reutiliza una sesión HTTP con encabezados estándar."""
-        if cls._session is None and REQUESTS_AVAILABLE:
+        """Crea y reutiliza una sesión HTTP."""
+
+        if cls._session is None:
+
             cls._session = requests.Session()
-            cls._session.headers.update({"Accept": "application/json"})
+
+            cls._session.headers.update({
+                "Accept": "application/json",
+                "User-Agent": "EcoTechSolutions/1.0"
+            })
+
         return cls._session
 
-    @staticmethod
-    def _sanitizar_texto(texto: str, campo: str) -> str:
-        """Valida que los textos no estén vacíos."""
-        if not texto or not isinstance(texto, str):
-            raise ValueError(f"El campo '{campo}' es inválido o está vacío.")
-        return texto.strip()
+    @classmethod
+    def _consultar_api(cls, url: str):
+        """Centraliza las solicitudes GET."""
+
+        response = cls._get_sesion().get(
+            url,
+            timeout=Settings.REQUEST_TIMEOUT
+        )
+
+        response.raise_for_status()
+
+        try:
+            return response.json()
+
+        except ValueError as error:
+            raise ValueError(
+                "La API devolvió una respuesta inválida."
+            ) from error
+
+    # --------------------------------------------------
+    # 2. DETECCIÓN DE MONEDA
+    # API: REST COUNTRIES
+    # --------------------------------------------------
 
     @classmethod
-    def obtener_moneda_por_pais(cls, nombre_pais: str) -> Tuple[str, str]:
+    def obtener_moneda_por_pais(
+        cls,
+        nombre_pais: str
+    ) -> Dict[str, str]:
         """
-        Consulta la API de REST Countries para obtener el código ISO de la moneda 
-        y el nombre oficial del país ingresado.
+        Obtiene el código monetario correspondiente
+        al país ingresado.
+
+        Parámetro:
+            nombre_pais: país del proyecto.
+
+        Retorna:
+            nombre_pais
+            codigo_moneda
         """
-        pais_limpio = cls._sanitizar_texto(nombre_pais, "país")
-        
-        # Endpoint público de REST Countries v3.1 (sin token obligatorio)
-        url = f"https://restcountries.com/v3.1/name/{pais_limpio}"
 
-        session = cls._get_sesion()
-        response = session.get(url, timeout=Settings.REQUEST_TIMEOUT)
+        if (
+            not isinstance(nombre_pais, str)
+            or not nombre_pais.strip()
+        ):
+            raise ValueError(
+                "Debes ingresar un nombre de país válido."
+            )
 
-        if response.status_code == 404:
-            raise ValueError(f"No se encontró el país '{nombre_pais}' en el registro internacional.")
-        
-        response.raise_for_status()
-        paises_data = response.json()
+        pais = nombre_pais.strip()
 
-        if not paises_data:
-            raise ValueError(f"No hay datos disponibles para el país '{nombre_pais}'.")
+        url = (
+            "https://restcountries.com/v3.1/name/"
+            f"{quote(pais, safe='')}?fields=name,currencies"
+        )
 
-        # Tomamos el primer resultado de la búsqueda
-        info_pais = paises_data[0]
-        nombre_oficial = info_pais.get("name", {}).get("common", nombre_pais)
-        
-        # Extraemos el diccionario de monedas (ej. {'PEN': {'name': 'Peruvian sol', 'symbol': 'S/.'}})
-        monedas_dict = info_pais.get("currencies", {})
-        if not monedas_dict:
-            raise ValueError(f"El país '{nombre_oficial}' no reporta una moneda oficial válida.")
+        data = cls._consultar_api(url)
 
-        # Tomamos la primera moneda disponible en la lista del país
-        codigo_moneda = list(monedas_dict.keys())[0]
+        if not isinstance(data, list) or not data:
+            raise ValueError(
+                f"No se encontró información para {pais}."
+            )
 
-        return nombre_oficial, codigo_moneda
+        # Buscar coincidencia exacta cuando sea posible.
+        coincidencias = [
+            item for item in data
+            if item.get("name", {}).get(
+                "common", ""
+            ).casefold() == pais.casefold()
+        ]
+
+        if len(coincidencias) == 1:
+            informacion = coincidencias[0]
+
+        elif len(data) == 1:
+            informacion = data[0]
+
+        else:
+            raise ValueError(
+                "La búsqueda del país es ambigua."
+            )
+
+        nombre_oficial = informacion.get(
+            "name", {}
+        ).get("common", pais)
+
+        monedas = informacion.get("currencies", {})
+
+        if not monedas:
+            raise ValueError(
+                f"No se encontró moneda para {nombre_oficial}."
+            )
+
+        codigos = sorted(monedas.keys())
+
+        if len(codigos) > 1:
+            raise ValueError(
+                f"{nombre_oficial} posee varias monedas: "
+                f"{', '.join(codigos)}. "
+                "Debes seleccionar la correspondiente."
+            )
+
+        return {
+            "nombre_pais": nombre_oficial,
+            "codigo_moneda": codigos[0]
+        }
+
+    # --------------------------------------------------
+    # 3. CONVERSIÓN MONETARIA
+    # API: FRANKFURTER
+    # --------------------------------------------------
+
+    @classmethod
+    def convertir_clp(
+        cls,
+        monto_clp: float,
+        codigo_moneda: str
+    ) -> Dict[str, Any]:
+        """
+        Convierte un monto CLP a la moneda indicada.
+
+        Parámetros:
+            monto_clp: monto original en pesos chilenos.
+            codigo_moneda: código ISO de destino.
+
+        Retorna:
+            moneda_origen
+            moneda_destino
+            tasa
+            monto_convertido
+            fecha
+        """
+
+        if isinstance(monto_clp, bool):
+            raise ValueError("El monto no es válido.")
+
+        try:
+            monto = Decimal(str(monto_clp))
+
+        except (InvalidOperation, TypeError, ValueError):
+            raise ValueError(
+                "El monto debe ser numérico."
+            )
+
+        if not monto.is_finite() or monto <= 0:
+            raise ValueError(
+                "El monto debe ser mayor a cero."
+            )
+
+        if (
+            not isinstance(codigo_moneda, str)
+            or len(codigo_moneda.strip()) != 3
+            or not codigo_moneda.strip().isalpha()
+        ):
+            raise ValueError(
+                "El código monetario debe contener tres letras."
+            )
+
+        destino = codigo_moneda.strip().upper()
+
+        # No se requiere API si ambas monedas son CLP.
+
+        if destino == "CLP":
+            return {
+                "moneda_origen": "CLP",
+                "moneda_destino": "CLP",
+                "tasa": 1.0,
+                "monto_convertido": float(monto),
+                "fecha": "N/A"
+            }
+
+        url = (
+            f"https://api.frankfurter.dev/v2/rate/"
+            f"CLP/{destino}"
+        )
+
+        data = cls._consultar_api(url)
+
+        try:
+            tasa = Decimal(str(data["rate"]))
+
+        except (KeyError, InvalidOperation, TypeError):
+            raise ValueError(
+                "No se recibió un tipo de cambio válido."
+            )
+
+        if not tasa.is_finite() or tasa <= 0:
+            raise ValueError(
+                "El tipo de cambio recibido es inválido."
+            )
+
+        monto_convertido = (
+            monto * tasa
+        ).quantize(
+            Decimal("0.01"),
+            rounding=ROUND_HALF_UP
+        )
+
+        return {
+            "moneda_origen": "CLP",
+            "moneda_destino": destino,
+            "tasa": float(tasa),
+            "monto_convertido": float(monto_convertido),
+            "fecha": data.get("date", "Desconocida")
+        }
+
+    # --------------------------------------------------
+    # 4. PROCESO COMPLETO
+    # --------------------------------------------------
 
     @classmethod
     def calcular_pago_internacional(
         cls,
         monto_base_clp: float,
         pais_proyecto: str
-    ) -> Tuple[str, Dict[str, Any] | None]:
+    ) -> tuple:
+
         """
-        Método principal:
-        1. Usa la API 1 para detectar la moneda destino según el país del proyecto.
-        2. Usa la API 2 (Frankfurter) para convertir el sueldo base en CLP a esa moneda.
+        Coordina la detección y conversión monetaria.
+
+        1. Detecta la moneda del país.
+        2. Convierte el monto CLP.
+        3. Construye el resultado final.
         """
+
         try:
-            if not isinstance(monto_base_clp, (int, float)) or monto_base_clp <= 0:
-                raise ValueError("El monto base del sueldo debe ser mayor a cero.")
 
-            if not REQUESTS_AVAILABLE:
-                return ( "Librería 'requests' no instalada.", None )
-
-            # PASO 1: Consultar la API de Países para obtener la moneda destino
-            nombre_pais_oficial, moneda_destino = cls.obtener_moneda_por_pais(pais_proyecto)
-
-        except ValueError as e:
-            return (str(e), None)
-        except requests.exceptions.RequestException:
-            logger.warning("Falla de red al consultar REST Countries. Intentando contingencia local.")
-            # Si falla la API de países, puedes recurrir a un respaldo o retornar error
-            return (f"No se pudo conectar con el servicio de países para '{pais_proyecto}'.", None)
-
-        # Si el proyecto se ejecuta en Chile (CLP), no requiere conversión externa
-        if moneda_destino == "CLP":
-            return (
-                "Proyecto en Chile. Sin conversión requerida.",
-                {
-                    "monto_origen_clp": float(monto_base_clp),
-                    "moneda_destino": "CLP",
-                    "tasa_aplicada": 1.0,
-                    "monto_final_ajustado": float(monto_base_clp),
-                    "fecha_indicador": "N/A",
-                    "fuente": "Local (Chile)"
-                }
+            # Primera API: detectar moneda.
+            informacion = cls.obtener_moneda_por_pais(
+                pais_proyecto
             )
 
-        # PASO 2: Consultar la API de Divisas (Frankfurter) para el tipo de cambio CLP -> Moneda Destino
-        url_divisas = f"{Settings.API_BASE_URL_MONEDA}/latest?base=CLP&symbols={moneda_destino}"
+            codigo = informacion["codigo_moneda"]
 
-        try:
-            session = cls._get_sesion()
-            response = session.get(url_divisas, timeout=Settings.REQUEST_TIMEOUT)
+            # Segunda API: convertir monto.
+            conversion = cls.convertir_clp(
+                monto_base_clp,
+                codigo
+            )
 
-            if response.status_code in (400, 404, 422):
-                return cls._manejar_contingencia(float(monto_base_clp), "CLP", moneda_destino, f"Moneda '{moneda_destino}' no soportada en el conversor.")
-            elif response.status_code == 429:
-                return cls._manejar_contingencia(float(monto_base_clp), "CLP", moneda_destino, "Límite de peticiones excedido en API de divisas (HTTP 429).")
-            elif 500 <= response.status_code < 600:
-                return cls._manejar_contingencia(float(monto_base_clp), "CLP", moneda_destino, f"Servidor de divisas no disponible (HTTP {response.status_code}).")
-
-            response.raise_for_status()
-            data = response.json()
-
-            # Extraemos la tasa de cambio desde el diccionario 'rates' de Frankfurter
-            rates = data.get("rates", {})
-            tasa = float(rates.get(moneda_destino, 0.0))
-
-            if tasa == 0.0:
-                return cls._manejar_contingencia(float(monto_base_clp), "CLP", moneda_destino, "La tasa retornada fue cero.")
-
-            monto_ajustado = round(monto_base_clp * tasa, 2)
-
+            # Resultado consolidado.
             resultado = {
-                "monto_origen_clp": float(monto_base_clp),
-                "moneda_destino": moneda_destino,
-                "tasa_aplicada": tasa,
-                "monto_final_ajustado": monto_ajustado,
-                "fecha_indicador": data.get("date", "Desconocida"),
-                "fuente": "APIs Externas (REST Countries + Frankfurter)"
+                "pais": informacion["nombre_pais"],
+                "monto_origen_clp": float(
+                    monto_base_clp
+                ),
+                "moneda_destino": codigo,
+                "tasa_aplicada": conversion["tasa"],
+                "monto_final_ajustado": conversion[
+                    "monto_convertido"
+                ],
+                "fecha_indicador": conversion["fecha"],
+                "fuente": (
+                    "REST Countries + Frankfurter"
+                    if codigo != "CLP"
+                    else "REST Countries + cálculo local"
+                )
             }
 
-            msg = f"Pago calculado con éxito para {nombre_pais_oficial} (Tasa: {tasa} {moneda_destino}/CLP)."
-            return (msg, resultado)
+            return (
+                "Conversión monetaria realizada correctamente.",
+                resultado
+            )
 
-        except requests.exceptions.RequestException:
-            logger.warning("Falla de red con la API de divisas. Activando contingencia.")
-            return cls._manejar_contingencia(float(monto_base_clp), "CLP", moneda_destino, "Falla de red con la API de conversión.")
+        except requests.exceptions.RequestException as error:
+            logger.exception(
+                "Error de conexión al consumir las APIs."
+            )
 
-    @classmethod
-    def _manejar_contingencia(
-        cls,
-        monto_base_clp: float,
-        origen: str,
-        destino: str,
-        causa_error: str
-    ) -> Tuple[str, Dict[str, Any] | None]:
-        """Plan de contingencia offline usando tasas referenciales locales si fallan las APIs."""
-        if not Settings.ENABLE_OFFLINE_FALLBACK:
-            return (f"{causa_error} (El modo contingencia offline está deshabilitado).", None)
+            return (
+                "No fue posible conectar con los servicios externos.",
+                None
+            )
 
-        tasa = cls.TASAS_CONTINGENCIA.get((origen, destino))
-        if not tasa:
-            return (f"[CONTINGENCIA] {causa_error} No existe tasa de respaldo local para CLP -> {destino}.", None)
+        except ValueError as error:
+            return (str(error), None)
 
-        monto_ajustado = round(monto_base_clp * tasa, 2)
-        resultado_local = {
-            "monto_origen_clp": monto_base_clp,
-            "moneda_destino": destino,
-            "tasa_aplicada": tasa,
-            "monto_final_ajustado": monto_ajustado,
-            "fecha_indicador": "Referencia local almacenada",
-            "fuente": "Modo Contingencia (Offline)"
-        }
+        except Exception:
+            logger.exception(
+                "Error inesperado en MonedaService."
+            )
 
-        msg = f"[CONTINGENCIA] {causa_error} Usando tasa referencial local: 1 CLP = {tasa} {destino}"
-        return (msg, resultado_local)
+            return (
+                "Ocurrió un error inesperado en el servicio monetario.",
+                None
+            )

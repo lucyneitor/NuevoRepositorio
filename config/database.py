@@ -43,6 +43,7 @@ class Database:
                     descripcion TEXT NOT NULL,
                     fecha_inicio DATE NOT NULL,
                     fecha_fin DATE NOT NULL,
+                    pais TEXT NOT NULL,
                     estado TEXT NOT NULL DEFAULT 'Pendiente'
                         CHECK (estado IN ('Pendiente', 'En proceso', 'Finalizado'))
                 )
