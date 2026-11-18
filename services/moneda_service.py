@@ -71,7 +71,7 @@ class MonedaService:
     def obtener_moneda_por_pais(
         cls,
         nombre_pais: str
-    ) -> Dict[str, str]:
+    ) -> str:
         """
         Obtiene el código monetario correspondiente
         al país ingresado.
@@ -80,8 +80,7 @@ class MonedaService:
             nombre_pais: país del proyecto.
 
         Retorna:
-            nombre_pais
-            codigo_moneda
+            Código de la moneda (ej. 'USD', 'CLP').
         """
 
         if (
@@ -145,10 +144,8 @@ class MonedaService:
                 "Debes seleccionar la correspondiente."
             )
 
-        return {
-            "nombre_pais": nombre_oficial,
-            "codigo_moneda": codigos[0]
-        }
+        # Retornamos únicamente el string con el código de la moneda
+        return codigos[0]
 
     # --------------------------------------------------
     # 3. CONVERSIÓN MONETARIA

@@ -6,6 +6,9 @@ from datetime import date
 from services.clima_service import ClimaService
 from services.moneda_service import MonedaService
 from models.tiempo_dao import TiempoDAO
+from models.empleado_dao import EmpleadoDAO
+from models.transaccion import Transaccion
+from models.transaccion_dao import TransaccionDAO
 
 class ProyectoController:
     def __init__(self):
@@ -61,9 +64,18 @@ class ProyectoController:
                 else:
                     nom = pedir("nombre del proyecto a procesar pagos")
                     list_proyect = ProyectoDAO.obtener_ids_y_pais_por_nombre(nom)
-                    list_empleados = TiempoDAO.obtener_ruts_por_proyecto(id)
+                    listado=[]
+                    for item in list_proyect:
+                        list_empleados = TiempoDAO.obtener_ruts_por_proyecto(item["id_proyecto"])
+                        proyecto_paises = {
+                            "id": item["id_proyecto"],
+                            "pais": item["pais"],
+                            "lista de empleados": list_empleados
+                        }
+                        listado.append(proyecto_paises)  
 
-                    
+                    resultados=self.ejecutar_trans(listado)
+                    self.proyecto_view.reporte_pago(nom,resultados)
 
     def agregar_proyecto(self):
         nuevo=self.proyecto_view.formulario()
@@ -312,4 +324,59 @@ class ProyectoController:
                     conexion, msg = ClimaService.probar_conectividad()
                     self.proyecto_view.mostrar_resultado_conectividad(conexion,msg)
                     
-    def ejecutar_trans():
+    def ejecutar_trans(listado:list) -> list:
+        """
+        Coordina el cálculo de los pagos internacionales, muestra el reporte tabular
+        en consola y registra las transacciones correspondientes.
+        """
+        preparar_datos = []
+        for pago in listado:
+            # 1. Accedes a los datos generales del proyecto actual
+            id_proyecto = pago["id"]
+            pais_proyecto = pago["pais"]
+
+            print(f"\nProcesando proyecto {id_proyecto} en {pais_proyecto}...")
+
+            detalles_empleados = []
+            cod_moneda=MonedaService.obtener_moneda_por_pais(pago["pais"])
+
+            # 2. Recorres la lista de empleados específica de ESTE proyecto
+            for rut in pago["lista de empleados"]:
+                print(f"  -> Pagando al empleado con RUT: {rut}")
+                empleado = EmpleadoDAO.obtener_empleado_por_rut(rut) #accedo al empleado
+
+                # 2.accedo directamente a su sueldo al tener objeto empleado
+                sueldo_base = empleado.sueldo # accedo a su sueldo 
+                resultado=MonedaService.convertir_clp(sueldo_base,cod_moneda)#diccionario de resultados
+
+                transaccion = Transaccion(
+                    rut=rut,
+                    id_proyecto=id_proyecto,
+                    sueldo_emp=sueldo_base,
+                    moneda_origen_clp="CLP",
+                    sueldo_pagado=resultado["monto_convertido"],
+                    moneda_destino=resultado["moneda_destino"],
+                    tasa_cambio=resultado["tasa"],
+                    fecha_transaccion=resultado["fecha"]
+                )
+
+                TransaccionDAO.registrar_transaccion(transaccion)
+
+                detalles_empleados.append({
+                    "rut": rut,
+                    "sueldo_clp": sueldo_base,
+                    "resultado": resultado
+                })
+
+            # Guardamos el empaquetado del proyecto actual
+            preparar_datos.append({
+                "pais": pais_proyecto,
+                "codigo_moneda": cod_moneda,
+                "detalles_empleados": detalles_empleados
+            })
+
+        return preparar_datos
+
+        
+                
+

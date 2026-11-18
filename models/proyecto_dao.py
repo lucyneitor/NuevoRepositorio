@@ -139,33 +139,6 @@ class ProyectoDAO:
             conn.close()
 
     @staticmethod
-    def obtener_ids_por_nombre(nombre: str) -> list[int]:
-        """
-        Busca proyectos por coincidencia parcial en el nombre y devuelve sus IDs.
-        """
-        if not isinstance(nombre, str) or not nombre.strip():
-            return []
-
-        conn = Database().get_connection()
-        try:
-            cursor = conn.cursor()
-            cursor.execute(
-                """
-                SELECT id_proyecto
-                FROM proyecto
-                WHERE nombre LIKE ? COLLATE NOCASE
-                ORDER BY nombre, id_proyecto
-                """,
-                (f"%{nombre.strip()}%",),
-            )
-            return [fila["id_proyecto"] for fila in cursor.fetchall()]
-        except Exception as error:
-            print(f"Error al buscar proyectos por nombre: {error}")
-            return []
-        finally:
-            conn.close()
-
-    @staticmethod
     def obtener_ids_y_pais_por_nombre(nombre: str) -> list[dict]:
         """
         Busca proyectos cuyo nombre contenga el texto indicado y devuelve 

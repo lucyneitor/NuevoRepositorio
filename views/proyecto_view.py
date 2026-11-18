@@ -240,3 +240,32 @@ class ProyectoView():
             print(f"💬 DETALLE: {msg}")
             
         print("=" * 55 + "\n")
+
+    @staticmethod
+    def reporte_pago(nom: str, datos_proyectos: list):
+        print("=" * 80)
+        print(f"✈️Reporte de pago internacional del proyecto: {nom}")
+        print("=" * 80)
+        
+        for item in datos_proyectos:
+            pais = item["pais"]
+            cod = item["codigo_moneda"]
+            detalles = item["detalles_empleados"]
+            
+            print(f"| País : {pais} | Cambio de moneda en {cod}")
+            print("-" * 80)
+            
+            for emp in detalles:
+                rut = emp["rut"]
+                sueldo_base = emp["sueldo_clp"]
+                monto_conv = emp["resultado"]["monto_convertido"]
+                tasa = emp["resultado"]["tasa"]
+                fecha = emp["respuesta"]["fecha"]
+
+                print(f"| RUT: {rut:<12} | Sueldo base: {sueldo_base:<10,.0f} CLP -> {monto_conv:<10,.2f} {cod}")
+                print("*"*80)
+                print(f"Tasa: {tasa} | Fecha: {fecha} |")
+                print("*"*80)
+            print("-" * 80)
+            
+        print("=" * 80)
