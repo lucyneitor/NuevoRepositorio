@@ -65,7 +65,13 @@ Utiliza arquitectura MVC + DAO y persistencia mediante SQLite.
 - [ ] Completar documentación de instalación y uso.
 
 ## Aplicación de IA en el repositorio
-explicacion pendiente
+
+Se utilizó GitHub Copilot como herramienta de apoyo para retroalimentar la arquitectura del proyecto, revisar el avance de los módulos y detectar funcionalidades pendientes.
+
+La IA de gemini también se empleó para estructurar vistas y organizar la presentación de datos en consola junto a la profundidad de información sobre apis, como tablas, menús y resúmenes de empleados, proyectos y registros de tiempo. Esto permitió optimizar el tiempo de desarrollo y mantener una estructura más clara y uniforme.
+
+Las propuestas generadas fueron revisadas, adaptadas e implementadas según las necesidades del proyecto, por lo que el código final representa decisiones técnicas propias y resultados comprobados en el repositorio.
+
 ## Tecnologías
 
 - Python
