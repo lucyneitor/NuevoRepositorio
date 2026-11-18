@@ -1,5 +1,5 @@
 from views.proyecto_view import ProyectoView
-from views.utils import pedir,eleccion, validador_op1, validador_dia, validador_op_sup, validador_inicial, validador_time, mostrar_mensaje, ValidationError, confirmar, pedir_texto_valido, validacion_fechas
+from views.utils import pedir,eleccion, validador_op1, validador_dia, validador_op_sup, validador_inicial, validador_time, mostrar_mensaje, ValidationError, confirmar, pedir_texto_valido, validacion_fechas, validador_grande
 from models.proyecto import Proyecto
 from models.proyecto_dao import ProyectoDAO
 from datetime import date
@@ -21,7 +21,7 @@ class ProyectoController:
             op = pedir("opción")
             try:
                 op = int(op)
-                eleccion(validador_op_sup,op)
+                eleccion(validador_grande,op)
             except (TypeError, ValueError, ValidationError) as e:
                 print(e)
             else:
@@ -74,14 +74,14 @@ class ProyectoController:
                         }
                         listado.append(proyecto_paises)  
 
-                    resultados=self.ejecutar_trans(listado)
+                    resultados= self.ejecutar_trans(listado)
                     self.proyecto_view.reporte_pago(nom,resultados)
 
     def agregar_proyecto(self):
         nuevo=self.proyecto_view.formulario()
         crear_proyecto= Proyecto(
             id_proyecto=None, nombre = nuevo["nombre"], descripcion=nuevo["descripcion"], 
-            fecha_inicio = nuevo["fecha_inicio"], fecha_fin=nuevo["fecha_fin"],
+            pais_ejecut=nuevo["país"],fecha_inicio = nuevo["fecha_inicio"], fecha_fin=nuevo["fecha_fin"],
             estado=nuevo["estado"]
         )
         if self.proyecto_dao.agregar_proyecto(crear_proyecto): # consultar linea (modificar)
@@ -323,57 +323,73 @@ class ProyectoController:
                 else:
                     conexion, msg = ClimaService.probar_conectividad()
                     self.proyecto_view.mostrar_resultado_conectividad(conexion,msg)
-                    
-    def ejecutar_trans(listado:list) -> list:
+
+    
+    def ejecutar_trans(self,listado: list) -> list:
         """
-        Coordina el cálculo de los pagos internacionales, muestra el reporte tabular
-        en consola y registra las transacciones correspondientes.
+        Calcula los pagos internacionales por proyecto y registra las transacciones en BD.
         """
         preparar_datos = []
+
         for pago in listado:
-            # 1. Accedes a los datos generales del proyecto actual
             id_proyecto = pago["id"]
             pais_proyecto = pago["pais"]
+            ruts_empleados = pago["lista de empleados"]
 
-            print(f"\nProcesando proyecto {id_proyecto} en {pais_proyecto}...")
+            print(f"\nProcesando proyecto #{id_proyecto} ({pais_proyecto})...")
+
+            if not ruts_empleados:
+                mostrar_mensaje(f"El proyecto #{id_proyecto} no tiene empleados registrados.")
+                continue
+
+            # 1. Se resuelve la moneda UNA SOLA VEZ por proyecto (fuera del ciclo)
+            try:
+                cod_moneda = MonedaService.obtener_moneda_por_pais(pais_proyecto)
+            except Exception as error:
+                mostrar_mensaje(f"No se pudo obtener la moneda para '{pais_proyecto}': {error}")
+                continue
 
             detalles_empleados = []
-            cod_moneda=MonedaService.obtener_moneda_por_pais(pago["pais"])
 
-            # 2. Recorres la lista de empleados específica de ESTE proyecto
-            for rut in pago["lista de empleados"]:
-                print(f"  -> Pagando al empleado con RUT: {rut}")
-                empleado = EmpleadoDAO.obtener_empleado_por_rut(rut) #accedo al empleado
+            # 2. Dentro del ciclo solo se convierten los sueldos usando esa moneda fija
+            for rut in ruts_empleados:
+                empleado = EmpleadoDAO.obtener_empleado_por_rut(rut)
+                if not empleado:
+                    mostrar_mensaje(f"Empleado con RUT {rut} no encontrado. Se omite.")
+                    continue
 
-                # 2.accedo directamente a su sueldo al tener objeto empleado
-                sueldo_base = empleado.sueldo # accedo a su sueldo 
-                resultado=MonedaService.convertir_clp(sueldo_base,cod_moneda)#diccionario de resultados
+                try:
+                    resultado = MonedaService.convertir_clp(empleado.sueldo, cod_moneda)
+                except Exception as error:
+                    mostrar_mensaje(f"Error al convertir sueldo de {rut} a {cod_moneda}: {error}")
+                    continue
 
                 transaccion = Transaccion(
                     rut=rut,
                     id_proyecto=id_proyecto,
-                    sueldo_emp=sueldo_base,
+                    sueldo_emp=empleado.sueldo,
                     moneda_origen_clp="CLP",
                     sueldo_pagado=resultado["monto_convertido"],
                     moneda_destino=resultado["moneda_destino"],
                     tasa_cambio=resultado["tasa"],
-                    fecha_transaccion=resultado["fecha"]
+                    fecha_transaccion=resultado["fecha"],
                 )
 
-                TransaccionDAO.registrar_transaccion(transaccion)
+                if not TransaccionDAO.guardar(transaccion):
+                    mostrar_mensaje(f"Advertencia: no se pudo guardar en BD la transacción de {rut}.")
 
                 detalles_empleados.append({
                     "rut": rut,
-                    "sueldo_clp": sueldo_base,
-                    "resultado": resultado
+                    "sueldo_clp": empleado.sueldo,
+                    "resultado": resultado,
                 })
 
-            # Guardamos el empaquetado del proyecto actual
-            preparar_datos.append({
-                "pais": pais_proyecto,
-                "codigo_moneda": cod_moneda,
-                "detalles_empleados": detalles_empleados
-            })
+            if detalles_empleados:
+                preparar_datos.append({
+                    "pais": pais_proyecto,
+                    "codigo_moneda": cod_moneda,
+                    "detalles_empleados": detalles_empleados,
+                })
 
         return preparar_datos
 

@@ -36,7 +36,7 @@ class ProyectoDAO:
                     proyecto.fecha_inicio,
                     proyecto.fecha_fin,
                     proyecto.estado,
-                    proyecto.pais,
+                    proyecto.pais_ejecut,
                     )
             )
             proyecto.id_proyecto = cursor.lastrowid
@@ -95,7 +95,7 @@ class ProyectoDAO:
                                             proyecto_obj.fecha_inicio,
                                             proyecto_obj.fecha_fin,
                                             proyecto_obj.estado,
-                                            proyecto_obj.pais,
+                                            proyecto_obj.pais_ejecut,
                                             proyecto_obj.id_proyecto)
             )
             conn.commit()

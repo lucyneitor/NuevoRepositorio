@@ -33,7 +33,7 @@ class ProyectoView():
         print(">"*50)
         nombre = pedir("Nombre del proyecto").strip()
         descripcion = pedir("Descripción").strip()
-
+        pais = pedir("país")
         while True:
             try:
                 fecha_inicio_texto = pedir("Fecha de inicio (DD-MM-AAAA)").strip()
@@ -68,6 +68,7 @@ class ProyectoView():
         return {
             "nombre": nombre,
             "descripcion": descripcion,
+            "país": pais,
             "fecha_inicio": fecha_inicio.isoformat(),
             "fecha_fin": fecha_fin.isoformat(),
             "estado": estado,

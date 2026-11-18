@@ -19,7 +19,7 @@ class Settings:
     ENABLE_OFFLINE_FALLBACK: bool = (os.getenv("ENABLE_OFFLINE_FALLBACK", "True").lower() in ("true", "1", "yes"))
 
     API_BASE_URL_PAIS:str = os.getenv("API_BASE_URL_PAIS","https://restcountries.com/v3.1")
-    API_BASE_URL_MONEDA:str = os.getenv("API_BASE_URL_MONEDA""https://api.frankfurter.dev/v2") #conversion clp a codigo monetario correspondiente
+    API_BASE_URL_MONEDA:str = os.getenv("API_BASE_URL_MONEDA","https://api.frankfurter.dev/v2") #conversion clp a codigo monetario correspondiente
 
     #login del sistema [usuario administrador]
     ADMIN_INITIAL_USER: str = os.getenv("ADMIN_INITIAL_USER", "admin")
