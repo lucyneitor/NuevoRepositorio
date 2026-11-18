@@ -10,6 +10,12 @@ from models.empleado_dao import EmpleadoDAO
 from models.transaccion import Transaccion
 from models.transaccion_dao import TransaccionDAO
 
+try:
+    import requests
+    REQUEST_ERROR = requests.exceptions.RequestException
+except ImportError:
+    REQUEST_ERROR = OSError
+
 class ProyectoController:
     def __init__(self):
         self.proyecto_view = ProyectoView()
@@ -345,8 +351,11 @@ class ProyectoController:
             # 1. Se resuelve la moneda UNA SOLA VEZ por proyecto (fuera del ciclo)
             try:
                 cod_moneda = MonedaService.obtener_moneda_por_pais(pais_proyecto)
-            except Exception as error:
-                mostrar_mensaje(f"No se pudo obtener la moneda para '{pais_proyecto}': {error}")
+            except ValueError as error:
+                mostrar_mensaje(f"Dato inválido para {pais_proyecto}: {error}")
+            
+            except (REQUEST_ERROR, RuntimeError) as error:
+                mostrar_mensaje(f"Error de conexión al consultar moneda de '{pais_proyecto}': {error}")
                 continue
 
             detalles_empleados = []
@@ -360,8 +369,11 @@ class ProyectoController:
 
                 try:
                     resultado = MonedaService.convertir_clp(empleado.sueldo, cod_moneda)
-                except Exception as error:
-                    mostrar_mensaje(f"Error al convertir sueldo de {rut} a {cod_moneda}: {error}")
+                except ValueError as error:
+                    mostrar_mensaje(f"Error en datos de conversión para {rut} a {cod_moneda}: {error}")
+                    continue
+                except (REQUEST_ERROR, RuntimeError) as error:
+                    mostrar_mensaje(f"Error de red al convertir sueldo de {rut}: {error}")
                     continue
 
                 transaccion = Transaccion(

@@ -6,14 +6,17 @@ from decimal import Decimal, InvalidOperation, ROUND_HALF_UP
 from typing import Any, Dict, Optional, Tuple
 from urllib.parse import quote
 
-import requests
-from requests.adapters import HTTPAdapter
-from urllib3.util.retry import Retry
-
+try:
+    import requests
+    from requests.adapters import HTTPAdapter
+    from urllib3.util.retry import Retry
+    REQUESTS_AVAILABLE = True
+except ImportError:
+    requests=None
+    REQUESTS_AVAILABLE = False
 from config.settings import Settings
 
 logger = logging.getLogger(__name__)
-
 
 def _normalizar_texto(texto: str) -> str:
     """Elimina tildes y normaliza mayúsculas/minúsculas."""
@@ -149,7 +152,7 @@ class MonedaService:
         if clave_cache in cls._cache_paises:
             return cls._cache_paises[clave_cache].copy()
 
-        base_url = (Settings.API_BASE_URL_PAIS or "[https://restcountries.com/v3.1](https://restcountries.com/v3.1)").rstrip("/")
+        base_url = (Settings.API_BASE_URL_PAIS or "https://restcountries.com/v3.1").rstrip("/")
         encoded = quote(pais, safe="")
         fields = "fields=name,translations,currencies"
 
@@ -268,7 +271,7 @@ class MonedaService:
         if clave_tasa in cls._cache_tasas:
             tasa, fecha_api = cls._cache_tasas[clave_tasa]
         else:
-            base_url = (Settings.API_BASE_URL_MONEDA or "[https://api.frankfurter.dev/v2](https://api.frankfurter.dev/v2)").rstrip("/")
+            base_url = (Settings.API_BASE_URL_MONEDA or "https://api.frankfurter.dev/v2").rstrip("/")
             url = f"{base_url}/rate/CLP/{destino}"
 
             try:
