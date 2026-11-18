@@ -261,7 +261,7 @@ class ProyectoView():
                 sueldo_base = emp["sueldo_clp"]
                 monto_conv = emp["resultado"]["monto_convertido"]
                 tasa = emp["resultado"]["tasa"]
-                fecha = emp["respuesta"]["fecha"]
+                fecha = emp["resultado"]["fecha"]
 
                 print(f"| RUT: {rut:<12} | Sueldo base: {sueldo_base:<10,.0f} CLP -> {monto_conv:<10,.2f} {cod}")
                 print("*"*80)
