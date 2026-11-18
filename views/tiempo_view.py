@@ -232,7 +232,7 @@ class TiempoView():
         print("-"*60)
         for tiempo in registros:
             print(
-                f"{tiempo.fecha.strftime("%d-%m-%Y"):<12} "
+                f"{tiempo.fecha.strftime('%d-%m-%Y'):<12} "
                 f"{tiempo.hora_entrada.strftime('%H:%M'):<10} "
                 f"{tiempo.hora_salida.strftime('%H:%M'):<10} "
                 f"{tiempo.pausa_minutos:>5} min   "

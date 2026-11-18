@@ -179,7 +179,7 @@ class MonedaService:
                     f"{base_url}/translation/{encoded}?{fields}",
                     f"No se encontró información para '{pais}'.",
                 )
-        except requests.exceptions.RequestException:
+        except REQUEST_EXCEPTION:
             if Settings.ENABLE_OFFLINE_FALLBACK:
                 clave_offline = _normalizar_texto(pais)
                 if clave_offline in cls.CONTINGENCIA_PAISES:
@@ -302,7 +302,7 @@ class MonedaService:
                 fecha_api = data.get("date", fecha_hoy)
                 cls._cache_tasas[clave_tasa] = (tasa, fecha_api)
 
-            except (requests.exceptions.RequestException, ValueError):
+            except (REQUEST_EXCEPTION, ValueError):
                 if Settings.ENABLE_OFFLINE_FALLBACK and destino in cls.CONTINGENCIA_TASAS_CLP:
                     logger.warning("Usando tasa referencial de contingencia para CLP -> %s.", destino)
                     tasa = cls.CONTINGENCIA_TASAS_CLP[destino]
@@ -356,7 +356,7 @@ class MonedaService:
 
             return ("Conversión monetaria realizada correctamente.", resultado)
 
-        except requests.exceptions.RequestException:
+        except REQUEST_EXCEPTION:
             logger.exception("Error de conexión al consumir las APIs monetarias.")
             return ("No fue posible conectar con los servicios externos.", None)
 
