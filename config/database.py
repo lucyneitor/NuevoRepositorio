@@ -214,7 +214,7 @@ class Database:
                     "2026-01-15",
                     "2026-12-20",
                     "En proceso",
-                    "Chile",
+                    "Argentina",
                 ),
                 (
                     "App Móvil Terreno",
@@ -222,7 +222,7 @@ class Database:
                     "2026-03-01",
                     "2026-11-30",
                     "En proceso",
-                    "Chile",
+                    "Francia",
                 ),
                 (
                     "Auditoría Energética 2026",
