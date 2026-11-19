@@ -68,20 +68,52 @@ class ProyectoController:
                 elif op == 6:
                     self.servicio_clima()
                 else:
-                    nom = pedir("nombre del proyecto a procesar pagos")
+                    nom = pedir("nombre del proyecto a procesar pagos").strip()
+
+                    # 1. Validar entrada.
+                    if not nom:
+                        mostrar_mensaje("Debe ingresar el nombre del proyecto.")
+                        continue
+
+                    # 2. Buscar proyecto en la base de datos.
                     list_proyect = ProyectoDAO.obtener_ids_y_pais_por_nombre(nom)
-                    listado=[]
+
+                    # 3. Comprobar existencia.
+                    if not list_proyect:
+                        mostrar_mensaje(
+                            f"No existe ningún proyecto que coincida con '{nom}'."
+                        )
+                        continue
+
+                    # 4. Preparar proyectos y empleados.
+                    listado = []
+
                     for item in list_proyect:
-                        list_empleados = TiempoDAO.obtener_ruts_por_proyecto(item["id_proyecto"])
+                        list_empleados = TiempoDAO.obtener_ruts_por_proyecto(
+                            item["id_proyecto"]
+                        )
+
                         proyecto_paises = {
                             "id": item["id_proyecto"],
                             "pais": item["pais"],
                             "lista de empleados": list_empleados
                         }
-                        listado.append(proyecto_paises)  
 
-                    resultados= self.ejecutar_trans(listado)
-                    self.proyecto_view.reporte_pago(nom,resultados)
+                        listado.append(proyecto_paises)
+
+                    # 5. Procesar pagos.
+                    resultados = self.ejecutar_trans(listado)
+
+                    # 6. Mostrar resultados únicamente si existen.
+                    if resultados:
+                        self.proyecto_view.reporte_pago(nom, resultados)
+                    else:
+                        mostrar_mensaje(
+                            "No se generaron pagos internacionales. "
+                            "Verifique que los proyectos tengan empleados "
+                            "y que las conversiones hayan sido exitosas."
+                        )
+
 
     def agregar_proyecto(self):
         nuevo=self.proyecto_view.formulario()

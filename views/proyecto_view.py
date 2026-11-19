@@ -244,6 +244,10 @@ class ProyectoView():
 
     @staticmethod
     def reporte_pago(nom: str, datos_proyectos: list):
+        if not datos_proyectos:
+            print("\n⚠️ No existen resultados para generar el reporte.")
+            return
+
         print("=" * 80)
         print(f"✈️Reporte de pago internacional del proyecto: {nom}")
         print("=" * 80)
