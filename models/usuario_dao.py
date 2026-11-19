@@ -153,6 +153,7 @@ class UsuarioDAO:
         finally:
             conn.close()
 
+    @staticmethod
     def actualizar_usuario(usuario: Usuario) -> bool:
         conn = Database().get_connection()
 

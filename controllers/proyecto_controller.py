@@ -310,7 +310,7 @@ class ProyectoController:
                             dias = pedir("días deseados a proyectar (max. 3 días): ")
                             try:
                                 dias = int(dias)
-                                eleccion(validador_dia, op)
+                                eleccion(validador_dia, dias)
                             except (TypeError, ValueError, ValidationError) as e:
                                 print(e)
                                 continue
