@@ -179,7 +179,7 @@ class ProyectoView():
         print(f"💧 Humedad:           {datos_clima['humedad']}%")
         print(f"💨 Viento:            {datos_clima['viento_kph']} km/h")
         print("----------------------------------------------------")
-        print(f"📊 ESTADO OPERATIVO:  [{analisis['estado_operativo']}]")
+        print(f"📊 ESTADO OPERATIVO:  [{analisis['estado']}]")
         print(f"💡 DECISIÓN SUGERIDA: {analisis['recomendacion']}")
         if analisis["alertas"]:
             print("\n⚠️  ALERTAS DE RIESGO DETECTADAS:")

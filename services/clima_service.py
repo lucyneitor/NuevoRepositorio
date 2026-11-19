@@ -582,7 +582,8 @@ class ClimaService:
         ) and not condicion:
             return {
                 "estado": "SIN DATOS",
-                "recomendacion": "No hay información climática válida para evaluar."
+                "recomendacion": "No hay información climática válida para evaluar.",
+                "alertas":[]
             }
 
         alertas = []
@@ -622,7 +623,8 @@ class ClimaService:
 
         return {
             "estado": estado,
-            "recomendacion": recomendacion
+            "recomendacion": recomendacion,
+            "alertas": alertas
         }
 
 
