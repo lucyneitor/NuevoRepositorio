@@ -200,7 +200,7 @@ class ProyectoView():
         for idx, d in enumerate(datos_clima["dias"]):
             # Extraemos la evaluación precalculada para este día específico
             eval_dia = evaluaciones[idx] if idx < len(evaluaciones) else {}
-            estado = eval_dia.get("estado_operativo", "SIN EVALUAR")
+            estado = eval_dia.get("estado", "SIN EVALUAR")
             recomendacion = eval_dia.get("recomendacion", "")
             alertas = eval_dia.get("alertas", [])
 

@@ -181,6 +181,16 @@ class Database:
                     1100000,
                     "Operaciones",
                 ),
+                ("17654321-3", "Matías Henríquez", "Pedro de Valdivia 321, Concepción", "+56965432109",
+                 "matias.henriquez@ecotech.cl", "activo", "2024-02-01", 1350000, "Operaciones"),
+                ("16789012-1", "Javiera Soto", "Orompello 150, Concepción", "+56954321098",
+                 "javiera.soto@ecotech.cl", "activo", "2023-08-14", 1600000, "Tecnología"),
+                ("15432109-8", "Tomás Fuentes", "Av. Collao 890, Concepción", "+56943210987",
+                 "tomas.fuentes@ecotech.cl", "vacaciones", "2025-01-20", 980000, "Operaciones"),
+                ("21345678-4", "Paula Riquelme", "Arturo Prat 77, Chillán", "+56932109876",
+                 "paula.riquelme@ecotech.cl", "suspendido", "2024-11-04", 1050000, "Ventas"),
+                ("14876543-K", "Rodrigo Vera", "Maipú 410, Los Ángeles", "+56921098765",
+                 "rodrigo.vera@ecotech.cl", "inactivo", "2023-03-06", 900000, "Ventas"),
             ]
             cursor.executemany(
                 """
@@ -222,6 +232,14 @@ class Database:
                     "Pendiente",
                     "Chile",
                 ),
+                ("Parque Solar Texas", "Instalación de paneles solares en parque industrial",
+                 "2026-02-01", "2027-02-01", "En proceso", "Estados Unidos"),
+                ("Planta Eólica Andalucía", "Montaje de aerogeneradores en zona costera",
+                 "2026-05-01", "2027-05-01", "En proceso", "España"),
+                ("Red Solar Osaka", "Mantención de red solar urbana (proyecto cerrado)",
+                 "2025-09-01", "2026-09-30", "Finalizado", "Japón"),
+                ("Biomasa Brasil", "Estudio de factibilidad de planta de biomasa",
+                 "2027-01-10", "2027-09-30", "Pendiente", "Brasil"),
             ]
             cursor.executemany(
                 """
@@ -231,6 +249,54 @@ class Database:
                 VALUES (?, ?, ?, ?, ?, ?)
                 """,
                 proyectos_seed,
+            )
+
+
+            # 4. Registros de tiempo (vinculan empleados con proyectos; sin ellos no hay pagos).
+            #    Se usa INSERT ... WHERE NOT EXISTS porque init_db() corre en cada arranque
+            #    y la tabla 'tiempo' no tiene UNIQUE: así no se duplican los registros.
+            tiempos_seed = [
+                # (fecha, entrada, salida, pausa, rut, proyecto)
+                # Parque Solar Texas (USD): 2 activos + 1 suspendido
+                ("2026-11-02", "08:00", "17:00", 60, "18456321-9", "Parque Solar Texas"),
+                ("2026-11-03", "08:00", "17:00", 60, "18456321-9", "Parque Solar Texas"),
+                ("2026-11-02", "09:00", "18:00", 60, "19876543-2", "Parque Solar Texas"),
+                ("2026-11-02", "08:00", "16:00", 30, "21345678-4", "Parque Solar Texas"),
+                # Planta Eólica Andalucía (EUR): Diego trabaja en 2 proyectos; Tomás de vacaciones
+                ("2026-11-04", "08:00", "17:00", 60, "19876543-2", "Planta Eólica Andalucía"),
+                ("2026-11-04", "08:30", "17:30", 60, "20123456-K", "Planta Eólica Andalucía"),
+                ("2026-11-05", "08:30", "17:30", 60, "20123456-K", "Planta Eólica Andalucía"),
+                ("2026-11-04", "08:00", "16:00", 30, "15432109-8", "Planta Eólica Andalucía"),
+                # Red Solar Osaka (JPY, finalizado): Rodrigo ahora inactivo
+                ("2026-08-10", "08:00", "17:00", 60, "17654321-3", "Red Solar Osaka"),
+                ("2026-08-11", "08:00", "17:00", 60, "16789012-1", "Red Solar Osaka"),
+                ("2026-08-10", "08:00", "17:00", 60, "14876543-K", "Red Solar Osaka"),
+                # Proyectos en Chile (CLP, sin conversión)
+                ("2026-11-09", "09:00", "18:00", 60, "18456321-9", "Portal Web EcoTech"),
+                ("2026-11-09", "09:00", "18:00", 60, "16789012-1", "Portal Web EcoTech"),
+                ("2026-11-10", "08:00", "17:00", 60, "17654321-3", "App Móvil Terreno"),
+                ("2026-11-10", "08:00", "17:00", 60, "20123456-K", "App Móvil Terreno"),
+                # 'Biomasa Brasil' y 'Auditoría Energética 2026' quedan SIN empleados a propósito
+            ]
+            cursor.executemany(
+                """
+                INSERT INTO tiempo (fecha, hora_entrada, hora_salida, pausa_minutos,
+                                    rut_empleado, id_proyecto)
+                SELECT :fecha, :entrada, :salida, :pausa, :rut,
+                       (SELECT id_proyecto FROM proyecto WHERE nombre = :proyecto)
+                WHERE EXISTS (SELECT 1 FROM proyecto WHERE nombre = :proyecto)
+                  AND EXISTS (SELECT 1 FROM empleado WHERE rut = :rut)
+                  AND NOT EXISTS (
+                      SELECT 1 FROM tiempo
+                      WHERE rut_empleado = :rut AND fecha = :fecha
+                        AND hora_entrada = :entrada
+                        AND id_proyecto = (SELECT id_proyecto FROM proyecto WHERE nombre = :proyecto)
+                  )
+                """,
+                [
+                    {"fecha": f, "entrada": e, "salida": s, "pausa": p, "rut": r, "proyecto": n}
+                    for (f, e, s, p, r, n) in tiempos_seed
+                ],
             )
 
             conn.commit()

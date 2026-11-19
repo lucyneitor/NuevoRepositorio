@@ -75,6 +75,10 @@ class ProyectoController:
                         mostrar_mensaje("Debe ingresar el nombre del proyecto.")
                         continue
 
+                    if not confirmar("¿Seguro de procesar los pagos de estos proyectos?"):
+                        mostrar_mensaje("Volver al menu proyecto.")
+                        return
+
                     # 2. Buscar proyecto en la base de datos.
                     list_proyect = ProyectoDAO.obtener_ids_y_pais_por_nombre(nom)
 
@@ -399,6 +403,11 @@ class ProyectoController:
                     mostrar_mensaje(f"Empleado con RUT {rut} no encontrado. Se omite.")
                     continue
 
+                if str(empleado.estado).strip().lower() != "activo":
+                    mostrar_mensaje(
+                        f"Empleado {rut} está '{empleado.estado}'. No recibe pago."
+                    )
+                    continue
                 try:
                     resultado = MonedaService.convertir_clp(empleado.sueldo, cod_moneda)
                 except ValueError as error:
