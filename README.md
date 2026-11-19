@@ -1,109 +1,147 @@
 # Sistema de Gestión EcoTech Solutions
 
-Aplicación de consola desarrollada en Python para la administración integral de empleados, departamentos, proyectos, registros de tiempo, usuarios e informes, ampliada con **integración de servicios externos en tiempo real** para la planificación operativa y la gestión financiera internacional.
+Aplicación de consola desarrollada en Python para gestionar empleados,
+departamentos, proyectos, registros de tiempo, usuarios, pagos internacionales
+e informes. La persistencia se realiza en SQLite y el flujo de la aplicación
+se organiza mediante controladores, vistas, modelos y DAOs.
 
-Implementa una arquitectura **MVC + DAO** con persistencia relacional en **SQLite**, seguridad basada en credenciales encriptadas (`SHA-256`), externalización de configuraciones mediante variables de entorno (`.env`) y mecanismos de tolerancia a fallos.
+## Funcionalidades disponibles
 
----
+- Inicio de sesión obligatorio con roles `Administrador` y `Empleado`.
+- Creación automática del usuario administrador inicial cuando la tabla
+  `usuario` está vacía.
+- Gestión de empleados y departamentos.
+- Gestión de proyectos con estado `Pendiente`, `En proceso` o `Finalizado`.
+- Registro de horas trabajadas por empleado y proyecto.
+- Consulta del clima actual y pronóstico de hasta tres días mediante WeatherAPI.
+- Evaluación de viabilidad operativa a partir de temperatura, viento, humedad,
+  lluvia y condición climática.
+- Detección de la moneda de un país mediante `countries.dev`.
+- Conversión de montos desde CLP mediante Frankfurter.
+- Registro de transacciones internacionales y generación de reportes de pago.
+- Gestión de usuarios disponible para administradores.
+- Módulo de informes accesible desde el menú de administrador.
 
-## Estado actual del proyecto
+Las consultas climáticas y monetarias requieren conexión a Internet y sus
+respectivas variables de configuración. Si una API falla, el servicio
+monetario informa el error y no registra una conversión incompleta.
 
-| Indicador | Avance |
-|---|---:|
-| Avance técnico | **92%** |
-| Avance funcional | **90%** |
-| Seguridad y resiliencia API | **95%** |
+## Arquitectura
 
-### Avance por módulo
+```text
+main.py
+├── controllers/   Flujo de la aplicación y reglas de interacción
+├── views/         Menús, formularios y salida por consola
+├── models/        Entidades y objetos de acceso a datos (DAO)
+├── services/      Integraciones de clima y moneda
+└── config/        Configuración y conexión/inicialización de SQLite
+```
 
-| Módulo | Avance | Estado |
-|---|---:|---|
-| Arquitectura MVC + DAO | 95% | Implementado |
-| Configuración y entorno (`.env` / `Settings`) | 95% | Implementado |
-| Usuarios y autenticación (`SHA-256`) | 95% | Implementado |
-| API del Clima (`WeatherAPI` + viabilidad operativa) | 95% | Implementado |
-| API de Moneda (`REST Countries` + `Frankfurter`) | 95% | Implementado |
-| Proyectos y transacciones internacionales | 92% | Implementado |
-| Seguridad, sanitización y manejo de errores | 92% | Implementado |
-| Base de datos SQLite y DAOs | 90% | Implementado |
-| Modelos de dominio y validaciones | 90% | Implementado |
-| Empleados y Departamentos | 85% | Implementado |
-| Control de tiempos | 80% | Funcional |
-| Documentación técnica y trazabilidad IA | 95% | Implementado |
-| Informes | 20% | Estructura base |
+La base de datos se crea en `sistema_gestion.db`, en la raíz del proyecto.
+`config/database.py` crea las tablas y carga datos iniciales de ejemplo para
+departamentos, empleados, proyectos y registros de tiempo. La inicialización
+de datos usa inserciones idempotentes para no duplicar los registros de
+ejemplo al reiniciar la aplicación.
 
----
+## Requisitos
 
-## Problemáticas de EcoTech Solutions y Solución Implementada
+- Python 3.10 o superior.
+- Dependencias indicadas en `requirements.txt`.
+- Una API key de WeatherAPI para consultar el clima.
 
-### 1. Planificación operativa de proyectos (Integración Climática)
-* **Problemática:** Los proyectos de tecnologías sostenibles en terreno sufrían retrasos por condiciones climáticas no previstas al carecer de variables meteorológicas externas en la planificación.
-* **Solución en el repositorio:**
-  * Se desarrolló `ClimaService` (`services/clima_service.py`) conectado a **WeatherAPI** (`current.json` y `forecast.json`).
-  * Desde `ProyectoController.servicio_clima()` y `ProyectoView`, los usuarios autenticados consultan el clima actual y el pronóstico a futuro (hasta 3 días) de la ciudad de operación.
-  * El método `evaluar_viabilidad_operativa()` analiza automáticamente temperatura, humedad, viento y precipitaciones para clasificar la jornada en **`ÓPTIMO`**, **`PRECAUCIÓN`** o **`RIESGO ALTO`**, entregando recomendaciones operativas y alertas preventivas.
+## Instalación y ejecución
 
-### 2. Gestión de pagos internacionales (Integración Monetaria)
-* **Problemática:** Al expandir proyectos a distintos países, el sistema calculaba sueldos únicamente en pesos chilenos (`CLP`) sin detectar la moneda local ni aplicar tasas de cambio actualizadas.
-* **Solución en el repositorio:**
-  * Se desarrolló `MonedaService` (`services/moneda_service.py`) integrando dos APIs externas:
-    1. **REST Countries (`/v3.1`):** identifica automáticamente el código ISO de la moneda oficial del país donde se ejecuta el proyecto (soportando nombres en español e inglés).
-    2. **Frankfurter (`/v2/rate/CLP/{destino}`):** obtiene el tipo de cambio actualizado desde `CLP` hacia la moneda destino.
-  * En `ProyectoController.ejecutar_trans()`, el sistema calcula el sueldo convertido para cada empleado asignado al proyecto, registra cada operación en SQLite mediante `Transaccion` / `TransaccionDAO` y genera un reporte consolidado en `ProyectoView.reporte_pago()`.
+En Windows, desde la raíz del proyecto:
 
-### 3. Problemáticas técnicas iniciales resueltas
-* **Consumo deficiente de APIs:** Se reemplazaron peticiones aisladas por sesiones HTTP persistentes (`requests.Session`) con reintentos automáticos (`HTTPAdapter` + `Retry`), timeouts configurables y filtrado de campos (`?fields=`).
-* **Falta de control de acceso:** Se impuso autenticación obligatoria antes de acceder al menú principal y a cualquier servicio externo.
-* **Validación insuficiente de entradas:** Se incorporó sanitización mediante expresiones regulares Unicode y validación estricta de tipos y formatos en modelos y servicios.
-* **Interrupciones ante caídas de red:** Se implementó manejo jerárquico de excepciones y respaldo automático mediante tablas de contingencia offline (`ENABLE_OFFLINE_FALLBACK=True`).
-* **Exposición de datos sensibles:** Se aislaron API keys, URLs y credenciales iniciales en `.env`, evitando mostrar trazas internas en consola.
+```powershell
+py -m venv .venv
+.\.venv\Scripts\Activate.ps1
+py -m pip install -r requirements.txt
+py main.py
+```
 
----
+Al ejecutar el programa por primera vez se crea la base de datos y, durante el
+primer inicio de sesión, se crea el administrador inicial si todavía no existe
+ningún usuario.
 
-## Cumplimiento Técnico por Área (Objetivos 3.1.1 – 3.1.4)
+## Configuración
 
-### 3.1.1 Consumo de Servicios Externos mediante APIs
-* **Solicitudes HTTP óptimas y seguras:** Implementadas mediante la librería oficial `requests` utilizando `requests.Session`, encabezados estándar (`Accept: application/json`, `User-Agent`), `timeout=Settings.REQUEST_TIMEOUT` y política de reintentos (`Retry`) ante errores transitorios `502`, `503` y `504`. Además, la importación de `requests` está protegida (`REQUESTS_AVAILABLE`) para evitar fallos abruptos si la dependencia no está instalada.
-* **Procesamiento estructurado de respuestas JSON:** Las respuestas obtenidas con `response.json()` son validadas y transformadas en diccionarios limpios y desacoplados (`resultado_clima`, `resultado_pronostico`, `resultado` de conversión), aislando la estructura externa de las vistas y controladores.
-* **Selección y filtrado preciso de datos:**
-  * En **REST Countries** se envía el parámetro `fields=name,translations,currencies` para descargar únicamente los campos necesarios y descartar metadatos irrelevantes.
-  * En **WeatherAPI** se solicita `lang=es` y solo se extraen temperatura, sensación térmica, condición, humedad, viento y probabilidad de lluvia.
-  * En `ProyectoController.ejecutar_trans()` se consulta la moneda del país **una sola vez por proyecto** fuera del ciclo de empleados, apoyado por caché en memoria (`_cache_paises` y `_cache_tasas`) para evitar consultas N+1 redundantes.
-* **Integración y consistencia lógica:** Los cálculos monetarios emplean aritmética decimal exacta (`decimal.Decimal` con redondeo financiero `ROUND_HALF_UP`) para evitar imprecisiones de punto flotante, validando que tasas y montos sean finitos y mayores a cero antes de persistirlos en la tabla `transaccion`.
+Copiar `.env.example` como `.env` y completar, al menos, `API_KEY_CLIMA`:
 
-### 3.1.2 Mecanismos Básicos de Seguridad y Control de Acceso
-* **Autenticación con credenciales encriptadas:** `AuthController`, `Usuario` (`models/usuario.py`) y `UsuarioDAO` gestionan el inicio de sesión ocultando la contraseña en consola con `pwinput`, encriptando claves con **SHA-256** (`hashlib.sha256`) y verificándolas en tiempo constante mediante `hmac.compare_digest` para mitigar ataques de temporización. Incluye bloqueo por máximo de intentos (`MAX_LOGIN_ATTEMPTS`) y protección contra auto-eliminación del usuario activo.
-* **Validaciones exhaustivas de entrada:**
-  * `ClimaService.sanitizar_ciudad()` y `MonedaService._sanitizar_pais()` validan longitud, tipo y caracteres permitidos mediante expresiones regulares Unicode (`re.fullmatch`), codificando parámetros de ruta con `urllib.parse.quote` para evitar inyección en URLs.
-  * `Usuario.validar_credenciales_ingreso()` bloquea campos vacíos, longitudes mínimas incumplidas y caracteres no permitidos.
-  * Todos los DAOs utilizan consultas SQL parametrizadas (`?`) para prevenir inyección SQL.
-* **Gestión de información sensible:** `config/settings.py` carga las variables desde `.env` (ignorado en Git mediante `.gitignore` y documentado en `.env.example`), desacoplando `API_KEY_CLIMA`, endpoints base, timeouts y credenciales iniciales del código fuente.
-* **Control de flujo inquebrantable:** En `MainController.ejecutar()`, el flujo del programa exige superar `AuthController.iniciar_sesion()` antes de desplegar el menú principal o permitir el acceso a `ProyectoController`, garantizando que **ningún usuario no autenticado** pueda consumir `ClimaService` ni `MonedaService`. Adicionalmente, las opciones administrativas se restringen según el rol (`Administrador` vs `Empleado`).
+```dotenv
+API_BASE_URL_CLIMA=https://api.weatherapi.com/v1
+API_KEY_CLIMA=tu_api_key_aqui
+REQUEST_TIMEOUT=5
+ENABLE_OFFLINE_FALLBACK=False
 
-### 3.1.3 Manejo de Errores, Excepciones y Resiliencia Operativa
-* **Manejo jerárquico de excepciones:** En `MonedaService`, `ClimaService` y `ProyectoController` se aislaron los errores según su naturaleza: `ValueError` para datos o parámetros inválidos, `Timeout` / `ConnectionError` / `RequestException` (`REQUEST_ERROR`) para fallos de red y `RuntimeError` para dependencias faltantes o límites de cuota, evitando bloques `except Exception` genéricos que oculten fallos de programación.
-* **Gestión de red, desconexiones y timeouts:** Todas las llamadas HTTP definen un tiempo máximo de espera (`Settings.REQUEST_TIMEOUT`) y capturan caídas de red o DNS sin detener la ejecución del sistema.
-* **Tratamiento específico por categoría HTTP:**
-  * `200 OK`: validación de estructura JSON y extracción de indicadores.
-  * `400 / 404 / 422`: recurso inexistente o parámetro inválido (ciudad, país o moneda no soportada).
-  * `401 / 403`: alerta controlada de API Key inválida o no autorizada sin exponer credenciales.
-  * `429`: detección explícita de límite de peticiones excedido (rate limit).
-  * `500–599`: detección de indisponibilidad del servidor externo y activación de contingencia.
-* **Continuidad operativa y mensajes seguros:** Si ocurre un fallo de conectividad o de servidor externo y `ENABLE_OFFLINE_FALLBACK=True`, los servicios activan automáticamente respaldos locales (`CLIMA_CONTINGENCIA`, `CONTINGENCIA_PAISES` y `CONTINGENCIA_TASAS_CLP`). Los detalles técnicos se registran internamente mediante `logging`, mostrando al usuario final únicamente mensajes claros y seguros.
+API_BASE_URL_PAIS=https://countries.dev
+API_BASE_URL_MONEDA=https://api.frankfurter.dev/v2
 
----
+ADMIN_INITIAL_USER=admin
+ADMIN_INITIAL_CLAVE=admin1234
+MAX_LOGIN_ATTEMPTS=3
+```
 
-## 3.1.4 Evaluación, Análisis Crítico y Refactorización con Apoyo de IA
+`config/settings.py` carga estas variables y aplica valores por defecto cuando
+no están definidas. No se debe publicar el archivo `.env` ni una API key.
 
-Durante el desarrollo se emplearon herramientas de inteligencia artificial (**GitHub Copilot** y **Gemini**) como apoyo para acelerar el diseño de servicios, vistas de consola y diagnóstico de errores, sometiendo cada fragmento generado a revisión técnica antes de integrarlo al repositorio.
+### Modo offline de clima
 
-### 1. Evidencia de Prompts, Respuestas y Componentes Generados
-* **Prompt 1 — Diagnóstico de integración monetaria:**
-  * *Consulta realizada:* *"Detecta las fallas que tiene el módulo MonedaService y su integración con ProyectoController."*
-  * *Respuesta y componentes revisados:* La IA identificó inconsistencias entre el tipo de retorno esperado por `ProyectoController` (`str` con código ISO) y el diccionario retornado inicialmente por el servicio, además de señalar la ausencia de resolución para nombres de países en español (`translations.spa`).
-* **Prompt 2 — Refactorización de servicios externos y manejo de errores:**
-  * *Consulta realizada:* *"Refactoriza MonedaService para estructurar solicitudes HTTP seguras, manejar categorías de respuesta HTTP, evitar consultas repetidas y soportar contingencia offline."*
-  * *Componentes generados:* Estructura base de `_consultar_api()`, sesión HTTP con `HTTPAdapter`/`Retry`, cachés de clase (`_cache_paises`, `_cache_tasas`) y tablas de contingencia offline.
-* **Prompt 3 — Estructuración de vistas y diagnóstico de avance:**
-  * *Consulta realizada:* *"Estructura vistas en consola para reportes climáticos y pagos internacionales, y audita los errores pendientes en el repositorio."*
-  * *Componentes generados:* Formateo tabular de `ProyectoView.resultado_clima
+`ENABLE_OFFLINE_FALLBACK` está desactivado por defecto. Si se activa, el
+servicio de clima puede usar datos locales referenciales únicamente para
+Chillán cuando WeatherAPI no está disponible. Estos datos se muestran como
+`CONTINGENCIA` y su evaluación devuelve `SIN VERIFICAR`; no autorizan labores
+en terreno. El modo offline no proporciona cotizaciones monetarias.
+
+## Integraciones externas
+
+### WeatherAPI
+
+`services/clima_service.py` consume:
+
+- `current.json` para el clima actual.
+- `forecast.json` para pronósticos de uno a tres días.
+
+Las peticiones usan `requests.Session`, timeout configurable y reintentos para
+errores transitorios. La API key se envía mediante parámetros de la petición y
+no debe escribirse en el código fuente.
+
+### Países y monedas
+
+`services/moneda_service.py` consulta `API_BASE_URL_PAIS/name/{país}` para
+obtener el código ISO de la moneda del proyecto. Después consulta
+`API_BASE_URL_MONEDA/rate/CLP/{moneda}` para obtener la tasa y convierte el
+monto con `Decimal` y redondeo financiero.
+
+Las respuestas válidas se almacenan en cachés en memoria durante la ejecución.
+La tasa se valida antes de guardar una transacción en SQLite.
+
+## Seguridad y validaciones
+
+- Las contraseñas no se almacenan en texto plano: se guardan como hashes
+  SHA-256. SHA-256 es un hash, no cifrado reversible.
+- La comparación de credenciales usa `hmac.compare_digest`.
+- El acceso al menú principal requiere autenticación.
+- Las opciones de gestión de usuarios e informes se muestran para
+  administradores.
+- Los DAOs usan consultas SQL parametrizadas.
+- Se validan nombres de usuario, contraseñas, ciudades, países, monedas y
+  valores numéricos antes de procesarlos.
+- Las solicitudes HTTP usan timeout y manejo específico de errores de red y
+  respuestas HTTP.
+
+## Datos iniciales
+
+La inicialización de `config/database.py` crea estas tablas:
+
+`departamento`, `proyecto`, `empleado`, `transaccion`, `tiempo`, `informe` y
+`usuario`.
+
+También inserta departamentos, empleados, proyectos y horas de ejemplo. Los
+proyectos de ejemplo incluyen destinos en Chile, Argentina, Francia, Estados
+Unidos, España, Japón y Brasil; algunos proyectos se dejan sin empleados para
+probar ese escenario.
+
+Para reiniciar completamente los datos locales, detener la aplicación y
+eliminar de forma manual `sistema_gestion.db`. La próxima ejecución volverá a
+crear el esquema y los datos de ejemplo.

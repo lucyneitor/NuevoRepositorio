@@ -1,4 +1,5 @@
 import logging
+import sqlite3
 from config.database import Database
 from models.transaccion import Transaccion
 
@@ -18,6 +19,18 @@ class TransaccionDAO:
 
         try:
             cursor = conn.cursor()
+            conn.execute("BEGIN IMMEDIATE")
+            cursor.execute("""
+                SELECT 1 FROM transaccion
+                WHERE rut = ? AND id_proyecto = ?
+                    AND substr(fecha_transaccion, 1, 7) = ?
+                LIMIT 1
+            """, (transaccion.rut, transaccion.id_proyecto,
+                    transaccion.fecha_transaccion[:7]))
+            if cursor.fetchone():
+                logger.warning("Este pago ya se registró para el período indicado.")
+                conn.rollback()
+                return False
             cursor.execute("""
                 INSERT INTO transaccion (
                     rut, id_proyecto, sueldo_emp, moneda_origen_clp,
@@ -37,8 +50,9 @@ class TransaccionDAO:
             conn.commit()
             return True
 
-        except Exception as e:
-            logger.error(f"Error al guardar la transacción en la base de datos: {e}")
+        except sqlite3.Error as e:
+            conn.rollback()
+            logger.error("Error al guardar la transacción: %s", e)
             return False
         finally:
             conn.close()

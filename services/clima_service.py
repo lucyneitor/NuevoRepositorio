@@ -261,14 +261,26 @@ class ClimaService:
             current = cls._validar_seccion(data,"current")
             condition = cls._validar_seccion(current,"condition")
 
+            campos = {
+                "temp_c": (-100, 70),
+                "feelslike_c": (-100, 70),
+                "humidity": (0, 100),
+                "wind_kph": (0, 400),
+            }
+            for campo, (minimo, maximo) in campos.items():
+                if cls._numero_seguro(current.get(campo), minimo, maximo) is None:
+                    raise ValueError(f"Dato climático inválido: {campo}")
+            if not isinstance(condition.get("text"), str) or not condition["text"].strip():
+                raise ValueError("Falta la descripción del clima.")
+
             resultado_clima = {
                 "ciudad": location.get("name", ciudad_segura),
                 "pais": location.get("country", ""),
-                "temperatura": current.get("temp_c", 0.0),
-                "sensacion_termica": current.get("feelslike_c", 0.0),
-                "condicion": condition.get("text", "Desconocido"),
-                "humedad": current.get("humidity", 0),
-                "viento_kph": current.get("wind_kph", 0.0)
+                "temperatura": float(current["temp_c"]),
+                "sensacion_termica": float(current["feelslike_c"]),
+                "condicion": condition["text"],
+                "humedad": float(current["humidity"]),
+                "viento_kph": float(current["wind_kph"])
             }
 
             # 🛠️ Evaluamos la viabilidad operativa de inmediato con los datos obtenidos
@@ -575,6 +587,20 @@ class ClimaService:
             else ""
         )
 
+        if datos_clima.get("es_referencial"):
+            return {
+                "estado": "SIN VERIFICAR",
+                "recomendacion": "Datos referenciales: no autorizan labores en terreno.",
+                "alertas": []
+            }
+
+        if temp is None or viento is None:
+            return {
+                "estado": "DATOS INSUFICIENTES",
+                "recomendacion": "No se informaron temperatura y viento válidos.",
+                "alertas": []
+            }
+
         # No evaluar si no existe ningún dato útil.
         if all(
             valor is None
@@ -744,7 +770,7 @@ class ClimaService:
                     "temp_max": day_info.get("maxtemp_c"),
                     "temp_min": day_info.get("mintemp_c"),
                     "condicion": condition.get("text"),
-                    "prob_lluvia": day_info.get("daily_chance_of_rain", 0),
+                    "prob_lluvia": day_info.get("daily_chance_of_rain"),
                     "viento_max_kph": day_info.get("maxwind_kph"),
                 }
                 resultado_pronostico["dias"].append(datos_dia_crudo)

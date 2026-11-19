@@ -13,12 +13,12 @@ class Settings:
     Centraliza las variables de configuración del sistema.
     Evita exponer credenciales hardcodeadas en el código fuente.
     """
-    API_BASE_URL_CLIMA : str = os.getenv("API_BASE_URL_CLIMA", "http://api.weatherapi.com/v1")#(lo que trae, valor por defecto)
+    API_BASE_URL_CLIMA : str = os.getenv("API_BASE_URL_CLIMA", "https://api.weatherapi.com/v1")#(lo que trae, valor por defecto)
     API_KEY_CLIMA: str = os.getenv("API_KEY_CLIMA", "")#(variable,valor por defecto)
     REQUEST_TIMEOUT: int = int(os.getenv("REQUEST_TIMEOUT", "5")) 
-    ENABLE_OFFLINE_FALLBACK: bool = (os.getenv("ENABLE_OFFLINE_FALLBACK", "True").lower() in ("true", "1", "yes"))
+    ENABLE_OFFLINE_FALLBACK: bool = (os.getenv("ENABLE_OFFLINE_FALLBACK", "False").lower() in ("true", "1", "yes"))
 
-    API_BASE_URL_PAIS:str = os.getenv("API_BASE_URL_PAIS","https://restcountries.com/v3.1")
+    API_BASE_URL_PAIS:str = os.getenv("API_BASE_URL_PAIS","https://countries.dev")
     API_BASE_URL_MONEDA:str = os.getenv("API_BASE_URL_MONEDA","https://api.frankfurter.dev/v2") #conversion clp a codigo monetario correspondiente
 
     #login del sistema [usuario administrador]

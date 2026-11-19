@@ -1,7 +1,9 @@
 import sqlite3
+import secrets
 from pathlib import Path
 from sqlite3 import Connection, Cursor
-
+from config.settings import Settings
+from models.usuario import Usuario
 
 class Database:
     """
@@ -204,6 +206,44 @@ class Database:
                 )
                 """,
                 empleados_seed,
+            )
+            usuarios_seed = [
+                # (username, nombre completo, rut del empleado)
+                ("sofia.contreras", "Sofía Contreras", "18456321-9"),
+                ("diego.morales", "Diego Morales", "19876543-2"),
+                ("valentina.munoz", "Valentina Muñoz", "20123456-K"),
+                ("matias.henriquez", "Matías Henríquez", "17654321-3"),
+                ("javiera.soto", "Javiera Soto", "16789012-1"),
+                ("tomas.fuentes", "Tomás Fuentes", "15432109-8"),
+            ]
+
+            # 1. Leer qué usuarios ya existen (SELECT)
+            existentes = cursor.execute(
+                "SELECT username, rut_empleado FROM usuario"
+            ).fetchall()
+            usernames_usados = {f["username"] for f in existentes}
+            ruts_usados = {f["rut_empleado"] for f in existentes if f["rut_empleado"]}
+
+            # 2. Armar las filas con la clave ya encriptada
+            filas_usuarios = []
+            credenciales_nuevas = []
+            for username, nombre, rut in usuarios_seed:
+                if username in usernames_usados or rut in ruts_usados:
+                    continue
+                clave = Settings.SEED_CLAVE_EMPLEADOS or secrets.token_urlsafe(9)
+                filas_usuarios.append(
+                    (username, Usuario.encriptar_credencial(clave), nombre, "Empleado", rut)
+                )
+                credenciales_nuevas.append((username, clave))
+
+            # 3. Insertar (INSERT ... VALUES, con la lista como segundo argumento)
+            cursor.executemany(
+                """
+                INSERT OR IGNORE INTO usuario
+                    (username, password_hash, nombre_completo, rol, rut_empleado)
+                VALUES (?, ?, ?, ?, ?)
+                """,
+                filas_usuarios,
             )
 
             # 3. Proyectos (3 registros con estados válidos del CHECK)

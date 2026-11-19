@@ -54,6 +54,9 @@ class AuthController:
         return None
 
     def ejecutar(self, usuario_actual: Usuario | None = None) -> None:
+        if usuario_actual is None or usuario_actual.rol != "Administrador":
+            self.view.mostrar_error("Acceso denegado")
+        
         while True:
             opcion = self.view.mostrar_menu_usuarios()
             if opcion == 1:

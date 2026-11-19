@@ -136,94 +136,69 @@ class MonedaService:
     # --------------------------------------------------
 
     @classmethod
-    def _coincide_pais(cls, item: Dict[str, Any], pais_buscado: str) -> bool:
-        """Compara el país ingresado con nombres oficiales/comunes en inglés y español."""
-        objetivo = _normalizar_texto(pais_buscado)
-        name_data = item.get("name", {})
-        spa_data = item.get("translations", {}).get("spa", {})
-
-        candidatos = [
-            name_data.get("common", ""),
-            name_data.get("official", ""),
-            spa_data.get("common", ""),
-            spa_data.get("official", ""),
-        ]
-        return any(_normalizar_texto(c) == objetivo for c in candidatos if c)
-
-    @classmethod
     def _obtener_detalle_pais(
         cls,
         nombre_pais: str,
         moneda_preferida: Optional[str] = None,
     ) -> Dict[str, str]:
-        """Obtiene el nombre oficial y el código ISO de moneda para un país."""
+        """Consulta país y moneda en countries.dev, conservando el formato interno."""
         pais = cls._sanitizar_pais(nombre_pais)
         pref = (moneda_preferida or "").strip().upper()
         clave_cache = f"{_normalizar_texto(pais)}:{pref}"
-
         if clave_cache in cls._cache_paises:
             return cls._cache_paises[clave_cache].copy()
 
-        base_url = (Settings.API_BASE_URL_PAIS or "https://restcountries.com/v3.1").rstrip("/")
-        encoded = quote(pais, safe="")
-        fields = "fields=name,translations,currencies"
-
-        try:
-            try:
-                data = cls._consultar_api(
-                    f"{base_url}/name/{encoded}?{fields}",
-                    f"No se encontró información para '{pais}'.",
-                )
-            except ValueError:
-                data = cls._consultar_api(
-                    f"{base_url}/translation/{encoded}?{fields}",
-                    f"No se encontró información para '{pais}'.",
-                )
-        except REQUEST_EXCEPTION:
-            if Settings.ENABLE_OFFLINE_FALLBACK:
-                clave_offline = _normalizar_texto(pais)
-                if clave_offline in cls.CONTINGENCIA_PAISES:
-                    logger.warning("Modo contingencia activo para país '%s'.", pais)
-                    return cls.CONTINGENCIA_PAISES[clave_offline].copy()
-            raise
-
+        nombres_ingles = {
+            "espana": "Spain", "estados unidos": "United States",
+            "reino unido": "United Kingdom", "japon": "Japan",
+            "francia": "France", "alemania": "Germany",
+            "brasil": "Brazil", "mexico": "Mexico",
+            "canada": "Canada", "argentina": "Argentina",
+        }
+        buscar = nombres_ingles.get(_normalizar_texto(pais), pais)
+        base_url = (Settings.API_BASE_URL_PAIS or "https://countries.dev").rstrip("/")
+        data = cls._consultar_api(
+            f"{base_url}/name/{quote(buscar, safe='')}",
+            f"No se encontró información para '{pais}'.",
+        )
         if not isinstance(data, list) or not data:
-            raise ValueError(f"No se encontró información para '{pais}'.")
+            raise ValueError("La API de países devolvió información inválida.")
 
-        coincidencias = [item for item in data if cls._coincide_pais(item, pais)]
-
+        objetivo = _normalizar_texto(buscar)
+        coincidencias = [
+            item for item in data
+            if isinstance(item, dict)
+            and isinstance(item.get("name"), str)
+            and _normalizar_texto(item["name"]) == objetivo
+        ]
         if len(coincidencias) == 1:
             informacion = coincidencias[0]
-        elif len(data) == 1:
+        elif len(data) == 1 and isinstance(data[0], dict):
             informacion = data[0]
         else:
-            raise ValueError(f"La búsqueda del país '{pais}' es ambigua.")
+            raise ValueError(f"La búsqueda de '{pais}' es ambigua.")
 
-        nombre_oficial = (
-            informacion.get("translations", {}).get("spa", {}).get("common")
-            or informacion.get("name", {}).get("common", pais)
-        )
-        monedas = informacion.get("currencies", {})
-
-        if not monedas:
-            raise ValueError(f"No se encontró moneda para {nombre_oficial}.")
-
-        codigos = sorted(monedas.keys())
-
+        monedas = informacion.get("currencies")
+        if not isinstance(monedas, list) or not monedas:
+            raise ValueError(f"No se encontró una moneda para '{pais}'.")
+        codigos = sorted({
+            mon["code"].upper() for mon in monedas
+            if isinstance(mon, dict) and isinstance(mon.get("code"), str)
+            and len(mon["code"]) == 3 and mon["code"].isalpha()
+        })
+        if not codigos:
+            raise ValueError(f"El código monetario de '{pais}' no es válido.")
         if len(codigos) > 1:
             if pref and pref in codigos:
-                codigo_elegido = pref
+                codigo = pref
             else:
-                raise ValueError(
-                    f"{nombre_oficial} posee varias monedas: {', '.join(codigos)}. "
-                    "Debes seleccionar la correspondiente."
-                )
+                raise ValueError(f"Selecciona una moneda: {', '.join(codigos)}.")
         else:
-            codigo_elegido = codigos[0]
+            codigo = codigos[0]
 
         resultado = {
-            "nombre_pais": nombre_oficial,
-            "codigo_moneda": codigo_elegido,
+            "nombre_pais": informacion.get("name", pais),
+            "codigo_moneda": codigo,
         }
         cls._cache_paises[clave_cache] = resultado.copy()
         return resultado
@@ -299,16 +274,18 @@ class MonedaService:
                 if not tasa.is_finite() or tasa <= 0:
                     raise ValueError("El tipo de cambio recibido es inválido.")
 
-                fecha_api = data.get("date", fecha_hoy)
+                fecha_api = data.get("date")
+                if not isinstance(fecha_api, str):
+                    raise ValueError("La API no devolvió una fecha válida.")
+                try:
+                    date.fromisoformat(fecha_api)
+                except ValueError:
+                    raise ValueError("La fecha del tipo de cambio es inválida.")
                 cls._cache_tasas[clave_tasa] = (tasa, fecha_api)
 
             except (REQUEST_EXCEPTION, ValueError):
-                if Settings.ENABLE_OFFLINE_FALLBACK and destino in cls.CONTINGENCIA_TASAS_CLP:
-                    logger.warning("Usando tasa referencial de contingencia para CLP -> %s.", destino)
-                    tasa = cls.CONTINGENCIA_TASAS_CLP[destino]
-                    fecha_api = fecha_hoy
-                else:
-                    raise
+                # No registrar pagos con cotizaciones de contingencia.
+                raise
 
         bruto = monto * tasa
         monto_convertido = bruto.quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
